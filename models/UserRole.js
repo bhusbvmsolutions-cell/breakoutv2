@@ -10,6 +10,7 @@ module.exports = (sequelize, DataTypes) => {
         userId: {
           type: DataTypes.INTEGER,
           allowNull: false,
+          unique: false,
           references: {
             model: 'users',
             key: 'id'
@@ -18,6 +19,7 @@ module.exports = (sequelize, DataTypes) => {
         roleId: {
           type: DataTypes.INTEGER,
           allowNull: false,
+          unique: false,
           references: {
             model: 'roles',
             key: 'id'
@@ -26,6 +28,7 @@ module.exports = (sequelize, DataTypes) => {
         assignedBy: {
           type: DataTypes.INTEGER,
           allowNull: true,
+          unique: false,
           references: {
             model: 'users',
             key: 'id'

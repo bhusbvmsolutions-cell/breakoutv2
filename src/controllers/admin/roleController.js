@@ -152,6 +152,7 @@ const roleController = {
         title: 'Create Role',
         groupedPermissions,
         maxAssignableLevel,
+        formData: {},
         user: req.session.user
       });
     } catch (error) {

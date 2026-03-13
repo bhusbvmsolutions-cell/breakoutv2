@@ -2,35 +2,35 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('role_permissions', {
+    await queryInterface.createTable('roles', {
       id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
         primaryKey: true
       },
-      roleId: {
+      name: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        unique: false
+      },
+      displayName: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
+      description: {
+        type: Sequelize.TEXT,
+        allowNull: true
+      },
+      level: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        unique: true,
-        references: {
-          model: 'roles',
-          key: 'id'
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
+        defaultValue: 0
       },
-      permissionId: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        unique: true,
-        references: {
-          model: 'permissions',
-          key: 'id'
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
+      isSystem: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
       },
-      grantedBy: {
+      createdBy: {
         type: Sequelize.INTEGER,
         allowNull: true,
         references: {
@@ -52,6 +52,6 @@ module.exports = {
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('role_permissions');
+    await queryInterface.dropTable('roles');
   }
 };

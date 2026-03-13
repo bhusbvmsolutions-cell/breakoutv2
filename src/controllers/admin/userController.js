@@ -128,6 +128,7 @@ const userController = {
         title: 'Create User',
         roles: assignableRoles,
         selectedRoleIds,
+        formData: {},
         user: req.session.user
       });
     } catch (error) {
