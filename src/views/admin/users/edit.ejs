@@ -1,0 +1,91 @@
+<div class="row">
+    <div class="col-12 col-lg-12">
+      <div class="card">
+        <div class="card-header">
+          <h4><i class="bi bi-pencil-square"></i> Edit User: <%= editUser.firstName || '' %> <%= editUser.lastName || '' %></h4>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-8">
+      <div class="card">
+        <div class="card-header">
+          <h5>Edit User Information</h5>
+        </div>
+        <div class="card-body">
+          <% if (typeof error !== 'undefined' && error) { %>
+            <div class="alert alert-danger"><%= error %></div>
+          <% } %>
+  
+          <form action="/admin/users/<%= editUser.id %>" method="POST" class="row g-3">
+            <div class="col-md-6">
+              <label for="firstName" class="form-label">First Name <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="firstName" name="firstName" 
+                     value="<%= editUser.firstName || '' %>" required>
+            </div>
+            
+            <div class="col-md-6">
+              <label for="lastName" class="form-label">Last Name <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="lastName" name="lastName" 
+                     value="<%= editUser.lastName || '' %>" required>
+            </div>
+            
+            <div class="col-md-6">
+              <label for="username" class="form-label">Username</label>
+              <input type="text" class="form-control" id="username" name="username" 
+                     value="<%= editUser.username || '' %>">
+            </div>
+            
+            <div class="col-md-6">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" class="form-control" id="email" value="<%= editUser.email %>" disabled>
+              <small class="text-muted">Email cannot be changed</small>
+            </div>
+            
+            <div class="col-md-6">
+              <label for="phone" class="form-label">Phone</label>
+              <input type="text" class="form-control" id="phone" name="phone" 
+                     value="<%= editUser.phone || '' %>">
+            </div>
+            
+            <div class="col-md-6">
+              <div class="form-check form-switch mt-4">
+                <input class="form-check-input" type="checkbox" id="isActive" name="isActive" 
+                       <%= editUser.isActive ? 'checked' : '' %>>
+                <label class="form-check-label" for="isActive">Account Active</label>
+              </div>
+            </div>
+            
+            <div class="col-12">
+              <label class="form-label">Assign Roles</label>
+              <div class="border p-3 rounded" style="max-height: 200px; overflow-y: auto;">
+                <% allRoles.forEach(role => { %>
+                  <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" name="roleIds" value="<%= role.id %>" 
+                           id="role<%= role.id %>"
+                           <%= userRoles?.includes(role.id) ? 'checked' : '' %>>
+                    <label class="form-check-label" for="role<%= role.id %>">
+                      <strong><%= role.displayName %></strong> 
+                      <small class="text-muted">(Level: <%= role.level %>)</small>
+                      <br>
+                      <small class="text-muted"><%= role.description || '' %></small>
+                    </label>
+                  </div>
+                <% }); %>
+              </div>
+            </div>
+            
+            <div class="col-12">
+              <hr>
+              <button type="submit" class="btn btn-primary">
+                <i class="bi bi-save"></i> Update User
+              </button>
+              <a href="/admin/users" class="btn btn-secondary">Cancel</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>

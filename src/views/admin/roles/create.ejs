@@ -1,0 +1,117 @@
+<div class="row">
+    <div class="col-12 col-lg-12">
+      <div class="card">
+        <div class="card-header">
+          <h4><i class="bi bi-shield-plus"></i> Create New Role</h4>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-8">
+      <div class="card">
+        <div class="card-header">
+          <h5>Role Information</h5>
+        </div>
+        <div class="card-body">
+          <% if (typeof error !== 'undefined' && error) { %>
+            <div class="alert alert-danger"><%= error %></div>
+          <% } %>
+  
+          <form action="/admin/roles" method="POST">
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="name" class="form-label">Role Name <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="name" name="name" 
+                       value="<%= formData?.name || '' %>" 
+                       pattern="[a-zA-Z0-9_]+" 
+                       title="Only letters, numbers, and underscores allowed"
+                       required>
+                <small class="text-muted">Only letters, numbers, and underscores (e.g., content_manager)</small>
+              </div>
+              
+              <div class="col-md-6">
+                <label for="displayName" class="form-label">Display Name <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="displayName" name="displayName" 
+                       value="<%= formData?.displayName || '' %>" required>
+                <small class="text-muted">Human-readable name (e.g., Content Manager)</small>
+              </div>
+            </div>
+            
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="level" class="form-label">Role Level <span class="text-danger">*</span></label>
+                <input type="number" class="form-control" id="level" name="level" 
+                       value="<%= formData?.level || 10 %>" min="1" max="<%= maxAssignableLevel || 999 %>" required>
+                <small class="text-muted">Higher number = more privileges (1-<%= maxAssignableLevel || 999 %>)</small>
+              </div>
+              
+              <div class="col-md-6">
+                <label for="description" class="form-label">Description</label>
+                <textarea class="form-control" id="description" name="description" rows="3"><%= formData?.description || '' %></textarea>
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label">Assign Permissions</label>
+              <div class="row">
+                <% Object.keys(groupedPermissions).forEach(resource => { %>
+                  <div class="col-md-6 mb-3">
+                    <div class="card">
+                      <div class="card-header bg-light">
+                        <div class="form-check">
+                          <input class="form-check-input resource-checkall" type="checkbox" 
+                                 data-resource="<%= resource %>" id="checkAll_<%= resource %>">
+                          <label class="form-check-label fw-bold" for="checkAll_<%= resource %>">
+                            <%= resource.charAt(0).toUpperCase() + resource.slice(1) %>
+                          </label>
+                        </div>
+                      </div>
+                      <div class="card-body">
+                        <% groupedPermissions[resource].forEach(perm => { %>
+                          <div class="form-check mb-2">
+                            <input class="form-check-input permission-check" type="checkbox" 
+                                   name="permissionIds" value="<%= perm.id %>" 
+                                   id="perm_<%= perm.id %>" data-resource="<%= resource %>">
+                            <label class="form-check-label" for="perm_<%= perm.id %>">
+                              <span class="badge bg-secondary"><%= perm.action %></span>
+                              <small class="text-muted d-block"><%= perm.description || perm.name %></small>
+                            </label>
+                          </div>
+                        <% }); %>
+                      </div>
+                    </div>
+                  </div>
+                <% }); %>
+              </div>
+            </div>
+            
+            <hr>
+            <button type="submit" class="btn btn-primary">
+              <i class="bi bi-save"></i> Create Role
+            </button>
+            <a href="/admin/roles" class="btn btn-secondary">Cancel</a>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    $(document).ready(function() {
+      // Resource checkall
+      $('.resource-checkall').on('change', function() {
+        const resource = $(this).data('resource');
+        $('.permission-check[data-resource="' + resource + '"]').prop('checked', $(this).prop('checked'));
+      });
+      
+      // Individual permission check
+      $('.permission-check').on('change', function() {
+        const resource = $(this).data('resource');
+        const total = $('.permission-check[data-resource="' + resource + '"]').length;
+        const checked = $('.permission-check[data-resource="' + resource + '"]:checked').length;
+        $('.resource-checkall[data-resource="' + resource + '"]').prop('checked', total === checked);
+      });
+    });
+  </script>

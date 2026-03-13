@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en" class="dark-theme">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- loader-->
+    <link href="<%= baseUrl %>/assets/css/pace.min.css" rel="stylesheet" />
+    <script src="<%= baseUrl %>/assets/js/pace.min.js"></script>
+
+    <!--plugins-->
+    <link
+      href="<%= baseUrl %>/assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css"
+      rel="stylesheet"
+    />
+
+    <!-- CSS Files -->
+    <link href="<%= baseUrl %>/assets/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="<%= baseUrl %>/assets/css/bootstrap-extended.css" rel="stylesheet" />
+    <link href="<%= baseUrl %>/assets/css/style.css" rel="stylesheet" />
+    <link href="<%= baseUrl %>/assets/css/icons.css" rel="stylesheet" />
+    <link href="<%= baseUrl %>/assets/css/dark-theme.css" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <title>Breakout | Admin Login</title>
+  </head>
+
+  <body>
+    <!--start wrapper-->
+    <div class="wrapper">
+      <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-transparent p-3">
+          <div class="container-fluid">
+            <a href="javascript:;">
+              <img src="<%= baseUrl %>/assets/images/logo-icon-1.png" alt="Logo" />
+            </a>
+          </div>
+        </nav>
+      </header>
+      <div class="container">
+        <div class="row">
+          <div class="col-xl-4 col-lg-5 col-md-7 mx-auto mt-5">
+            <div class="card radius-10">
+              <div class="card-body p-4">
+                <div class="text-center">
+                  <h4>Welcome Admin</h4>
+                  <p>Sign In to your account</p>
+                </div>
+
+                <!-- Display server-side messages -->
+                <% if (typeof error !== 'undefined' && error) { %>
+                  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-triangle"></i> <%= error %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                  </div>
+                <% } %>
+                
+                <% if (typeof message !== 'undefined' && message) { %>
+                  <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="bi bi-check-circle"></i> <%= message %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                  </div>
+                <% } %>
+
+                <!-- Client-side error display -->
+                <div id="error" class="alert alert-danger d-none">
+                  <span id="errorMessage"></span>
+                </div>
+
+                <form id="loginForm" class="form-body row g-3" action="/admin/login" method="POST">
+                  <div class="col-12">
+                    <label for="email" class="form-label">Email</label>
+                    <input 
+                      type="email" 
+                      class="form-control" 
+                      id="email" 
+                      name="email"
+                      value="<%= typeof email !== 'undefined' ? email : '' %>"
+                      required
+                    />
+                  </div>
+                  <div class="col-12">
+                    <label for="userpassword" class="form-label">Password</label>
+                    <input
+                      type="password"
+                      class="form-control"
+                      id="userpassword"
+                      name="password"
+                      required
+                    />
+                  </div>
+                  <div class="col-12 text-end">
+                    <a href="/admin/forgot-password">Forgot Password ?</a>
+                  </div>
+                  <div class="col-12 col-lg-12">
+                    <div class="d-grid">
+                      <button type="submit" class="btn btn-primary">
+                        Sign In
+                      </button>
+                    </div>
+                  </div>
+                </form>
+                
+                <div class="text-center mt-3">
+                  <small class="text-muted">Demo: admin@example.com / Admin@123</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--end wrapper-->
+
+    <script src="<%= baseUrl %>/assets/js/bootstrap.bundle.min.js"></script>
+    <script>
+      const loginForm = document.getElementById("loginForm");
+      const errorDiv = document.getElementById("error");
+      const errorMessage = document.getElementById("errorMessage");
+
+      let loginAttempts = 0;
+      const maxAttempts = 5;
+      let lockTimeout;
+
+      // Optional AJAX login (commented out to use traditional form submission)
+      /*
+      loginForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("userpassword").value;
+
+        if (loginAttempts >= maxAttempts) {
+          errorDiv.classList.remove("d-none");
+          errorMessage.textContent =
+            "Too many login attempts. Please try again after 10 seconds.";
+          return;
+        }
+
+        const response = await fetch("/auth-validate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          localStorage.setItem("token", result.token);
+          window.location.href = "/admin/dashboard";
+        } else {
+          loginAttempts++;
+          if (loginAttempts >= maxAttempts) {
+            lockTimeout = setTimeout(() => (loginAttempts = 0), 10000);
+          }
+          errorDiv.classList.remove("d-none");
+          errorMessage.textContent =
+            result.message || "Invalid credentials. Please try again.";
+        }
+      });
+      */
+    </script>
+  </body>
+</html>

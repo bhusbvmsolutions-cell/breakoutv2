@@ -1,0 +1,130 @@
+<div class="row">
+    <div class="col-12 col-lg-12">
+      <div class="card">
+        <div class="card-header">
+          <h4><i class="bi bi-person"></i> My Profile</h4>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <% if (typeof success !== 'undefined' && success) { %>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <i class="bi bi-check-circle"></i> <%= success %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  <% } %>
+  
+  <% if (typeof error !== 'undefined' && error) { %>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <i class="bi bi-exclamation-triangle"></i> <%= error %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  <% } %>
+  
+  <div class="row">
+    <div class="col-12 col-lg-4">
+      <div class="card">
+        <div class="card-body text-center">
+          <% if (user?.avatar) { %>
+            <img src="<%= user.avatar %>" class="rounded-circle" width="120" height="120" alt="Profile">
+          <% } else { %>
+            <div class="mx-auto rounded-circle bg-primary d-flex align-items-center justify-content-center text-white" 
+                 style="width: 120px; height: 120px; font-size: 48px;">
+              <%= (user?.firstName?.charAt(0) || '').toUpperCase() %><%= (user?.lastName?.charAt(0) || '').toUpperCase() %>
+            </div>
+          <% } %>
+          
+          <h4 class="mt-3"><%= user?.firstName || '' %> <%= user?.lastName || '' %></h4>
+          <p class="text-secondary mb-1"><%= user?.email || '' %></p>
+          <p class="text-secondary mb-3"><%= user?.phone || 'No phone' %></p>
+          
+          <span class="badge bg-primary"><%= user?.role || 'User' %></span>
+          
+          <% if (user?.roles && user.roles.length > 0) { %>
+            <div class="mt-3">
+              <% user.roles.forEach(role => { %>
+                <span class="badge bg-secondary me-1"><%= role.name %></span>
+              <% }); %>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  
+    <div class="col-12 col-lg-8">
+      <div class="card">
+        <div class="card-header">
+          <h5>Edit Profile</h5>
+        </div>
+        <div class="card-body">
+          <form action="/admin/profile" method="POST" class="row g-3">
+            <div class="col-md-6">
+              <label for="firstName" class="form-label">First Name</label>
+              <input type="text" class="form-control" id="firstName" name="firstName" 
+                     value="<%= user?.firstName || '' %>" required>
+            </div>
+            
+            <div class="col-md-6">
+              <label for="lastName" class="form-label">Last Name</label>
+              <input type="text" class="form-control" id="lastName" name="lastName" 
+                     value="<%= user?.lastName || '' %>" required>
+            </div>
+            
+            <div class="col-md-6">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" class="form-control" id="email" value="<%= user?.email || '' %>" disabled>
+              <small class="text-muted">Email cannot be changed</small>
+            </div>
+            
+            <div class="col-md-6">
+              <label for="phone" class="form-label">Phone</label>
+              <input type="text" class="form-control" id="phone" name="phone" 
+                     value="<%= user?.phone || '' %>">
+            </div>
+            
+            <div class="col-12">
+              <label for="bio" class="form-label">Bio</label>
+              <textarea class="form-control" id="bio" name="bio" rows="3"><%= user?.bio || '' %></textarea>
+            </div>
+            
+            <div class="col-12">
+              <button type="submit" class="btn btn-primary">
+                <i class="bi bi-save"></i> Save Changes
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+  
+      <div class="card mt-3">
+        <div class="card-header">
+          <h5>Change Password</h5>
+        </div>
+        <div class="card-body">
+          <form action="/admin/change-password" method="POST" class="row g-3">
+            <div class="col-12">
+              <label for="currentPassword" class="form-label">Current Password</label>
+              <input type="password" class="form-control" id="currentPassword" name="currentPassword" required>
+            </div>
+            
+            <div class="col-md-6">
+              <label for="newPassword" class="form-label">New Password</label>
+              <input type="password" class="form-control" id="newPassword" name="newPassword" required minlength="6">
+            </div>
+            
+            <div class="col-md-6">
+              <label for="confirmPassword" class="form-label">Confirm Password</label>
+              <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required minlength="6">
+            </div>
+            
+            <div class="col-12">
+              <button type="submit" class="btn btn-warning">
+                <i class="bi bi-key"></i> Change Password
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>

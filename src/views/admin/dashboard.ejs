@@ -1,0 +1,217 @@
+<div class="row">
+    <div class="col-12 col-lg-12">
+      <div class="card">
+        <div class="card-header">
+          <h4><i class="bi bi-speedometer2"></i> Dashboard</h4>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Welcome message -->
+  <div class="alert alert-info alert-dismissible fade show" role="alert">
+    <i class="bi bi-info-circle"></i>
+    Welcome back, <strong><%= user?.firstName || '' %> <%= user?.lastName || '' %></strong>!
+    You are logged in as <span class="badge bg-primary"><%= user?.role || 'Admin' %></span>
+    <% if (userRoles && userRoles.length > 0) { %>
+      with roles: 
+      <% userRoles.forEach(role => { %>
+        <span class="badge bg-secondary"><%= role.name %></span>
+      <% }); %>
+    <% } %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+  
+  <!-- Statistics Cards -->
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4">
+    <div class="col">
+      <div class="card radius-10">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div>
+              <p class="mb-0 text-secondary">Total Users</p>
+              <h4 class="my-1"><%= stats?.totalUsers || 0 %></h4>
+              <p class="mb-0 font-13 text-success">
+                <i class="bi bi-arrow-up"></i> Active users
+              </p>
+            </div>
+            <div class="widgets-icons bg-light-primary text-primary ms-auto">
+              <i class="bi bi-people"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <div class="col">
+      <div class="card radius-10">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div>
+              <p class="mb-0 text-secondary">Total Roles</p>
+              <h4 class="my-1"><%= stats?.totalRoles || 0 %></h4>
+              <p class="mb-0 font-13 text-success">
+                <i class="bi bi-arrow-up"></i> System roles
+              </p>
+            </div>
+            <div class="widgets-icons bg-light-success text-success ms-auto">
+              <i class="bi bi-shield"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <div class="col">
+      <div class="card radius-10">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div>
+              <p class="mb-0 text-secondary">Permissions</p>
+              <h4 class="my-1"><%= stats?.totalPermissions || 0 %></h4>
+              <p class="mb-0 font-13 text-warning">
+                <i class="bi bi-arrow-up"></i> Total permissions
+              </p>
+            </div>
+            <div class="widgets-icons bg-light-warning text-warning ms-auto">
+              <i class="bi bi-key"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <div class="col">
+      <div class="card radius-10">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div>
+              <p class="mb-0 text-secondary">System Status</p>
+              <h4 class="my-1">
+                <i class="bi bi-check-circle text-success"></i> Active
+              </h4>
+              <p class="mb-0 font-13 text-info">
+                <i class="bi bi-hdd-stack"></i> Running
+              </p>
+            </div>
+            <div class="widgets-icons bg-light-info text-info ms-auto">
+              <i class="bi bi-hdd-stack"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div><!--end row-->
+  
+  <div class="row mt-3">
+    <!-- Recent Users -->
+    <div class="col-12 col-lg-8">
+      <div class="card">
+        <div class="card-header">
+          <div class="d-flex align-items-center">
+            <div>
+              <h5 class="mb-0"><i class="bi bi-clock-history"></i> Recent Users</h5>
+            </div>
+            <div class="dropdown ms-auto">
+              <a href="javascript:;" class="dropdown-toggle dropdown-toggle-nocaret" data-bs-toggle="dropdown">
+                <i class="bi bi-three-dots-vertical"></i>
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="/admin/users">View All</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Joined</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% if (stats?.recentUsers && stats.recentUsers.length > 0) { %>
+                  <% stats.recentUsers.forEach(userItem => { %>
+                    <tr>
+                      <td><%= userItem.id %></td>
+                      <td>
+                        <div class="d-flex align-items-center">
+                          <div class="ms-2">
+                            <h6 class="mb-0"><%= userItem.firstName || '' %> <%= userItem.lastName || '' %></h6>
+                          </div>
+                        </div>
+                      </td>
+                      <td><%= userItem.email %></td>
+                      <td><%= new Date(userItem.createdAt).toLocaleDateString() %></td>
+                      <td>
+                        <button class="btn btn-sm btn-outline-primary">
+                          <ion-icon name="eye-outline"></ion-icon>
+                        </button>
+                      </td>
+                    </tr>
+                  <% }); %>
+                <% } else { %>
+                  <tr>
+                    <td colspan="5" class="text-center">No users found</td>
+                  </tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Quick Actions -->
+    <div class="col-12 col-lg-4">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0"><i class="bi bi-lightning"></i> Quick Actions</h5>
+        </div>
+        <div class="card-body">
+          <div class="d-grid gap-2">
+            <a href="/admin/users" class="btn btn-outline-primary">
+              <i class="bi bi-people"></i> Manage Users
+            </a>
+            <a href="/admin/roles" class="btn btn-outline-success">
+              <i class="bi bi-shield"></i> Manage Roles
+            </a>
+            <a href="/admin/permissions" class="btn btn-outline-info">
+              <i class="bi bi-key"></i> Permissions
+            </a>
+            <a href="/api/health" target="_blank" class="btn btn-outline-warning">
+              <i class="bi bi-hdd-stack"></i> API Status
+            </a>
+          </div>
+        </div>
+      </div>
+  
+      <!-- System Info -->
+      <div class="card mt-3">
+        <div class="card-header">
+          <h5 class="mb-0"><i class="bi bi-info-circle"></i> System Info</h5>
+        </div>
+        <div class="card-body">
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              Node Version
+              <span class="badge bg-primary"><%= process.version %></span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              Environment
+              <span class="badge bg-info"><%= process.env.NODE_ENV || 'development' %></span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              Server Time
+              <span class="badge bg-secondary"><%= new Date().toLocaleString() %></span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div><!--end row-->
