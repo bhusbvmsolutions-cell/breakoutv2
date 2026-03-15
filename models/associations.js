@@ -4,7 +4,7 @@
  */
 
 module.exports = (db) => {
-    const { User, Role, Permission, UserRole, RolePermission } = db;
+    const { User, Role, Permission, UserRole, RolePermission, Module } = db;
   
     // ==================== User Associations ====================
     
@@ -40,15 +40,26 @@ module.exports = (db) => {
       as: 'roles'
     });
   
+    // ==================== Module Associations ====================
+    Module.hasMany(Permission, {
+      foreignKey: 'moduleId',
+      as: 'permissions'
+    });
+
+    Permission.belongsTo(Module, {
+      foreignKey: 'moduleId',
+      as: 'module'
+    });
+
     // ==================== Self-Referential Associations ====================
-    
+
     // UserRole - Who assigned the role
     UserRole.belongsTo(User, {
       as: 'assigner',
       foreignKey: 'assignedBy',
       constraints: false // Set to true if you want foreign key constraints
     });
-  
+
     User.hasMany(UserRole, {
       as: 'assignedRoles',
       foreignKey: 'assignedBy'

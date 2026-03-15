@@ -3,50 +3,57 @@ const bcrypt = require('bcryptjs');
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    // Get super admin role ID
     const roles = await queryInterface.sequelize.query(
       `SELECT id FROM roles WHERE name = 'super_admin';`,
       { type: Sequelize.QueryTypes.SELECT }
     );
-    
+
     const superAdminRoleId = roles[0]?.id;
-    
+
     if (!superAdminRoleId) {
-      console.log('⚠️ Super admin role not found. Run roles seeder first.');
+      console.log('Super admin role not found. Run roles seeder first.');
       return;
     }
-    
-    // Check if admin user already exists
-    const existingUser = await queryInterface.sequelize.query(
-      `SELECT id FROM users WHERE email = 'admin@example.com';`,
+
+    const [existingUser] = await queryInterface.sequelize.query(
+      `SELECT id, role FROM users WHERE email = 'admin@example.com' LIMIT 1;`,
       { type: Sequelize.QueryTypes.SELECT }
     );
 
-    if (existingUser.length === 0) {
+    if (!existingUser) {
       const hashedPassword = await bcrypt.hash('Admin@123', 10);
-      
-      // Insert admin user
-      const [result] = await queryInterface.sequelize.query(
-        `INSERT INTO users 
-        (firstName, lastName, username, email, password, phone, role, isActive, isEmailVerified, lastPasswordChange, createdAt, updatedAt) 
-        VALUES 
+
+      await queryInterface.sequelize.query(
+        `INSERT INTO users
+        (firstName, lastName, username, email, password, phone, role, isActive, isEmailVerified, lastPasswordChange, createdAt, updatedAt)
+        VALUES
         ('Super', 'Admin', 'superadmin', 'admin@example.com', ?, '+1234567890', 'super_admin', true, true, ?, NOW(), NOW())`,
         {
           replacements: [hashedPassword, new Date()],
           type: Sequelize.QueryTypes.INSERT
         }
       );
+    } else if (existingUser.role !== 'super_admin') {
+      await queryInterface.bulkUpdate('users', { role: 'super_admin' }, { id: existingUser.id });
+    }
 
-      // Get the inserted user ID
-      const [newUser] = await queryInterface.sequelize.query(
-        `SELECT id FROM users WHERE email = 'admin@example.com';`,
-        { type: Sequelize.QueryTypes.SELECT }
+    const [adminUser] = await queryInterface.sequelize.query(
+      `SELECT id FROM users WHERE email = 'admin@example.com' LIMIT 1;`,
+      { type: Sequelize.QueryTypes.SELECT }
+    );
+
+    if (adminUser) {
+      const [userRole] = await queryInterface.sequelize.query(
+        `SELECT id FROM user_roles WHERE userId = ? AND roleId = ? LIMIT 1;`,
+        {
+          replacements: [adminUser.id, superAdminRoleId],
+          type: Sequelize.QueryTypes.SELECT
+        }
       );
 
-      // Assign super admin role to user
-      if (newUser) {
+      if (!userRole) {
         await queryInterface.bulkInsert('user_roles', [{
-          userId: newUser.id,
+          userId: adminUser.id,
           roleId: superAdminRoleId,
           assignedBy: null,
           assignedAt: new Date(),
@@ -54,29 +61,25 @@ module.exports = {
           updatedAt: new Date()
         }]);
       }
-      
-      console.log('✅ Super admin user created');
-      console.log('   Email: admin@example.com');
-      console.log('   Password: Admin@123');
-    } else {
-      console.log('ℹ️ Admin user already exists');
     }
+
+    console.log('Super admin user ready');
+    console.log('Email: admin@example.com');
+    console.log('Password: Admin@123');
   },
 
   down: async (queryInterface, Sequelize) => {
-    // Delete user roles first
     const user = await queryInterface.sequelize.query(
       `SELECT id FROM users WHERE email = 'admin@example.com';`,
       { type: Sequelize.QueryTypes.SELECT }
     );
-    
+
     if (user[0]?.id) {
       await queryInterface.bulkDelete('user_roles', {
         userId: user[0].id
       });
     }
-    
-    // Delete user
+
     await queryInterface.bulkDelete('users', {
       email: 'admin@example.com'
     });

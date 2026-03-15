@@ -83,8 +83,8 @@ function generateMigration(modelName, model) {
     if (attr.primaryKey)
       definition += `        primaryKey: true,\n`;
 
-    if (attr.unique && !attr.primaryKey)
-      definition += `        unique: false,\n`;
+    if ((attr.unique === true || typeof attr.unique === "string") && !attr.primaryKey)
+      definition += `        unique: true,\n`;
 
     if (attr.defaultValue !== undefined) {
         if (attr.defaultValue === "NOW" || attr.defaultValue?.key === "NOW") {
@@ -193,6 +193,7 @@ async function generateAllMigrations() {
     const migrationOrder = [
       "User",
       "Role",
+      "Module",
       "Permission",
       "UserRole",
       "RolePermission"

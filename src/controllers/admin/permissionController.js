@@ -1,6 +1,6 @@
 const db = require('../../../models');
 const { Op } = require('sequelize');
-const { autoCreatePermissions, assignAllPermissionsToSuperAdmin } = require('../../utils/permissionGenerator');
+const { autoCreatePermissions, assignAllPermissionsToSuperAdmin, assignDefaultPermissionsToAdmin } = require('../../utils/permissionGenerator');
 const { isSuperAdmin, userHasPermission } = require('../../utils/rbacHelper');
 
 const permissionController = {
@@ -110,6 +110,8 @@ const permissionController = {
       try {
         const assignResult = await assignAllPermissionsToSuperAdmin();
         result.superAdminAssignments = assignResult.assigned;
+        const adminAssignResult = await assignDefaultPermissionsToAdmin();
+        result.adminAssignments = adminAssignResult.assigned;
       } catch (assignError) {
         console.warn('Super admin assignment skipped:', assignError.message);
       }
@@ -265,6 +267,13 @@ const permissionController = {
         }
 
         result.superAdminAssignments = assigned;
+      }
+
+      try {
+        const adminAssignResult = await assignDefaultPermissionsToAdmin();
+        result.adminAssignments = adminAssignResult.assigned;
+      } catch (assignError) {
+        console.warn('Admin assignment skipped:', assignError.message);
       }
 
       res.json({ 

@@ -1,142 +1,161 @@
 const db = require('../../models');
 
-// List of all models/resources that need permissions
-const RESOURCES = [
-  'users',
-  'roles', 
-  'permissions',
-  'products',
-  'orders',
-  'categories',
-  'settings',
-  'dashboard'
-];
+const DEFAULT_ACTIONS = ['view', 'create', 'edit', 'delete', 'manage'];
+const EXTRA_RESOURCES = ['dashboard', 'settings'];
+const IGNORED_TABLES = new Set(['sequelizemeta', 'sequelizedata', 'sessions']);
 
-const ACTIONS = ['create', 'read', 'update', 'delete', 'manage'];
+const normalizeTableName = (value) => {
+  if (!value) return null;
+  if (typeof value === 'string') return value;
+  if (typeof value === 'object') {
+    if (value.tableName) return value.tableName;
+    if (value.name) return value.name;
+  }
+  return String(value);
+};
 
-/**
- * Generate all possible permissions based on resources and actions
- */
-const generateAllPermissions = () => {
+const listResourcesFromDatabaseTables = async () => {
+  const queryInterface = db.sequelize.getQueryInterface();
+  const tablesRaw = await queryInterface.showAllTables();
+  const tableNames = (tablesRaw || [])
+    .map(normalizeTableName)
+    .filter(Boolean)
+    .filter(name => !IGNORED_TABLES.has(String(name).toLowerCase()));
+
+  return new Set([...tableNames, ...EXTRA_RESOURCES]);
+};
+
+const listModuleIdsByKey = async () => {
+  try {
+    const modules = await db.Module.findAll({
+      attributes: ['id', 'key'],
+      order: [['order', 'ASC']]
+    });
+
+    return new Map(modules.map(m => [m.key, m.id]));
+  } catch (error) {
+    // Module linking is optional.
+    return new Map();
+  }
+};
+
+const generateAllPermissions = async () => {
+  const resources = await listResourcesFromDatabaseTables();
+  const moduleIdByKey = await listModuleIdsByKey();
+
   const permissions = [];
-  
-  RESOURCES.forEach(resource => {
-    ACTIONS.forEach(action => {
-      // Skip invalid combinations
-      if (resource === 'dashboard' && !['read', 'manage'].includes(action)) return;
-      if (resource === 'settings' && !['read', 'update', 'manage'].includes(action)) return;
-      
+
+  for (const resource of Array.from(resources).sort()) {
+    for (const action of DEFAULT_ACTIONS) {
       permissions.push({
         name: `${action}_${resource}`,
         resource,
         action,
         description: `Can ${action} ${resource}`,
-        isSystem: true
+        isSystem: true,
+        moduleId: moduleIdByKey.get(resource) || null
       });
-    });
-  });
+    }
+  }
 
-  // Add special permissions
   permissions.push({
     name: 'manage_all',
     resource: 'system',
     action: 'manage',
     description: 'Can manage all system resources',
-    isSystem: true
+    isSystem: true,
+    moduleId: null
   });
 
   return permissions;
 };
 
-/**
- * Auto-create permissions for all models
- * This should be run after migrations and can be called from a seeder or API
- */
 const autoCreatePermissions = async () => {
   try {
-    const permissions = generateAllPermissions();
+    const queryInterface = db.sequelize.getQueryInterface();
+    const tablesRaw = await queryInterface.showAllTables();
+    const tableNames = (tablesRaw || []).map(normalizeTableName).filter(Boolean);
+
+    // Skip noisy startup errors when DB isn't migrated yet.
+    if (!tableNames.some(t => String(t).toLowerCase() === 'permissions')) {
+      console.log('Permissions table not found; skipping auto permission generation.');
+      return { created: 0, skipped: 0, skippedReason: 'permissions_table_missing' };
+    }
+
+    const permissions = await generateAllPermissions();
     let created = 0;
     let skipped = 0;
 
     for (const permData of permissions) {
-      const [permission, created_] = await db.Permission.findOrCreate({
-        where: { 
-          resource: permData.resource, 
-          action: permData.action 
-        },
+      const [, createdFlag] = await db.Permission.findOrCreate({
+        where: { name: permData.name },
         defaults: permData
       });
-      
-      if (created_) {
-        created++;
-      } else {
-        skipped++;
-      }
+      if (createdFlag) created++; else skipped++;
     }
 
-    console.log(`✅ Permissions auto-created: ${created}, skipped: ${skipped}`);
+    console.log(`Permissions auto-created: ${created}, skipped: ${skipped}`);
     return { created, skipped };
   } catch (error) {
-    console.error('❌ Error auto-creating permissions:', error);
+    console.error('Error auto-creating permissions:', error);
     throw error;
   }
 };
 
-/**
- * Assign all permissions to super admin role
- */
 const assignAllPermissionsToSuperAdmin = async () => {
   try {
-    // Find super admin role
-    const superAdminRole = await db.Role.findOne({ 
-      where: { name: 'super_admin' } 
-    });
+    const superAdminRole = await db.Role.findOne({ where: { name: 'super_admin' } });
+    if (!superAdminRole) return { assigned: 0, skipped: 0 };
 
-    if (!superAdminRole) {
-      throw new Error('Super admin role not found');
-    }
-
-    // Get all permissions
     const allPermissions = await db.Permission.findAll();
-
-    // Assign each permission to super admin
     let assigned = 0;
     let skipped = 0;
 
     for (const permission of allPermissions) {
-      try {
-        await db.RolePermission.findOrCreate({
-          where: {
-            roleId: superAdminRole.id,
-            permissionId: permission.id
-          },
-          defaults: {
-            roleId: superAdminRole.id,
-            permissionId: permission.id,
-            grantedBy: null
-          }
-        });
-        assigned++;
-      } catch (error) {
-        if (error.name !== 'SequelizeUniqueConstraintError') {
-          console.error(`Error assigning permission ${permission.id}:`, error);
-        }
-        skipped++;
-      }
+      const [, created] = await db.RolePermission.findOrCreate({
+        where: { roleId: superAdminRole.id, permissionId: permission.id },
+        defaults: { roleId: superAdminRole.id, permissionId: permission.id, grantedBy: null }
+      });
+      if (created) assigned++; else skipped++;
     }
 
-    console.log(`✅ Permissions assigned to super admin: ${assigned}, skipped: ${skipped}`);
+    console.log(`Permissions assigned to super admin: ${assigned}, skipped: ${skipped}`);
     return { assigned, skipped };
   } catch (error) {
-    console.error('❌ Error assigning permissions to super admin:', error);
+    console.error('Error assigning permissions to super admin:', error);
+    throw error;
+  }
+};
+
+const assignDefaultPermissionsToAdmin = async () => {
+  try {
+    const adminRole = await db.Role.findOne({ where: { name: 'admin' } });
+    if (!adminRole) return { assigned: 0, skipped: 0 };
+
+    const allPermissions = await db.Permission.findAll();
+    const assignable = allPermissions.filter(p => !(p.resource === 'system' && p.action === 'manage'));
+    let assigned = 0;
+    let skipped = 0;
+
+    for (const permission of assignable) {
+      const [, created] = await db.RolePermission.findOrCreate({
+        where: { roleId: adminRole.id, permissionId: permission.id },
+        defaults: { roleId: adminRole.id, permissionId: permission.id, grantedBy: null }
+      });
+      if (created) assigned++; else skipped++;
+    }
+
+    console.log(`Permissions assigned to admin: ${assigned}, skipped: ${skipped}`);
+    return { assigned, skipped };
+  } catch (error) {
+    console.error('Error assigning permissions to admin:', error);
     throw error;
   }
 };
 
 module.exports = {
-  generateAllPermissions,
   autoCreatePermissions,
   assignAllPermissionsToSuperAdmin,
-  RESOURCES,
-  ACTIONS
+  assignDefaultPermissionsToAdmin,
+  DEFAULT_ACTIONS
 };

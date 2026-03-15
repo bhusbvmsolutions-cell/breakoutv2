@@ -1,0 +1,82 @@
+<!-- Toast Container - Positioned in top-right corner -->
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1100;">
+  <!-- Success Toast (only one) -->
+  <% if (success && success.length > 0) { %>
+    <div class="toast align-items-center text-white bg-success border-0 fade show" 
+         role="alert" aria-live="assertive" aria-atomic="true" 
+         data-bs-autohide="true" data-bs-delay="5000"
+         id="toast-message">
+      <div class="d-flex">
+        <div class="toast-body">
+          <i class="bi bi-check-circle-fill me-2"></i>
+          <%= success[0] %> <!-- Only show the first success message -->
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" 
+                data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+
+  <!-- Error Toast (only one, only shown if no success) -->
+  <% } else if (error && error.length > 0) { %>
+    <div class="toast align-items-center text-white bg-danger border-0 fade show" 
+         role="alert" aria-live="assertive" aria-atomic="true" 
+         data-bs-autohide="true" data-bs-delay="5000"
+         id="toast-message">
+      <div class="d-flex">
+        <div class="toast-body">
+          <i class="bi bi-exclamation-triangle-fill me-2"></i>
+          <%= error[0] %> <!-- Only show the first error message -->
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" 
+                data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+
+  <!-- Warning Toast (only one, only shown if no success/error) -->
+  <% } else if (warning && warning.length > 0) { %>
+    <div class="toast align-items-center text-dark bg-warning border-0 fade show" 
+         role="alert" aria-live="assertive" aria-atomic="true" 
+         data-bs-autohide="true" data-bs-delay="5000"
+         id="toast-message">
+      <div class="d-flex">
+        <div class="toast-body">
+          <i class="bi bi-exclamation-circle-fill me-2"></i>
+          <%= warning[0] %> <!-- Only show the first warning message -->
+        </div>
+        <button type="button" class="btn-close me-2 m-auto" 
+                data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+
+  <!-- Info Toast (only one, only shown if no success/error/warning) -->
+  <% } else if (info && info.length > 0) { %>
+    <div class="toast align-items-center text-white bg-info border-0 fade show" 
+         role="alert" aria-live="assertive" aria-atomic="true" 
+         data-bs-autohide="true" data-bs-delay="5000"
+         id="toast-message">
+      <div class="d-flex">
+        <div class="toast-body">
+          <i class="bi bi-info-circle-fill me-2"></i>
+          <%= info[0] %> <!-- Only show the first info message -->
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" 
+                data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+  <% } %>
+</div>
+
+<!-- JavaScript to initialize toast -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var toastElement = document.getElementById('toast-message');
+    if (toastElement) {
+      var toast = new bootstrap.Toast(toastElement, {
+        animation: true,
+        autohide: true,
+        delay: 5000
+      });
+      toast.show();
+    }
+  });
+</script>

@@ -85,12 +85,17 @@ const authController = {
       await user.update({ lastLogin: new Date() });
 
       // Set session
+      const highestRole = Array.isArray(user.roles) && user.roles.length > 0
+        ? user.roles.reduce((max, role) => (role.level > (max?.level || -Infinity) ? role : max), null)
+        : null;
+      const sessionRoleName = highestRole?.name || user.role;
+
       req.session.user = {
         id: user.id,
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
-        role: user.role,
+        role: sessionRoleName,
         roles: user.roles ? user.roles.map(r => ({
           id: r.id,
           name: r.name,

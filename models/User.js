@@ -127,6 +127,15 @@ module.exports = (sequelize, DataTypes) => {
   // These methods will be available after associations are loaded
   // They need to access the models through the db object
   User.prototype.hasPermission = async function(resource, action) {
+    const normalizeAction = (value) => {
+      if (!value) return value;
+      if (value === 'read') return 'view';
+      if (value === 'update') return 'edit';
+      return value;
+    };
+
+    const normalizedAction = normalizeAction(action);
+
     const roles = await this.getRoles({
       include: [{
         model: sequelize.models.Permission,
@@ -137,9 +146,11 @@ module.exports = (sequelize, DataTypes) => {
     
     for (const role of roles) {
       const permissions = role.permissions || [];
-      const hasPermission = permissions.some(p => 
-        p.resource === resource && (p.action === action || p.action === 'manage')
-      );
+      const hasPermission = permissions.some(p => {
+        const permissionAction = normalizeAction(p.action);
+        const permissionResource = p.resource || p.module?.key;
+        return permissionResource === resource && (permissionAction === normalizedAction || permissionAction === 'manage');
+      });
       if (hasPermission) return true;
     }
     

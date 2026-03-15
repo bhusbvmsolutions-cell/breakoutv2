@@ -8,6 +8,15 @@ const {
   filterAssignableRoles
 } = require('../../utils/rbacHelper');
 
+const getPrimaryRoleName = (roles = [], roleIds = []) => {
+  if (!roleIds || roleIds.length === 0) return 'viewer';
+  const roleIdSet = new Set(roleIds.map(id => Number.parseInt(id, 10)).filter(Number.isInteger));
+  const matched = roles.filter(role => roleIdSet.has(role.id));
+  if (matched.length === 0) return 'viewer';
+  matched.sort((a, b) => Number(b.level || 0) - Number(a.level || 0));
+  return matched[0]?.name || 'viewer';
+};
+
 const userController = {
   // List all users with pagination and filters
   listUsers: async (req, res) => {
@@ -215,6 +224,7 @@ const userController = {
       }
 
       // Create user
+      const primaryRoleName = getPrimaryRoleName(roles, requestedRoleIds);
       const newUser = await db.User.create({
         firstName,
         lastName,
@@ -224,7 +234,7 @@ const userController = {
         phone,
         isActive: true,
         isEmailVerified: false,
-        role: 'viewer' // Default role
+        role: primaryRoleName // Backward-compat role
       }, { transaction });
 
       // Assign roles if provided
@@ -329,6 +339,7 @@ const userController = {
       const { firstName, lastName, username, phone, isActive, roleIds } = req.body;
       const normalizedUsername = (username || '').trim();
       const requestedRoleIds = normalizeIdArray(roleIds);
+      let primaryRoleName = 'viewer';
 
       const user = await db.User.findByPk(id, {
         include: [{ model: db.Role, as: 'roles' }]
@@ -369,7 +380,7 @@ const userController = {
       if (requestedRoleIds.length > 0) {
         const roles = await db.Role.findAll({
           where: { id: requestedRoleIds },
-          attributes: ['id', 'level']
+          attributes: ['id', 'name', 'level']
         });
 
         if (roles.length !== new Set(requestedRoleIds).size) {
@@ -381,6 +392,8 @@ const userController = {
           await transaction.rollback();
           return res.redirect(`/admin/users/${id}/edit?error=You cannot assign roles higher than your own level`);
         }
+
+        primaryRoleName = getPrimaryRoleName(roles, requestedRoleIds);
       }
 
       // Update user
@@ -389,7 +402,8 @@ const userController = {
         lastName,
         username: normalizedUsername || null,
         phone,
-        isActive: isActive === 'on' || isActive === true
+        isActive: isActive === 'on' || isActive === true,
+        role: primaryRoleName
       }, { transaction });
 
       // Update roles
@@ -535,6 +549,7 @@ const userController = {
       const { id } = req.params;
       const { roleIds } = req.body;
       const requestedRoleIds = normalizeIdArray(roleIds);
+      let primaryRoleName = 'viewer';
 
       const user = await db.User.findByPk(id);
 
@@ -556,7 +571,7 @@ const userController = {
       if (requestedRoleIds.length > 0) {
         const roles = await db.Role.findAll({
           where: { id: requestedRoleIds },
-          attributes: ['id', 'level']
+          attributes: ['id', 'name', 'level']
         });
 
         if (roles.length !== new Set(requestedRoleIds).size) {
@@ -574,6 +589,8 @@ const userController = {
             error: 'You cannot assign roles higher than your own level' 
           });
         }
+
+        primaryRoleName = getPrimaryRoleName(roles, requestedRoleIds);
       }
 
       // Remove existing roles
@@ -593,12 +610,11 @@ const userController = {
         await db.UserRole.bulkCreate(roleAssignments, { transaction });
       }
 
+      await user.update({ role: primaryRoleName }, { transaction });
+
       await transaction.commit();
 
-      res.json({ 
-        success: true, 
-        message: 'Roles assigned successfully' 
-      });
+      res.redirect('/admin/users?success=Role assigned successfully');
 
     } catch (error) {
       await transaction.rollback();

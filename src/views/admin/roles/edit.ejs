@@ -14,11 +14,7 @@
         <div class="card-header">
           <h5>Edit Role Information</h5>
         </div>
-        <div class="card-body">
-          <% if (typeof error !== 'undefined' && error) { %>
-            <div class="alert alert-danger"><%= error %></div>
-          <% } %>
-  
+        <div class="card-body">  
           <form action="/admin/roles/<%= role.id %>" method="POST">
             <div class="row mb-3">
               <div class="col-md-6">

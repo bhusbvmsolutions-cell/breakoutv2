@@ -108,8 +108,6 @@ const roleController = {
           pages: Math.ceil(count / limit)
         },
         search,
-        success: req.query.success,
-        error: req.query.error,
         currentUrl: req.originalUrl,
         user: req.session.user,
         canCreateRole
@@ -117,6 +115,7 @@ const roleController = {
 
     } catch (error) {
       console.error('List Roles Error:', error);
+      req.flash('error', 'Failed to load roles');
       res.status(500).render('error', {
         title: 'Error',
         message: 'Failed to load roles',
@@ -157,6 +156,7 @@ const roleController = {
       });
     } catch (error) {
       console.error('Create Role Form Error:', error);
+      req.flash('error', 'Failed to load create role form');
       res.redirect('/admin/roles');
     }
   },
@@ -178,28 +178,14 @@ const roleController = {
 
       if (!Number.isInteger(parsedLevel)) {
         await transaction.rollback();
-        return res.redirect('/admin/roles?error=Invalid role level');
+        req.flash('error', 'Invalid role level');
+        return res.redirect('/admin/roles/create');
       }
 
       if (!isSuper && parsedLevel >= currentUserLevel) {
         await transaction.rollback();
-        const permissions = await db.Permission.findAll();
-        const groupedPermissions = {};
-        permissions.forEach(perm => {
-          if (!groupedPermissions[perm.resource]) {
-            groupedPermissions[perm.resource] = [];
-          }
-          groupedPermissions[perm.resource].push(perm);
-        });
-
-        return res.render('admin/roles/create', {
-          title: 'Create Role',
-          error: 'Role level must be lower than your highest role level',
-          groupedPermissions,
-          formData: req.body,
-          maxAssignableLevel,
-          user: req.session.user
-        });
+        req.flash('error', 'Role level must be lower than your highest role level');
+        return res.redirect('/admin/roles/create');
       }
 
       // Check if role exists
@@ -214,24 +200,8 @@ const roleController = {
 
       if (existingRole) {
         await transaction.rollback();
-        
-        const permissions = await db.Permission.findAll();
-        const groupedPermissions = {};
-        permissions.forEach(perm => {
-          if (!groupedPermissions[perm.resource]) {
-            groupedPermissions[perm.resource] = [];
-          }
-          groupedPermissions[perm.resource].push(perm);
-        });
-
-        return res.render('admin/roles/create', {
-          title: 'Create Role',
-          error: 'Role with this name or display name already exists',
-          groupedPermissions,
-          formData: req.body,
-          maxAssignableLevel,
-          user: req.session.user
-        });
+        req.flash('error', 'Role with this name or display name already exists');
+        return res.redirect('/admin/roles/create');
       }
 
       // Create role
@@ -257,37 +227,14 @@ const roleController = {
       }
 
       await transaction.commit();
-
-      res.redirect('/admin/roles?success=Role created successfully');
+      req.flash('success', 'Role created successfully');
+      res.redirect('/admin/roles');
 
     } catch (error) {
       await transaction.rollback();
       console.error('Create Role Error:', error);
-      
-      const currentUser = await db.User.findByPk(req.session.user.id, {
-        include: [{ model: db.Role, as: 'roles' }]
-      });
-      const isSuper = isSuperAdmin(req.session.user, currentUser);
-      const currentUserLevel = getHighestRoleLevel(currentUser?.roles);
-      const maxAssignableLevel = isSuper ? 999 : Math.max(currentUserLevel - 1, 1);
-
-      const permissions = await db.Permission.findAll();
-      const groupedPermissions = {};
-      permissions.forEach(perm => {
-        if (!groupedPermissions[perm.resource]) {
-          groupedPermissions[perm.resource] = [];
-        }
-        groupedPermissions[perm.resource].push(perm);
-      });
-
-      res.render('admin/roles/create', {
-        title: 'Create Role',
-        error: 'Failed to create role: ' + error.message,
-        groupedPermissions,
-        formData: req.body,
-        maxAssignableLevel,
-        user: req.session.user
-      });
+      req.flash('error', 'Failed to create role: ' + error.message);
+      res.redirect('/admin/roles/create');
     }
   },
 
@@ -305,7 +252,8 @@ const roleController = {
       });
 
       if (!role) {
-        return res.redirect('/admin/roles?error=Role not found');
+        req.flash('error', 'Role not found');
+        return res.redirect('/admin/roles');
       }
 
       // Check if current user can manage this role
@@ -317,7 +265,8 @@ const roleController = {
       const maxAssignableLevel = isSuper ? 999 : Math.max(currentUserLevel - 1, 1);
 
       if (!isSuper && currentUserLevel <= role.level) {
-        return res.redirect('/admin/roles?error=You cannot edit this role');
+        req.flash('error', 'You cannot edit this role');
+        return res.redirect('/admin/roles');
       }
 
       const permissions = await db.Permission.findAll({
@@ -341,12 +290,12 @@ const roleController = {
         groupedPermissions,
         rolePermissions,
         maxAssignableLevel,
-        error: req.query.error,
-        user: req.session.user
+        user: req.session.user,
       });
 
     } catch (error) {
       console.error('Edit Role Form Error:', error);
+      req.flash('error', 'Failed to load edit role form');
       res.redirect('/admin/roles');
     }
   },
@@ -365,13 +314,15 @@ const roleController = {
 
       if (!role) {
         await transaction.rollback();
-        return res.redirect('/admin/roles?error=Role not found');
+        req.flash('error', 'Role not found');
+        return res.redirect('/admin/roles');
       }
 
       // Check if system role
       if (role.isSystem) {
         await transaction.rollback();
-        return res.redirect('/admin/roles?error=System roles cannot be modified');
+        req.flash('error', 'System roles cannot be modified');
+        return res.redirect('/admin/roles');
       }
 
       // Check if current user can manage this role
@@ -383,17 +334,20 @@ const roleController = {
 
       if (!isSuper && currentUserLevel <= role.level) {
         await transaction.rollback();
-        return res.redirect('/admin/roles?error=You cannot edit this role');
+        req.flash('error', 'You cannot edit this role');
+        return res.redirect('/admin/roles');
       }
 
       if (!Number.isInteger(parsedLevel)) {
         await transaction.rollback();
-        return res.redirect(`/admin/roles/${id}/edit?error=Invalid role level`);
+        req.flash('error', 'Invalid role level');
+        return res.redirect(`/admin/roles/${id}/edit`);
       }
 
       if (!isSuper && parsedLevel >= currentUserLevel) {
         await transaction.rollback();
-        return res.redirect(`/admin/roles/${id}/edit?error=Role level must be lower than your highest role level`);
+        req.flash('error', 'Role level must be lower than your highest role level');
+        return res.redirect(`/admin/roles/${id}/edit`);
       }
 
       // Update role
@@ -421,13 +375,15 @@ const roleController = {
       }
 
       await transaction.commit();
-
-      res.redirect('/admin/roles?success=Role updated successfully');
+      req.flash('success', 'Role updated successfully');
+      
+      res.redirect('/admin/roles');
 
     } catch (error) {
       await transaction.rollback();
       console.error('Update Role Error:', error);
-      res.redirect(`/admin/roles/${req.params.id}/edit?error=Failed to update role`);
+      req.flash('error', 'Failed to update role');
+      res.redirect(`/admin/roles/${req.params.id}/edit`);
     }
   },
 

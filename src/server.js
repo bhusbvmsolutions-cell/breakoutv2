@@ -10,10 +10,13 @@ const expressLayouts = require('express-ejs-layouts');
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
 require('dotenv').config();
 
+const flash = require('express-flash');
+
 // Database
 const db = require('../models');
 
 // Import routes
+const loadPermissions = require('./middlewares/loadPermissions');
 const routes = require('./routes');
 
 const app = express();
@@ -62,16 +65,32 @@ app.use(session({
 // Sync session store
 sessionStore.sync();
 
+app.use((req, res, next) => {
+  console.log("SESSION:", req.session);
+  next();
+});
+
+
+app.use(flash());
 // Make user available to all views
 app.use((req, res, next) => {
   res.locals.user = req.session.user || null;
   res.locals.currentUrl = req.url;
-
-
-  // base url for assets and links
   res.locals.baseUrl = process.env.APP_URL || `http://localhost:${PORT}`;
+
+  
+  
+  // Re-set them because req.flash clears them
+  res.locals.success = req.flash('success');
+  res.locals.error = req.flash('error');
+  res.locals.warning = req.flash('warning');
+  res.locals.info = req.flash('info');
+
   next();
 });
+
+// Load user permissions and sidebar modules before routes
+app.use(loadPermissions);
 
 // View engine setup
 app.use(expressLayouts);
@@ -125,20 +144,36 @@ app.use((err, req, res, next) => {
 });
 
 // Database connection and server start
+const { autoCreatePermissions, assignAllPermissionsToSuperAdmin, assignDefaultPermissionsToAdmin } = require('./utils/permissionGenerator');
+
 db.sequelize.authenticate()
-  .then(() => {
-    console.log('✅ Database connected successfully');
+  .then(async () => {
+    console.log('Database connected successfully');
+
+    try {
+      const perms = await autoCreatePermissions();
+      console.log(`Auto permission generation - created ${perms.created}, skipped ${perms.skipped}`);
+      const superResult = await assignAllPermissionsToSuperAdmin();
+      console.log(`Super admin permission assignment - assigned ${superResult.assigned}, skipped ${superResult.skipped}`);
+      const adminResult = await assignDefaultPermissionsToAdmin();
+      console.log(`Admin permission assignment - assigned ${adminResult.assigned}, skipped ${adminResult.skipped}`);
+    } catch (generateError) {
+      console.error('Auto permission sync failed at startup:', generateError);
+    }
     
     app.listen(PORT, () => {
-      console.log(`🚀 Server running on http://localhost:${PORT}`);
-      console.log(`📊 Environment: ${process.env.NODE_ENV}`);
-      console.log(`🔌 API: http://localhost:${PORT}/api`);
-      console.log(`👤 Admin Panel: http://localhost:${PORT}/admin`);
+      console.log(`Server running on http://localhost:${PORT}`);
+      console.log(`Environment: ${process.env.NODE_ENV}`);
+      console.log(`API: http://localhost:${PORT}/api`);
+      console.log(`Admin Panel: http://localhost:${PORT}/admin`);
     });
   })
   .catch(err => {
-    console.error('❌ Unable to connect to database:', err);
+    console.error('Unable to connect to database:', err);
     process.exit(1);
   });
 
+
+
 module.exports = app;
+

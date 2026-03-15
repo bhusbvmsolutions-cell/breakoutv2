@@ -2,7 +2,7 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('permissions', {
+    await queryInterface.createTable('roles', {
       id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
@@ -11,23 +11,34 @@ module.exports = {
       name: {
         type: Sequelize.STRING,
         allowNull: false,
-        unique: false
+        unique: true
       },
-      resource: {
+      displayName: {
         type: Sequelize.STRING,
-        allowNull: false
-      },
-      action: {
-        type: Sequelize.ENUM('create', 'read', 'update', 'delete', 'manage', 'export', 'import'),
         allowNull: false
       },
       description: {
         type: Sequelize.TEXT,
         allowNull: true
       },
+      level: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        defaultValue: 0
+      },
       isSystem: {
         type: Sequelize.BOOLEAN,
         defaultValue: false
+      },
+      createdBy: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+          model: 'users',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL'
       },
       createdAt: {
         type: Sequelize.DATE,
@@ -41,6 +52,6 @@ module.exports = {
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('permissions');
+    await queryInterface.dropTable('roles');
   }
 };

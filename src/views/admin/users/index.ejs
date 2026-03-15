@@ -7,21 +7,6 @@
     </div>
   </div>
 </div>
-
-<% if (typeof success !== 'undefined' && success) { %>
-  <div class="alert alert-success alert-dismissible fade show shadow-sm border-0 mt-3" role="alert">
-    <i class="bi bi-check-circle me-2"></i><%= success %>
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-  </div>
-<% } %>
-
-<% if (typeof error !== 'undefined' && error) { %>
-  <div class="alert alert-danger alert-dismissible fade show shadow-sm border-0 mt-3" role="alert">
-    <i class="bi bi-exclamation-triangle me-2"></i><%= error %>
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-  </div>
-<% } %>
-
 <div class="card shadow-sm border-0 mt-3">
   <div class="card-header bg-white border-0 py-2">
     <div class="row align-items-center g-2">
@@ -135,7 +120,7 @@
 
                   <!-- View User Modal (compact) -->
                   <div class="modal fade" id="viewUserModal<%= userItem.id %>" tabindex="-1">
-                    <div class="modal-dialog modal-dialog-centered modal-sm">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
                       <div class="modal-content border-0 shadow">
                         <div class="modal-header border-0 pb-0">
                           <h6 class="modal-title fw-semibold">User Details</h6>
@@ -148,7 +133,7 @@
                                    width="64" height="64" alt="Avatar">
                             <% } else { %>
                               <div class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center 
-                                          justify-content-center text-primary mx-auto fw-semibold" 
+                                          justify-content-center text-white mx-auto fw-semibold" 
                                    style="width: 64px; height: 64px; font-size: 24px;">
                                 <%= (userItem.firstName?.charAt(0) || '').toUpperCase() %><%= (userItem.lastName?.charAt(0) || '').toUpperCase() %>
                               </div>
@@ -170,9 +155,9 @@
                               <th class="ps-0 text-secondary fw-normal">Status</th>
                               <td>
                                 <% if (userItem.isActive) { %>
-                                  <span class="badge bg-success bg-opacity-10 text-success fw-normal">Active</span>
+                                  <span class="badge bg-success bg-opacity-10 text-white fw-normal">Active</span>
                                 <% } else { %>
-                                  <span class="badge bg-danger bg-opacity-10 text-danger fw-normal">Inactive</span>
+                                  <span class="badge bg-danger bg-opacity-10 text-white fw-normal">Inactive</span>
                                 <% } %>
                               </td>
                             </tr>
@@ -180,9 +165,9 @@
                               <th class="ps-0 text-secondary fw-normal">Email Verified</th>
                               <td>
                                 <% if (userItem.isEmailVerified) { %>
-                                  <span class="badge bg-success bg-opacity-10 text-success fw-normal">Yes</span>
+                                  <span class="badge bg-success bg-opacity-10 text-white fw-normal">Yes</span>
                                 <% } else { %>
-                                  <span class="badge bg-warning bg-opacity-10 text-warning fw-normal">No</span>
+                                  <span class="badge bg-warning bg-opacity-10 text-white fw-normal">No</span>
                                 <% } %>
                               </td>
                             </tr>
@@ -191,10 +176,10 @@
                               <td>
                                 <% if (userItem.roles && userItem.roles.length > 0) { %>
                                   <% userItem.roles.forEach(role => { %>
-                                    <span class="badge bg-info bg-opacity-10 text-info fw-normal me-1"><%= role.displayName %></span>
+                                    <span class="badge bg-info bg-opacity-10 text-white fw-normal me-1"><%= role.displayName %></span>
                                   <% }); %>
                                 <% } else { %>
-                                  <span class="badge bg-secondary bg-opacity-10 text-secondary fw-normal">No Role</span>
+                                  <span class="badge bg-secondary bg-opacity-10 text-black fw-normal">No Role</span>
                                 <% } %>
                               </td>
                             </tr>

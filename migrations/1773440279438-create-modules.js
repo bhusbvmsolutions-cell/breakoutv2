@@ -2,7 +2,7 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('roles', {
+    await queryInterface.createTable('modules', {
       id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
@@ -10,35 +10,30 @@ module.exports = {
       },
       name: {
         type: Sequelize.STRING,
-        allowNull: false,
-        unique: false
+        allowNull: false
       },
-      displayName: {
+      key: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        unique: true
+      },
+      icon: {
+        type: Sequelize.STRING,
+        allowNull: true
+      },
+      route: {
         type: Sequelize.STRING,
         allowNull: false
       },
-      description: {
-        type: Sequelize.TEXT,
-        allowNull: true
-      },
-      level: {
+      order: {
         type: Sequelize.INTEGER,
         allowNull: false,
         defaultValue: 0
       },
       isSystem: {
         type: Sequelize.BOOLEAN,
+        allowNull: false,
         defaultValue: false
-      },
-      createdBy: {
-        type: Sequelize.INTEGER,
-        allowNull: true,
-        references: {
-          model: 'users',
-          key: 'id'
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'SET NULL'
       },
       createdAt: {
         type: Sequelize.DATE,
@@ -52,6 +47,6 @@ module.exports = {
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('roles');
+    await queryInterface.dropTable('modules');
   }
 };

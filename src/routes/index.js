@@ -27,4 +27,11 @@ router.get('/', (req, res) => {
   res.redirect('/admin/login');
 });
 
+
+router.get('/test-flash', (req, res) => {
+  req.flash('success', 'This is a test success message');
+  req.flash('error', 'This is a test error message');
+  res.redirect('/admin/roles');
+});
+
 module.exports = router;

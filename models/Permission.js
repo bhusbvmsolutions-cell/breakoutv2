@@ -21,8 +21,16 @@ module.exports = (sequelize, DataTypes) => {
           comment: 'e.g., users, products, orders, roles'
         },
         action: {
-          type: DataTypes.ENUM('create', 'read', 'update', 'delete', 'manage', 'export', 'import'),
+          type: DataTypes.ENUM('view', 'create', 'edit', 'delete', 'manage', 'read', 'update', 'export', 'import'),
           allowNull: false,
+        },
+        moduleId: {
+          type: DataTypes.INTEGER,
+          allowNull: true,
+          references: {
+            model: 'modules',
+            key: 'id'
+          }
         },
         description: {
           type: DataTypes.TEXT,
