@@ -9,12 +9,9 @@
 </div>
 
 <div class="row mt-3">
-  <div class="col-md-8 mx-auto">
+  <div class="col-12 mx-auto">
     <div class="card">
       <div class="card-body">
-        <% if (typeof error !== 'undefined' && error) { %>
-          <div class="alert alert-danger"><%= error %></div>
-        <% } %>
         
         <form action="/admin/images/upload" method="POST" enctype="multipart/form-data">
           <div class="mb-3">

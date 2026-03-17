@@ -1,0 +1,289 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <h4><i class="bi bi-cloud-upload"></i> Upload Video</h4>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row mt-3">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body">        
+        <form id="uploadForm" action="/admin/videos/upload" method="POST" enctype="multipart/form-data">
+          <div class="mb-3">
+            <label for="video" class="form-label">Select Video <span class="text-danger">*</span></label>
+            <input type="file" class="form-control" id="video" name="video" accept="video/*" required>
+            <small class="text-muted">
+              Allowed: MP4, WEBM, OGG, MOV, AVI (Max: 500MB)
+            </small>
+          </div>
+          
+          <div class="mb-3">
+            <label for="title" class="form-label">Title</label>
+            <input type="text" class="form-control" id="title" name="title" placeholder="Video title">
+            <small class="text-muted">If not provided, filename will be used</small>
+          </div>
+          
+          <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea class="form-control" id="description" name="description" rows="3" placeholder="Video description"></textarea>
+          </div>
+          
+          <div class="mb-3">
+            <div id="preview" class="text-center p-3 border rounded" style="display: none; background: #f8f9fa;">
+              <h6>Preview:</h6>
+              <video id="previewVideo" controls style="max-width: 100%; max-height: 300px;">
+                <source src="#" id="videoSource">
+                Your browser does not support the video tag.
+              </video>
+              <div id="videoInfo" class="mt-2 text-start small">
+                <strong>Filename:</strong> <span id="fileName"></span><br>
+                <strong>Size:</strong> <span id="fileSize"></span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Upload Progress Section -->
+          <div id="uploadProgressContainer" style="display: none;" class="mb-3">
+            <div class="d-flex justify-content-between mb-1">
+              <span>Uploading...</span>
+              <span id="uploadPercentage">0%</span>
+            </div>
+            <div class="progress" style="height: 20px;">
+              <div id="uploadProgressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-success" 
+                   role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                <span id="progressText">0%</span>
+              </div>
+            </div>
+            <div id="uploadSpeed" class="small text-muted mt-1 text-end"></div>
+          </div>
+          
+          <hr>
+          
+          <div class="d-flex align-items-center">
+            <button type="submit" class="btn btn-primary" id="submitBtn">
+              <i class="bi bi-cloud-upload"></i> Upload Video
+            </button>
+            
+            <!-- Loading Spinner -->
+            <div id="loadingSpinner" class="ms-3" style="display: none;">
+              <div class="spinner-border spinner-border-sm text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              <span class="ms-2">Uploading video, please wait...</span>
+            </div>
+            
+            <a href="/admin/videos" class="btn btn-secondary ms-auto">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const videoInput = document.getElementById('video');
+    const uploadForm = document.getElementById('uploadForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const uploadProgressContainer = document.getElementById('uploadProgressContainer');
+    const uploadProgressBar = document.getElementById('uploadProgressBar');
+    const uploadPercentage = document.getElementById('uploadPercentage');
+    const progressText = document.getElementById('progressText');
+    const uploadSpeed = document.getElementById('uploadSpeed');
+    
+    let startTime = null;
+    let uploadedBytes = 0;
+
+    // Preview functionality
+    videoInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        // Show preview
+        const videoURL = URL.createObjectURL(file);
+        document.getElementById('videoSource').src = videoURL;
+        document.getElementById('previewVideo').load();
+        document.getElementById('preview').style.display = 'block';
+        
+        // Show basic file info
+        const size = (file.size / (1024 * 1024)).toFixed(2);
+        document.getElementById('fileName').textContent = file.name;
+        document.getElementById('fileSize').textContent = size + ' MB';
+      }
+    });
+
+    // Handle form submission with progress
+    uploadForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const file = videoInput.files[0];
+      if (!file) {
+        alert('Please select a video file');
+        return;
+      }
+
+      // Disable submit button and show loading
+      submitBtn.disabled = true;
+      loadingSpinner.style.display = 'inline-block';
+      uploadProgressContainer.style.display = 'block';
+      
+      // Reset progress
+      updateProgress(0);
+      startTime = Date.now();
+      uploadedBytes = 0;
+
+      const formData = new FormData(uploadForm);
+      
+      const xhr = new XMLHttpRequest();
+      
+      // Track upload progress
+      xhr.upload.addEventListener('progress', function(e) {
+        if (e.lengthComputable) {
+          const percentComplete = Math.round((e.loaded / e.total) * 100);
+          updateProgress(percentComplete);
+          
+          // Calculate upload speed
+          if (startTime) {
+            const elapsedSeconds = (Date.now() - startTime) / 1000;
+            const speed = e.loaded / elapsedSeconds; // bytes per second
+            uploadedBytes = e.loaded;
+            
+            let speedText;
+            if (speed > 1024 * 1024) {
+              speedText = (speed / (1024 * 1024)).toFixed(2) + ' MB/s';
+            } else if (speed > 1024) {
+              speedText = (speed / 1024).toFixed(2) + ' KB/s';
+            } else {
+              speedText = speed.toFixed(2) + ' B/s';
+            }
+            
+            const remainingBytes = e.total - e.loaded;
+            const remainingSeconds = remainingBytes / speed;
+            const remainingTime = formatTime(remainingSeconds);
+            
+            uploadSpeed.textContent = `Speed: ${speedText} | Remaining: ${remainingTime}`;
+          }
+        }
+      });
+
+      // Handle completion
+      xhr.addEventListener('load', function() {
+        if (xhr.status === 200) {
+          // Success - redirect to videos page
+          window.location.href = '/admin/videos';
+        } else {
+          // Error
+          let errorMessage = 'Upload failed';
+          try {
+            const response = JSON.parse(xhr.responseText);
+            errorMessage = response.error || errorMessage;
+          } catch(e) {
+            // If response is not JSON, use status text
+            errorMessage = xhr.statusText || errorMessage;
+          }
+          
+          alert('Error: ' + errorMessage);
+          resetUploadForm();
+        }
+      });
+
+      // Handle error
+      xhr.addEventListener('error', function() {
+        alert('Network error occurred during upload');
+        resetUploadForm();
+      });
+
+      // Handle abort
+      xhr.addEventListener('abort', function() {
+        alert('Upload aborted');
+        resetUploadForm();
+      });
+
+      // Open and send
+      xhr.open('POST', uploadForm.action, true);
+      xhr.send(formData);
+    });
+
+    // Helper function to update progress bar
+    function updateProgress(percent) {
+      uploadProgressBar.style.width = percent + '%';
+      uploadProgressBar.setAttribute('aria-valuenow', percent);
+      uploadPercentage.textContent = percent + '%';
+      progressText.textContent = percent + '%';
+      
+      // Change color based on progress
+      if (percent < 30) {
+        uploadProgressBar.className = 'progress-bar progress-bar-striped progress-bar-animated bg-info';
+      } else if (percent < 70) {
+        uploadProgressBar.className = 'progress-bar progress-bar-striped progress-bar-animated bg-primary';
+      } else if (percent < 90) {
+        uploadProgressBar.className = 'progress-bar progress-bar-striped progress-bar-animated bg-warning';
+      } else {
+        uploadProgressBar.className = 'progress-bar progress-bar-striped progress-bar-animated bg-success';
+      }
+    }
+
+    // Helper function to format time
+    function formatTime(seconds) {
+      if (seconds < 0 || !isFinite(seconds)) return 'calculating...';
+      
+      const hrs = Math.floor(seconds / 3600);
+      const mins = Math.floor((seconds % 3600) / 60);
+      const secs = Math.floor(seconds % 60);
+      
+      if (hrs > 0) {
+        return hrs + 'h ' + mins + 'm ' + secs + 's';
+      } else if (mins > 0) {
+        return mins + 'm ' + secs + 's';
+      } else {
+        return secs + 's';
+      }
+    }
+
+    // Helper function to reset form after error
+    function resetUploadForm() {
+      submitBtn.disabled = false;
+      loadingSpinner.style.display = 'none';
+      uploadProgressContainer.style.display = 'none';
+      uploadSpeed.textContent = '';
+    }
+
+    // Add confirmation for leaving page during upload
+    window.addEventListener('beforeunload', function(e) {
+      if (submitBtn.disabled) {
+        // Cancel the event
+        e.preventDefault();
+        // Chrome requires returnValue to be set
+        e.returnValue = '';
+      }
+    });
+  });
+</script>
+
+<style>
+  /* Optional: Add some animation to the progress bar */
+  .progress-bar {
+    transition: width 0.3s ease;
+  }
+  
+  /* Style for the preview video */
+  #previewVideo {
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  
+  /* Loading spinner animation */
+  @keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+  }
+  
+  #loadingSpinner {
+    animation: pulse 1.5s infinite;
+  }
+</style>
