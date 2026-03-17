@@ -18,9 +18,7 @@
     "db:status": "npx sequelize-cli db:migrate:status --config config/sequelize-cli-config.js",
     "-------- Seeder Scripts --------": "",
     "db:seed": "npx sequelize-cli db:seed:all --config config/sequelize-cli-config.js",
-    "db:seed:undo": "npx sequelize-cli db:seed:undo --config config/sequelize-cli-config.js",
     "db:seed:undo:all": "npx sequelize-cli db:seed:undo:all --config config/sequelize-cli-config.js",
-    "db:seed:permissions": "npx sequelize-cli db:seed --seed 2026031309505202-system-permissions.js --config config/sequelize-cli-config.js",
     "-------- Utility Scripts --------": "",
     "db:permissions:sync": "node scripts/sync-permissions.js",
     "db:refresh": "npm run db:seed:undo:all && npm run db:migrate:undo:all && npm run db:migrate && npm run db:seed",
@@ -49,7 +47,9 @@
     "multer": "^2.1.1",
     "mysql2": "^3.19.1",
     "sequelize": "^6.37.8",
-    "umzug": "^3.8.2"
+    "sharp": "^0.34.5",
+    "umzug": "^3.8.2",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.14",

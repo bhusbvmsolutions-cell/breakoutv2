@@ -1,0 +1,67 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <h4><i class="bi bi-cloud-upload"></i> Upload Image</h4>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row mt-3">
+  <div class="col-md-8 mx-auto">
+    <div class="card">
+      <div class="card-body">
+        <% if (typeof error !== 'undefined' && error) { %>
+          <div class="alert alert-danger"><%= error %></div>
+        <% } %>
+        
+        <form action="/admin/images/upload" method="POST" enctype="multipart/form-data">
+          <div class="mb-3">
+            <label for="image" class="form-label">Select Image <span class="text-danger">*</span></label>
+            <input type="file" class="form-control" id="image" name="image" accept="image/*" required>
+            <small class="text-muted">Allowed: JPG, JPEG, PNG, GIF, WEBP, SVG (Max: 5MB)</small>
+          </div>
+          
+          <div class="mb-3">
+            <label for="title" class="form-label">Title</label>
+            <input type="text" class="form-control" id="title" name="title" placeholder="Image title">
+            <small class="text-muted">If not provided, filename will be used</small>
+          </div>
+          
+          <div class="mb-3">
+            <label for="altText" class="form-label">Alt Text</label>
+            <input type="text" class="form-control" id="altText" name="altText" placeholder="Description for accessibility">
+          </div>
+          
+          <div class="mb-3">
+            <div id="preview" class="text-center" style="display: none;">
+              <h6>Preview:</h6>
+              <img id="previewImage" src="#" alt="Preview" style="max-width: 300px; max-height: 200px;">
+            </div>
+          </div>
+          
+          <hr>
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-cloud-upload"></i> Upload Image
+          </button>
+          <a href="/admin/images" class="btn btn-secondary">Cancel</a>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.getElementById('image').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById('preview').style.display = 'block';
+        document.getElementById('previewImage').src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+</script>

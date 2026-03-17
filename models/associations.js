@@ -4,7 +4,7 @@
  */
 
 module.exports = (db) => {
-    const { User, Role, Permission, UserRole, RolePermission, Module } = db;
+    const { User, Role, Permission, UserRole, RolePermission } = db;
   
     // ==================== User Associations ====================
     
@@ -38,17 +38,6 @@ module.exports = (db) => {
       foreignKey: 'permissionId',
       otherKey: 'roleId',
       as: 'roles'
-    });
-  
-    // ==================== Module Associations ====================
-    Module.hasMany(Permission, {
-      foreignKey: 'moduleId',
-      as: 'permissions'
-    });
-
-    Permission.belongsTo(Module, {
-      foreignKey: 'moduleId',
-      as: 'module'
     });
 
     // ==================== Self-Referential Associations ====================

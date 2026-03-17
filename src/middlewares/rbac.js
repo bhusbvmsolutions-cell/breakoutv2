@@ -1,171 +1,162 @@
-﻿const db = require('../../models');
-const {
-  getHighestRoleLevel,
-  isSuperAdmin,
-  userHasPermission
-} = require('../utils/rbacHelper');
+﻿const db = require("../../models");
 
 const hasPermission = (resource, action) => {
   return async (req, res, next) => {
     try {
-      const userId = req.session.user?.id;
+      const userId = req.session?.user?.id;
+
       if (!userId) {
-        if (req.xhr || req.path.startsWith('/api')) {
-          return res.status(401).json({ success: false, error: 'Authentication required' });
-        }
-        return res.redirect('/admin/login');
+        return res.redirect("/admin/login");
       }
 
-      const sessionUser = req.session.user;
-
       const user = await db.User.findByPk(userId, {
-        include: [{
-          model: db.Role,
-          as: 'roles',
-          include: [{
-            model: db.Permission,
-            as: 'permissions',
-            through: { attributes: [] }
-          }]
-        }]
+        include: [
+          {
+            model: db.Role,
+            as: "roles",
+            include: [
+              {
+                model: db.Permission,
+                as: "permissions",
+                through: { attributes: [] },
+              },
+            ],
+          },
+        ],
       });
 
       if (!user) {
-        if (req.xhr || req.path.startsWith('/api')) {
-          return res.status(401).json({ success: false, error: 'User not found' });
+        return res.redirect("/admin/login");
+      }
+
+      // Super admin bypass - check both role field and roles array
+      const isSuperAdmin = user.role === "super_admin" || 
+        (user.roles && user.roles.some(r => r.name === "super_admin"));
+      
+      if (isSuperAdmin) {
+        return next();
+      }
+
+      // Check permission
+      let allowed = false;
+      
+      if (user.roles && user.roles.length > 0) {
+        for (const role of user.roles) {
+          if (role.permissions && role.permissions.length > 0) {
+            const hasPerm = role.permissions.some(p => 
+              p.module === resource && p.action === action
+            );
+            if (hasPerm) {
+              allowed = true;
+              break;
+            }
+          }
         }
-        return res.redirect('/admin/login');
       }
 
-      if (isSuperAdmin(sessionUser, user)) {
+      if (allowed) {
         return next();
       }
 
-      if (userHasPermission(user, resource, action)) {
-        return next();
-      }
-
-      if (req.xhr || req.path.startsWith('/api')) {
-        return res.status(403).json({ success: false, error: `You don't have permission to ${action} ${resource}` });
-      }
-
-      return res.status(403).render('error', {
-        title: 'Access Denied',
+      return res.status(403).render("error", {
+        title: "Access Denied",
         message: `You don't have permission to ${action} ${resource}`,
-        error: { status: 403 }
+        error: { status: 403 },
       });
-    } catch (error) {
-      console.error('Permission check error:', error);
-      next(error);
+    } catch (err) {
+      console.error("Permission middleware error:", err);
+      next(err);
     }
   };
 };
 
-const hasRole = (roleNames) => {
+const hasRole = (roles) => {
   return async (req, res, next) => {
     try {
-      const userId = req.session.user?.id;
+      const userId = req.session?.user?.id;
+
       if (!userId) {
-        if (req.xhr || req.path.startsWith('/api')) {
-          return res.status(401).json({ success: false, error: 'Authentication required' });
-        }
-        return res.redirect('/admin/login');
+        return res.redirect("/admin/login");
       }
 
-      const sessionUser = req.session.user;
       const user = await db.User.findByPk(userId, {
-        include: [{ model: db.Role, as: 'roles' }]
+        include: [
+          {
+            model: db.Role,
+            as: "roles",
+          },
+        ],
       });
 
       if (!user) {
-        if (req.xhr || req.path.startsWith('/api')) {
-          return res.status(401).json({ success: false, error: 'User not found' });
-        }
-        return res.redirect('/admin/login');
+        return res.redirect("/admin/login");
       }
 
-      if (isSuperAdmin(sessionUser, user)) {
-        return next();
-      }
-
-      const roles = Array.isArray(roleNames) ? roleNames : [roleNames];
-      const hasRequiredRole = user.roles.some(role => roles.includes(role.name));
+      const roleArray = Array.isArray(roles) ? roles : [roles];
+      
+      // Check if user has any of the required roles
+      const hasRequiredRole = user.role && roleArray.includes(user.role) ||
+        (user.roles && user.roles.some(role => roleArray.includes(role.name)));
 
       if (hasRequiredRole) {
         return next();
       }
 
-      if (req.xhr || req.path.startsWith('/api')) {
-        return res.status(403).json({ success: false, error: 'Insufficient role privileges' });
-      }
-
-      return res.status(403).render('error', {
-        title: 'Access Denied',
-        message: 'You need higher privileges to access this resource',
-        error: { status: 403 }
+      return res.status(403).render("error", {
+        title: "Access Denied",
+        message: "Insufficient role privileges",
+        error: { status: 403 },
       });
-    } catch (error) {
-      console.error('Role check error:', error);
-      next(error);
+    } catch (err) {
+      console.error("Role middleware error:", err);
+      next(err);
     }
   };
 };
 
 const canManageUser = async (req, res, next) => {
   try {
-    const currentUserId = req.session.user?.id;
+    const currentUserId = req.session?.user?.id;
     const targetUserId = parseInt(req.params.id || req.body.userId);
 
-    if (!currentUserId) {
-      return res.status(401).json({ success: false, error: 'Authentication required' });
-    }
-
-    if (currentUserId === targetUserId) {
-      return next();
-    }
-
     const currentUser = await db.User.findByPk(currentUserId, {
-      include: [{ model: db.Role, as: 'roles' }]
+      include: [{ model: db.Role, as: "roles" }],
     });
-
-    if (!currentUser) {
-      return res.status(401).json({ success: false, error: 'User not found' });
-    }
 
     const targetUser = await db.User.findByPk(targetUserId, {
-      include: [{ model: db.Role, as: 'roles' }]
+      include: [{ model: db.Role, as: "roles" }],
     });
 
-    if (!targetUser) {
-      return res.status(404).json({ success: false, error: 'Target user not found' });
+    if (!currentUser || !targetUser) {
+      return res.status(404).json({ success: false, error: "User not found" });
     }
 
-    const isSuper = isSuperAdmin(req.session.user, currentUser);
-    if (isSuper) {
+    // Get highest role levels
+    const getHighestLevel = (user) => {
+      if (!user.roles || user.roles.length === 0) return 0;
+      return Math.max(...user.roles.map(r => r.level || 0));
+    };
+
+    const currentLevel = getHighestLevel(currentUser);
+    const targetLevel = getHighestLevel(targetUser);
+
+    if (currentLevel > targetLevel) {
       return next();
     }
 
-    const currentUserLevel = getHighestRoleLevel(currentUser.roles);
-    const targetUserLevel = getHighestRoleLevel(targetUser.roles);
-
-    if (currentUserLevel > targetUserLevel) {
-      return next();
-    }
-
-    const message = 'You cannot manage users with equal or higher role level';
-    if (req.xhr || req.path.startsWith('/api')) {
-      return res.status(403).json({ success: false, error: message });
-    }
-
-    return res.status(403).render('error', { title: 'Access Denied', message, error: { status: 403 } });
-  } catch (error) {
-    console.error('Manage user check error:', error);
-    next(error);
+    return res.status(403).render("error", {
+      title: "Access Denied",
+      message: "You cannot manage users with equal or higher role level",
+      error: { status: 403 },
+    });
+  } catch (err) {
+    console.error('Can manage user error:', err);
+    next(err);
   }
 };
 
 module.exports = {
   hasPermission,
   hasRole,
-  canManageUser
+  canManageUser,
 };

@@ -10,6 +10,7 @@ module.exports = (sequelize, DataTypes) => {
       roleId: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        unique: false,
         references: {
           model: 'roles',
           key: 'id'
@@ -18,6 +19,7 @@ module.exports = (sequelize, DataTypes) => {
       permissionId: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        unique: false,
         references: {
           model: 'permissions',
           key: 'id'
@@ -26,6 +28,7 @@ module.exports = (sequelize, DataTypes) => {
       grantedBy: {
         type: DataTypes.INTEGER,
         allowNull: true,
+        unique: false,
         references: {
           model: 'users',
           key: 'id'
@@ -35,12 +38,6 @@ module.exports = (sequelize, DataTypes) => {
     {
       tableName: "role_permissions",
       timestamps: true,
-      indexes: [
-        {
-          unique: true,
-          fields: ['roleId', 'permissionId']
-        }
-      ]
     }
   );
 

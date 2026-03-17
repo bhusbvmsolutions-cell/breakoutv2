@@ -2,7 +2,7 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('modules', {
+    await queryInterface.createTable('permissions', {
       id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
@@ -10,30 +10,20 @@ module.exports = {
       },
       name: {
         type: Sequelize.STRING,
-        allowNull: false
-      },
-      key: {
-        type: Sequelize.STRING,
         allowNull: false,
         unique: true
       },
-      icon: {
-        type: Sequelize.STRING,
-        allowNull: true
-      },
-      route: {
+      module: {
         type: Sequelize.STRING,
         allowNull: false
       },
-      order: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        defaultValue: 0
+      action: {
+        type: Sequelize.ENUM('view', 'create', 'edit', 'delete', 'manage', 'read', 'update', 'export', 'import'),
+        allowNull: false
       },
-      isSystem: {
-        type: Sequelize.BOOLEAN,
-        allowNull: false,
-        defaultValue: false
+      description: {
+        type: Sequelize.TEXT,
+        allowNull: true
       },
       createdAt: {
         type: Sequelize.DATE,
@@ -47,6 +37,6 @@ module.exports = {
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('modules');
+    await queryInterface.dropTable('permissions');
   }
 };

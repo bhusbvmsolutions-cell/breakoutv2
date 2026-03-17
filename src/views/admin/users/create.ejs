@@ -15,10 +15,6 @@
         <h5>User Information</h5>
       </div>
       <div class="card-body">
-        <% if (typeof error !== 'undefined' && error) { %>
-        <div class="alert alert-danger"><%= error %></div>
-        <% } %>
-
         <form action="/admin/users" method="POST" class="row g-3">
           <div class="col-md-6">
             <label for="firstName" class="form-label"

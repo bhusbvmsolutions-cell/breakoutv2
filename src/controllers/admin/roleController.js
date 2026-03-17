@@ -1,105 +1,143 @@
-const db = require('../../../models');
-const { Op } = require('sequelize');
+const db = require("../../../models");
+const { Op } = require("sequelize");
 const {
   getHighestRoleLevel,
   isSuperAdmin,
   userHasPermission,
-  normalizeIdArray
-} = require('../../utils/rbacHelper');
+  normalizeIdArray,
+} = require("../../utils/rbacHelper");
 
 const roleController = {
-  // List all roles
+  /*
+  =====================================================
+  LIST ROLES
+  =====================================================
+  */
   listRoles: async (req, res) => {
     try {
+      // Debug: Check what's in db
+      console.log('Available models:', Object.keys(db));
+      console.log('Role exists:', !!db.Role);
+      
+      // Verify Role model exists and has findAndCountAll
+      if (!db.Role) {
+        throw new Error('Role model not found in db object');
+      }
+      
+      if (typeof db.Role.findAndCountAll !== 'function') {
+        console.error('Role methods:', Object.keys(db.Role));
+        throw new Error('Role.findAndCountAll is not a function');
+      }
+
       const page = parseInt(req.query.page) || 1;
       const limit = parseInt(req.query.limit) || 10;
       const offset = (page - 1) * limit;
-      const search = req.query.search || '';
+      const search = req.query.search || "";
 
-      const whereClause = {};
-      
+      const where = {};
+
       if (search) {
-        whereClause[Op.or] = [
+        where[Op.or] = [
           { name: { [Op.like]: `%${search}%` } },
           { displayName: { [Op.like]: `%${search}%` } }
         ];
       }
 
-      const { count, rows: roles } = await db.Role.findAndCountAll({
-        where: whereClause,
-        include: [{
-          model: db.User,
-          as: 'creator',
-          attributes: ['id', 'firstName', 'lastName', 'email']
-        }],
+      const { count, rows } = await db.Role.findAndCountAll({
+        where,
+        include: [
+          {
+            model: db.User,
+            as: "creator",
+            attributes: ["id", "firstName", "lastName", "email"],
+            required: false
+          }
+        ],
+        order: [["level", "DESC"]],
         limit,
         offset,
-        order: [['level', 'DESC']]
+        distinct: true
       });
 
-      const roleIds = roles.map(role => role.id);
-      const roleUserCounts = roleIds.length > 0
+      const roleIds = rows.map(r => r.id);
+
+      const userCounts = roleIds.length
         ? await db.UserRole.findAll({
             attributes: [
-              'roleId',
-              [db.Sequelize.fn('COUNT', db.Sequelize.col('userId')), 'userCount']
+              "roleId",
+              [db.sequelize.fn("COUNT", db.sequelize.col("userId")), "count"]
             ],
             where: { roleId: roleIds },
-            group: ['roleId']
+            group: ["roleId"]
           })
         : [];
 
-      const roleUserCountMap = roleUserCounts.reduce((map, row) => {
-        const roleId = row.get('roleId');
-        map[roleId] = parseInt(row.get('userCount'), 10);
-        return map;
-      }, {});
-
-      // Get all permissions for the permission modal
-      const allPermissions = await db.Permission.findAll({
-        order: [['resource', 'ASC'], ['action', 'ASC']]
+      const countMap = {};
+      userCounts.forEach(r => {
+        countMap[r.get("roleId")] = parseInt(r.get("count"));
       });
 
-      // Group permissions by resource
+      const permissions = await db.Permission.findAll({
+        order: [["module", "ASC"], ["action", "ASC"]]
+      });
+
       const groupedPermissions = {};
-      allPermissions.forEach(perm => {
-        if (!groupedPermissions[perm.resource]) {
-          groupedPermissions[perm.resource] = [];
+
+      permissions.forEach(p => {
+        if (!groupedPermissions[p.module]) {
+          groupedPermissions[p.module] = [];
         }
-        groupedPermissions[perm.resource].push(perm);
+        groupedPermissions[p.module].push(p);
       });
 
-      // Get current user's role and permission info
       const currentUser = await db.User.findByPk(req.session.user.id, {
-        include: [{
-          model: db.Role,
-          as: 'roles',
-          include: [{
-            model: db.Permission,
-            as: 'permissions',
-            through: { attributes: [] }
-          }]
-        }]
+        include: [
+          {
+            model: db.Role,
+            as: "roles",
+            include: [
+              {
+                model: db.Permission,
+                as: "permissions",
+                through: { attributes: [] }
+              }
+            ]
+          }
+        ]
       });
 
       const isSuper = isSuperAdmin(req.session.user, currentUser);
-      const currentUserLevel = getHighestRoleLevel(currentUser?.roles);
-      const canCreateRole = isSuper || userHasPermission(currentUser, 'roles', 'create');
-      const canUpdateRole = isSuper || userHasPermission(currentUser, 'roles', 'update');
-      const canDeleteRole = isSuper || userHasPermission(currentUser, 'roles', 'delete');
+      const currentLevel = getHighestRoleLevel(currentUser?.roles || []);
 
-      // Add canManage flag to each role
-      const rolesWithManage = roles.map(role => {
-        const roleJson = role.toJSON();
-        roleJson.canManage = canUpdateRole && (isSuper || currentUserLevel > role.level);
-        roleJson.canDelete = canDeleteRole && roleJson.canManage && !role.isSystem;
-        roleJson.userCount = roleUserCountMap[role.id] || 0;
-        return roleJson;
+      const canCreateRole =
+        isSuper || userHasPermission(currentUser, "roles", "create");
+
+      const canUpdateRole =
+        isSuper || userHasPermission(currentUser, "roles", "update");
+
+      const canDeleteRole =
+        isSuper || userHasPermission(currentUser, "roles", "delete");
+
+      const roles = rows.map(role => {
+        const r = role.toJSON();
+
+        r.canManage =
+          canUpdateRole &&
+          (isSuper || currentLevel > role.level);
+
+        r.canDelete =
+          canDeleteRole &&
+          r.canManage &&
+          !role.isSystem;
+
+        r.userCount = countMap[role.id] || 0;
+
+        return r;
       });
 
-      res.render('admin/roles/index', {
-        title: 'Role Management',
-        roles: rolesWithManage,
+      res.render("admin/roles/index", {
+        title: "Role Management",
+        roles,
         groupedPermissions,
         pagination: {
           page,
@@ -108,464 +146,379 @@ const roleController = {
           pages: Math.ceil(count / limit)
         },
         search,
-        currentUrl: req.originalUrl,
         user: req.session.user,
         canCreateRole
       });
 
-    } catch (error) {
-      console.error('List Roles Error:', error);
-      req.flash('error', 'Failed to load roles');
-      res.status(500).render('error', {
-        title: 'Error',
-        message: 'Failed to load roles',
-        error: process.env.NODE_ENV === 'development' ? error : {}
-      });
+    } catch (err) {
+      console.error('Error in listRoles:', err);
+      req.flash("error", "Failed to load roles: " + err.message);
+      res.redirect("/admin/dashboard");
     }
   },
 
-  // Show create role form
+  /*
+  =====================================================
+  CREATE ROLE FORM
+  =====================================================
+  */
   createRoleForm: async (req, res) => {
     try {
       const currentUser = await db.User.findByPk(req.session.user.id, {
-        include: [{ model: db.Role, as: 'roles' }]
+        include: [
+          {
+            model: db.Role,
+            as: "roles",
+            include: [
+              {
+                model: db.Permission,
+                as: "permissions",
+                through: { attributes: [] }
+              }
+            ]
+          }
+        ]
       });
+
       const isSuper = isSuperAdmin(req.session.user, currentUser);
-      const currentUserLevel = getHighestRoleLevel(currentUser?.roles);
-      const maxAssignableLevel = isSuper ? 999 : Math.max(currentUserLevel - 1, 1);
+      const level = getHighestRoleLevel(currentUser?.roles || []);
+
+      const maxAssignableLevel =
+        isSuper ? 999 : Math.max(level - 1, 1);
 
       const permissions = await db.Permission.findAll({
-        order: [['resource', 'ASC'], ['action', 'ASC']]
+        order: [["module", "ASC"], ["action", "ASC"]]
       });
 
-      // Group permissions by resource
       const groupedPermissions = {};
-      permissions.forEach(perm => {
-        if (!groupedPermissions[perm.resource]) {
-          groupedPermissions[perm.resource] = [];
-        }
-        groupedPermissions[perm.resource].push(perm);
-      });
 
-      res.render('admin/roles/create', {
-        title: 'Create Role',
+      permissions.forEach(p => {
+        if (!groupedPermissions[p.module]) {
+          groupedPermissions[p.module] = [];
+        }
+        groupedPermissions[p.module].push(p);
+      });
+      formData = {};
+
+      res.render("admin/roles/create", {
+        title: "Create Role",
         groupedPermissions,
         maxAssignableLevel,
-        formData: {},
+        formData,
         user: req.session.user
       });
-    } catch (error) {
-      console.error('Create Role Form Error:', error);
-      req.flash('error', 'Failed to load create role form');
-      res.redirect('/admin/roles');
+
+    } catch (err) {
+      console.error('Error in createRoleForm:', err);
+      req.flash("error", "Failed to load create role form");
+      res.redirect("/admin/roles");
     }
   },
 
-  // Create new role
+  /*
+  =====================================================
+  CREATE ROLE
+  =====================================================
+  */
   createRole: async (req, res) => {
-    const transaction = await db.sequelize.transaction();
-    
+    const t = await db.sequelize.transaction();
+
     try {
       const { name, displayName, description, level, permissionIds } = req.body;
+
       const parsedLevel = parseInt(level, 10);
 
       const currentUser = await db.User.findByPk(req.session.user.id, {
-        include: [{ model: db.Role, as: 'roles' }]
+        include: [
+          {
+            model: db.Role,
+            as: "roles",
+            include: [
+              {
+                model: db.Permission,
+                as: "permissions",
+                through: { attributes: [] }
+              }
+            ]
+          }
+        ]
       });
+
       const isSuper = isSuperAdmin(req.session.user, currentUser);
-      const currentUserLevel = getHighestRoleLevel(currentUser?.roles);
-      const maxAssignableLevel = isSuper ? 999 : Math.max(currentUserLevel - 1, 1);
+      const currentLevel = getHighestRoleLevel(currentUser?.roles || []);
 
-      if (!Number.isInteger(parsedLevel)) {
-        await transaction.rollback();
-        req.flash('error', 'Invalid role level');
-        return res.redirect('/admin/roles/create');
+      if (!isSuper && parsedLevel >= currentLevel) {
+        await t.rollback();
+        req.flash("error", "Role level must be lower than your level");
+        return res.redirect("/admin/roles/create");
       }
 
-      if (!isSuper && parsedLevel >= currentUserLevel) {
-        await transaction.rollback();
-        req.flash('error', 'Role level must be lower than your highest role level');
-        return res.redirect('/admin/roles/create');
-      }
-
-      // Check if role exists
-      const existingRole = await db.Role.findOne({
+      const exists = await db.Role.findOne({
         where: {
-          [Op.or]: [
-            { name },
-            { displayName }
-          ]
+          [Op.or]: [{ name }, { displayName }]
         }
       });
 
-      if (existingRole) {
-        await transaction.rollback();
-        req.flash('error', 'Role with this name or display name already exists');
-        return res.redirect('/admin/roles/create');
+      if (exists) {
+        await t.rollback();
+        req.flash("error", "Role already exists");
+        return res.redirect("/admin/roles/create");
       }
 
-      // Create role
-      const newRole = await db.Role.create({
-        name,
-        displayName,
-        description,
-        level: parsedLevel,
-        isSystem: false,
-        createdBy: req.session.user.id
-      }, { transaction });
+      const role = await db.Role.create(
+        {
+          name,
+          displayName,
+          description,
+          level: parsedLevel,
+          createdBy: req.session.user.id,
+          isSystem: false
+        },
+        { transaction: t }
+      );
 
-      // Assign permissions if provided
-      const permIdArray = normalizeIdArray(permissionIds);
-      if (permIdArray.length > 0) {
-        const permissionAssignments = permIdArray.map(permId => ({
-          roleId: newRole.id,
-          permissionId: permId,
+      const ids = normalizeIdArray(permissionIds);
+
+      if (ids.length) {
+        const rows = ids.map(id => ({
+          roleId: role.id,
+          permissionId: id,
           grantedBy: req.session.user.id
         }));
 
-        await db.RolePermission.bulkCreate(permissionAssignments, { transaction });
+        await db.RolePermission.bulkCreate(rows, { transaction: t });
       }
 
-      await transaction.commit();
-      req.flash('success', 'Role created successfully');
-      res.redirect('/admin/roles');
+      await t.commit();
 
-    } catch (error) {
-      await transaction.rollback();
-      console.error('Create Role Error:', error);
-      req.flash('error', 'Failed to create role: ' + error.message);
-      res.redirect('/admin/roles/create');
+      req.flash("success", "Role created successfully");
+      res.redirect("/admin/roles");
+
+    } catch (err) {
+      await t.rollback();
+      console.error('Error in createRole:', err);
+      req.flash("error", "Failed to create role");
+      res.redirect("/admin/roles/create");
     }
   },
 
-  // Show edit role form
+  /*
+  =====================================================
+  EDIT ROLE FORM
+  =====================================================
+  */
   editRoleForm: async (req, res) => {
     try {
-      const { id } = req.params;
-
-      const role = await db.Role.findByPk(id, {
-        include: [{
-          model: db.Permission,
-          as: 'permissions',
-          through: { attributes: [] }
-        }]
+      const role = await db.Role.findByPk(req.params.id, {
+        include: [
+          {
+            model: db.Permission,
+            as: "permissions",
+            through: { attributes: [] }
+          }
+        ]
       });
 
       if (!role) {
-        req.flash('error', 'Role not found');
-        return res.redirect('/admin/roles');
+        req.flash("error", "Role not found");
+        return res.redirect("/admin/roles");
       }
 
-      // Check if current user can manage this role
       const currentUser = await db.User.findByPk(req.session.user.id, {
-        include: [{ model: db.Role, as: 'roles' }]
+        include: [
+          {
+            model: db.Role,
+            as: "roles",
+            include: [
+              {
+                model: db.Permission,
+                as: "permissions",
+                through: { attributes: [] }
+              }
+            ]
+          }
+        ]
       });
-      const isSuper = isSuperAdmin(req.session.user, currentUser);
-      const currentUserLevel = getHighestRoleLevel(currentUser?.roles);
-      const maxAssignableLevel = isSuper ? 999 : Math.max(currentUserLevel - 1, 1);
 
-      if (!isSuper && currentUserLevel <= role.level) {
-        req.flash('error', 'You cannot edit this role');
-        return res.redirect('/admin/roles');
+      const isSuper = isSuperAdmin(req.session.user, currentUser);
+      const currentLevel = getHighestRoleLevel(currentUser?.roles || []);
+
+      if (!isSuper && currentLevel <= role.level) {
+        req.flash("error", "You cannot edit this role");
+        return res.redirect("/admin/roles");
       }
 
       const permissions = await db.Permission.findAll({
-        order: [['resource', 'ASC'], ['action', 'ASC']]
+        order: [["module", "ASC"], ["action", "ASC"]]
       });
 
-      // Group permissions by resource
       const groupedPermissions = {};
-      permissions.forEach(perm => {
-        if (!groupedPermissions[perm.resource]) {
-          groupedPermissions[perm.resource] = [];
+
+      permissions.forEach(p => {
+        if (!groupedPermissions[p.module]) {
+          groupedPermissions[p.module] = [];
         }
-        groupedPermissions[perm.resource].push(perm);
+        groupedPermissions[p.module].push(p);
       });
 
-      const rolePermissions = role.permissions.map(p => p.id);
-
-      res.render('admin/roles/edit', {
-        title: 'Edit Role',
+      res.render("admin/roles/edit", {
+        title: "Edit Role",
         role: role.toJSON(),
+        rolePermissions: role.permissions.map(p => p.id),
         groupedPermissions,
-        rolePermissions,
-        maxAssignableLevel,
-        user: req.session.user,
+        maxAssignableLevel: isSuper ? 100 : currentLevel - 1,
+        user: req.session.user
       });
 
-    } catch (error) {
-      console.error('Edit Role Form Error:', error);
-      req.flash('error', 'Failed to load edit role form');
-      res.redirect('/admin/roles');
+    } catch (err) {
+      console.error('Error in editRoleForm:', err);
+      req.flash("error", "Failed to load role");
+      res.redirect("/admin/roles");
     }
   },
 
-  // Update role
+  /*
+  =====================================================
+  UPDATE ROLE
+  =====================================================
+  */
   updateRole: async (req, res) => {
-    const transaction = await db.sequelize.transaction();
-    
-    try {
-      const { id } = req.params;
-      const { name, displayName, description, level, permissionIds } = req.body;
-      const parsedLevel = parseInt(level, 10);
-      const requestedPermissionIds = normalizeIdArray(permissionIds);
+    const t = await db.sequelize.transaction();
 
-      const role = await db.Role.findByPk(id);
+    try {
+      const { name, displayName, description, level, permissionIds } = req.body;
+
+      const parsedLevel = parseInt(level, 10);
+      const ids = normalizeIdArray(permissionIds);
+
+      const role = await db.Role.findByPk(req.params.id);
 
       if (!role) {
-        await transaction.rollback();
-        req.flash('error', 'Role not found');
-        return res.redirect('/admin/roles');
+        await t.rollback();
+        req.flash("error", "Role not found");
+        return res.redirect("/admin/roles");
       }
 
-      // Check if system role
       if (role.isSystem) {
-        await transaction.rollback();
-        req.flash('error', 'System roles cannot be modified');
-        return res.redirect('/admin/roles');
+        await t.rollback();
+        req.flash("error", "System roles cannot be modified");
+        return res.redirect("/admin/roles");
       }
 
-      // Check if current user can manage this role
       const currentUser = await db.User.findByPk(req.session.user.id, {
-        include: [{ model: db.Role, as: 'roles' }]
+        include: [
+          {
+            model: db.Role,
+            as: "roles",
+            include: [
+              {
+                model: db.Permission,
+                as: "permissions",
+                through: { attributes: [] }
+              }
+            ]
+          }
+        ]
       });
+
       const isSuper = isSuperAdmin(req.session.user, currentUser);
-      const currentUserLevel = getHighestRoleLevel(currentUser?.roles);
+      const currentLevel = getHighestRoleLevel(currentUser?.roles || []);
 
-      if (!isSuper && currentUserLevel <= role.level) {
-        await transaction.rollback();
-        req.flash('error', 'You cannot edit this role');
-        return res.redirect('/admin/roles');
+      if (!isSuper && currentLevel <= role.level) {
+        await t.rollback();
+        req.flash("error", "You cannot edit this role");
+        return res.redirect("/admin/roles");
       }
 
-      if (!Number.isInteger(parsedLevel)) {
-        await transaction.rollback();
-        req.flash('error', 'Invalid role level');
-        return res.redirect(`/admin/roles/${id}/edit`);
-      }
+      await role.update(
+        {
+          name,
+          displayName,
+          description,
+          level: parsedLevel
+        },
+        { transaction: t }
+      );
 
-      if (!isSuper && parsedLevel >= currentUserLevel) {
-        await transaction.rollback();
-        req.flash('error', 'Role level must be lower than your highest role level');
-        return res.redirect(`/admin/roles/${id}/edit`);
-      }
-
-      // Update role
-      await role.update({
-        name,
-        displayName,
-        description,
-        level: parsedLevel
-      }, { transaction });
-
-      // Update permissions
       await db.RolePermission.destroy({
-        where: { roleId: id },
-        transaction
+        where: { roleId: role.id },
+        transaction: t
       });
 
-      if (requestedPermissionIds.length > 0) {
-        const permissionAssignments = requestedPermissionIds.map(permissionId => ({
-          roleId: id,
-          permissionId,
+      if (ids.length) {
+        const rows = ids.map(id => ({
+          roleId: role.id,
+          permissionId: id,
           grantedBy: req.session.user.id
         }));
 
-        await db.RolePermission.bulkCreate(permissionAssignments, { transaction });
+        await db.RolePermission.bulkCreate(rows, { transaction: t });
       }
 
-      await transaction.commit();
-      req.flash('success', 'Role updated successfully');
-      
-      res.redirect('/admin/roles');
+      await t.commit();
 
-    } catch (error) {
-      await transaction.rollback();
-      console.error('Update Role Error:', error);
-      req.flash('error', 'Failed to update role');
+      req.flash("success", "Role updated successfully");
+      res.redirect("/admin/roles");
+
+    } catch (err) {
+      await t.rollback();
+      console.error('Error in updateRole:', err);
+      req.flash("error", "Failed to update role");
       res.redirect(`/admin/roles/${req.params.id}/edit`);
     }
   },
 
-  // Delete role
+  /*
+  =====================================================
+  DELETE ROLE
+  =====================================================
+  */
   deleteRole: async (req, res) => {
-    const transaction = await db.sequelize.transaction();
-    
-    try {
-      const { id } = req.params;
+    const t = await db.sequelize.transaction();
 
-      const role = await db.Role.findByPk(id);
+    try {
+      const role = await db.Role.findByPk(req.params.id);
 
       if (!role) {
-        await transaction.rollback();
-        return res.status(404).json({ 
-          success: false, 
-          error: 'Role not found' 
-        });
+        await t.rollback();
+        return res.json({ success: false, message: "Role not found" });
       }
 
-      // Prevent deletion of system roles
       if (role.isSystem) {
-        await transaction.rollback();
-        return res.status(400).json({ 
-          success: false, 
-          error: 'System roles cannot be deleted' 
+        await t.rollback();
+        return res.json({
+          success: false,
+          message: "System role cannot be deleted"
         });
       }
 
-      // Check if current user can manage this role
-      const currentUser = await db.User.findByPk(req.session.user.id, {
-        include: [{ model: db.Role, as: 'roles' }]
-      });
-      const isSuper = isSuperAdmin(req.session.user, currentUser);
-      const currentUserLevel = getHighestRoleLevel(currentUser?.roles);
-
-      if (!isSuper && currentUserLevel <= role.level) {
-        await transaction.rollback();
-        return res.status(403).json({ 
-          success: false, 
-          error: 'You cannot delete this role' 
-        });
-      }
-
-      // Check if role is assigned to any users
-      const userCount = await db.UserRole.count({
-        where: { roleId: id }
+      const assigned = await db.UserRole.count({
+        where: { roleId: role.id }
       });
 
-      if (userCount > 0) {
-        await transaction.rollback();
-        return res.status(400).json({ 
-          success: false, 
-          error: 'Cannot delete role that is assigned to users' 
+      if (assigned) {
+        await t.rollback();
+        return res.json({
+          success: false,
+          message: "Role is assigned to users"
         });
       }
 
-      // Delete role permissions first
       await db.RolePermission.destroy({
-        where: { roleId: id },
-        transaction
+        where: { roleId: role.id },
+        transaction: t
       });
 
-      // Delete role
-      await role.destroy({ transaction });
+      await role.destroy({ transaction: t });
 
-      await transaction.commit();
+      await t.commit();
 
-      res.json({ 
-        success: true, 
-        message: 'Role deleted successfully' 
-      });
+      res.json({ success: true });
 
-    } catch (error) {
-      await transaction.rollback();
-      console.error('Delete Role Error:', error);
-      res.status(500).json({ 
-        success: false, 
-        error: 'Failed to delete role' 
-      });
-    }
-  },
-
-  // Get role permissions (AJAX)
-  getRolePermissions: async (req, res) => {
-    try {
-      const { id } = req.params;
-
-      const role = await db.Role.findByPk(id, {
-        include: [{
-          model: db.Permission,
-          as: 'permissions',
-          through: { attributes: [] },
-          attributes: ['id', 'name', 'resource', 'action']
-        }]
-      });
-
-      if (!role) {
-        return res.status(404).json({ 
-          success: false, 
-          error: 'Role not found' 
-        });
-      }
-
-      res.json({ 
-        success: true, 
-        permissions: role.permissions 
-      });
-
-    } catch (error) {
-      console.error('Get Role Permissions Error:', error);
-      res.status(500).json({ 
-        success: false, 
-        error: 'Failed to get role permissions' 
-      });
-    }
-  },
-
-  // Update role permissions (AJAX)
-  updateRolePermissions: async (req, res) => {
-    const transaction = await db.sequelize.transaction();
-    
-    try {
-      const { id } = req.params;
-      const { permissionIds } = req.body;
-      const requestedPermissionIds = normalizeIdArray(permissionIds);
-
-      const role = await db.Role.findByPk(id);
-
-      if (!role) {
-        await transaction.rollback();
-        return res.status(404).json({ 
-          success: false, 
-          error: 'Role not found' 
-        });
-      }
-
-      const currentUser = await db.User.findByPk(req.session.user.id, {
-        include: [{ model: db.Role, as: 'roles' }]
-      });
-      const isSuper = isSuperAdmin(req.session.user, currentUser);
-      const currentUserLevel = getHighestRoleLevel(currentUser?.roles);
-
-      if (!isSuper && currentUserLevel <= role.level) {
-        await transaction.rollback();
-        return res.status(403).json({ 
-          success: false, 
-          error: 'You cannot manage permissions for this role' 
-        });
-      }
-
-      // Remove existing permissions
-      await db.RolePermission.destroy({
-        where: { roleId: id },
-        transaction
-      });
-
-      // Add new permissions
-      if (requestedPermissionIds.length > 0) {
-        const permissionAssignments = requestedPermissionIds.map(permissionId => ({
-          roleId: id,
-          permissionId,
-          grantedBy: req.session.user.id
-        }));
-
-        await db.RolePermission.bulkCreate(permissionAssignments, { transaction });
-      }
-
-      await transaction.commit();
-
-      res.json({ 
-        success: true, 
-        message: 'Role permissions updated successfully' 
-      });
-
-    } catch (error) {
-      await transaction.rollback();
-      console.error('Update Role Permissions Error:', error);
-      res.status(500).json({ 
-        success: false, 
-        error: 'Failed to update role permissions' 
-      });
+    } catch (err) {
+      await t.rollback();
+      console.error('Error in deleteRole:', err);
+      res.json({ success: false, message: err.message });
     }
   }
 };

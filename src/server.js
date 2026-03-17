@@ -31,9 +31,12 @@ const sessionStore = new SequelizeStore({
 });
 
 // Middleware
-app.use(helmet({
-  contentSecurityPolicy: false,
-}));
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+    crossOriginResourcePolicy: false
+  })
+);
 
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
@@ -48,6 +51,7 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+console.log("STATIC PATH:", path.join(__dirname, 'public'));
 
 // Session configuration
 app.use(session({

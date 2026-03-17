@@ -7,6 +7,7 @@ const adminDashboardRoutes = require('./admin/dashboard.route');
 const adminUserRoutes = require('./admin/users.route');
 const adminRoleRoutes = require('./admin/roles.route');
 const adminPermissionRoutes = require('./admin/permissions.route');
+const adminImageRoutes = require('./admin/images.route'); 
 const apiTestRoutes = require('./api/test.apiroute');
 
 // Admin routes
@@ -15,6 +16,7 @@ router.use('/admin', adminDashboardRoutes);
 router.use('/admin/users', adminUserRoutes);
 router.use('/admin/roles', adminRoleRoutes);
 router.use('/admin/permissions', adminPermissionRoutes);
+router.use('/admin/images', adminImageRoutes);  
 
 // API routes
 router.use('/api', apiTestRoutes);

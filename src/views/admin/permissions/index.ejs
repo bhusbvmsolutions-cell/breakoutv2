@@ -31,10 +31,11 @@
         <div class="col-sm-6">
           <div class="d-flex justify-content-end gap-2">
             <form action="/admin/permissions" method="GET" class="d-flex">
-              <select name="resource" class="form-select form-select-sm me-2" style="width: 150px;">
-                <option value="">All Resources</option>
-                <% resources.forEach(res => { %>
-                  <option value="<%= res %>" <%= selectedResource === res ? 'selected' : '' %>><%= res %></option>
+              <!-- FIXED: Changed from 'resource' to 'module' -->
+              <select name="module" class="form-select form-select-sm me-2" style="width: 150px;">
+                <option value="">All Modules</option>
+                <% modules.forEach(mod => { %>
+                  <option value="<%= mod %>" <%= selectedModule === mod ? 'selected' : '' %>><%= mod.charAt(0).toUpperCase() + mod.slice(1) %></option>
                 <% }); %>
               </select>
               <input type="text" name="search" class="form-control form-control-sm me-2" placeholder="Search permissions..." value="<%= search || '' %>" style="width: 200px;">
@@ -59,15 +60,15 @@
       </div>
     </div>
     <div class="card-body">
-      <!-- Grouped by Resource -->
+      <!-- Grouped by Module (FIXED: Changed from Resource to Module) -->
       <ul class="nav nav-tabs mb-3" id="permissionTabs" role="tablist">
         <li class="nav-item" role="presentation">
           <button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all" type="button">All</button>
         </li>
-        <% Object.keys(groupedPermissions).forEach(resource => { %>
+        <% Object.keys(groupedPermissions).forEach(module => { %>
           <li class="nav-item" role="presentation">
-            <button class="nav-link" id="<%= resource %>-tab" data-bs-toggle="tab" data-bs-target="#<%= resource %>" type="button">
-              <%= resource.charAt(0).toUpperCase() + resource.slice(1) %>
+            <button class="nav-link" id="<%= module %>-tab" data-bs-toggle="tab" data-bs-target="#<%= module.replace(/\s+/g, '') %>" type="button">
+              <%= module.charAt(0).toUpperCase() + module.slice(1) %>
             </button>
           </li>
         <% }); %>
@@ -81,33 +82,26 @@
                 <tr>
                   <th>ID</th>
                   <th>Name</th>
-                  <th>Resource</th>
+                  <th>Module</th>
                   <th>Action</th>
                   <th>Description</th>
-                  <th>Type</th>
                   <th>Roles</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 <% if (permissions && permissions.length > 0) { %>
-                  <% permissions.forEach(perm => { %>
+                  <% permissions.forEach((perm, idx) => { %>
                     <tr>
-                      <td><%= perm.id %></td>
+                      <td><%= idx + 1 %></td>
                       <td><code><%= perm.name %></code></td>
-                      <td><span class="badge bg-info"><%= perm.resource %></span></td>
+                      <!-- FIXED: Changed from resource to module -->
+                      <td><span class="badge bg-info"><%= perm.module %></span></td>
                       <td><span class="badge bg-secondary"><%= perm.action %></span></td>
                       <td><%= perm.description || '-' %></td>
                       <td>
-                        <% if (perm.isSystem) { %>
-                          <span class="badge bg-danger">System</span>
-                        <% } else { %>
-                          <span class="badge bg-success">Custom</span>
-                        <% } %>
-                      </td>
-                      <td>
                         <button type="button" class="btn btn-sm btn-outline-info view-roles" data-perm-id="<%= perm.id %>">
-                          <i class="bi bi-people"></i> View
+                          <i class="bi bi-people"></i> View Roles
                         </button>
                       </td>
                       <td>
@@ -121,7 +115,7 @@
                   <% }); %>
                 <% } else { %>
                   <tr>
-                    <td colspan="8" class="text-center py-4">No permissions found</td>
+                    <td colspan="7" class="text-center py-4">No permissions found</td>
                   </tr>
                 <% } %>
               </tbody>
@@ -129,8 +123,9 @@
           </div>
         </div>
         
-        <% Object.keys(groupedPermissions).forEach(resource => { %>
-          <div class="tab-pane fade" id="<%= resource %>" role="tabpanel">
+        <!-- FIXED: Changed from resource to module -->
+        <% Object.keys(groupedPermissions).forEach(module => { %>
+          <div class="tab-pane fade" id="<%= module.replace(/\s+/g, '') %>" role="tabpanel">
             <div class="table-responsive">
               <table class="table table-hover">
                 <thead class="table-light">
@@ -139,28 +134,20 @@
                     <th>Name</th>
                     <th>Action</th>
                     <th>Description</th>
-                    <th>Type</th>
                     <th>Roles</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <% groupedPermissions[resource].forEach(perm => { %>
+                  <% groupedPermissions[module].forEach(perm => { %>
                     <tr>
                       <td><%= perm.id %></td>
                       <td><code><%= perm.name %></code></td>
                       <td><span class="badge bg-secondary"><%= perm.action %></span></td>
                       <td><%= perm.description || '-' %></td>
                       <td>
-                        <% if (perm.isSystem) { %>
-                          <span class="badge bg-danger">System</span>
-                        <% } else { %>
-                          <span class="badge bg-success">Custom</span>
-                        <% } %>
-                      </td>
-                      <td>
                         <button type="button" class="btn btn-sm btn-outline-info view-roles" data-perm-id="<%= perm.id %>">
-                          <i class="bi bi-people"></i> View
+                          <i class="bi bi-people"></i> View Roles
                         </button>
                       </td>
                       <td>
@@ -184,17 +171,17 @@
         <nav aria-label="Page navigation" class="mt-3">
           <ul class="pagination justify-content-center">
             <li class="page-item <%= pagination.page === 1 ? 'disabled' : '' %>">
-              <a class="page-link" href="?page=<%= pagination.page - 1 %><%= search ? '&search=' + search : '' %><%= selectedResource ? '&resource=' + selectedResource : '' %>">Previous</a>
+              <a class="page-link" href="?page=<%= pagination.page - 1 %><%= search ? '&search=' + search : '' %><%= selectedModule ? '&module=' + selectedModule : '' %>">Previous</a>
             </li>
             
             <% for (let i = 1; i <= pagination.pages; i++) { %>
               <li class="page-item <%= pagination.page === i ? 'active' : '' %>">
-                <a class="page-link" href="?page=<%= i %><%= search ? '&search=' + search : '' %><%= selectedResource ? '&resource=' + selectedResource : '' %>"><%= i %></a>
+                <a class="page-link" href="?page=<%= i %><%= search ? '&search=' + search : '' %><%= selectedModule ? '&module=' + selectedModule : '' %>"><%= i %></a>
               </li>
             <% } %>
             
             <li class="page-item <%= pagination.page === pagination.pages ? 'disabled' : '' %>">
-              <a class="page-link" href="?page=<%= pagination.page + 1 %><%= search ? '&search=' + search : '' %><%= selectedResource ? '&resource=' + selectedResource : '' %>">Next</a>
+              <a class="page-link" href="?page=<%= pagination.page + 1 %><%= search ? '&search=' + search : '' %><%= selectedModule ? '&module=' + selectedModule : '' %>">Next</a>
             </li>
           </ul>
         </nav>
@@ -236,8 +223,9 @@
               <input type="text" class="form-control" id="editPermName" readonly>
             </div>
             <div class="mb-3">
-              <label class="form-label">Resource</label>
-              <input type="text" class="form-control" id="editPermResource" readonly>
+              <!-- FIXED: Changed from Resource to Module -->
+              <label class="form-label">Module</label>
+              <input type="text" class="form-control" id="editPermModule" readonly>
             </div>
             <div class="mb-3">
               <label class="form-label">Action</label>
@@ -263,7 +251,7 @@
       $('.view-roles').on('click', function() {
         const permId = $(this).data('perm-id');
         
-        $('#rolesList').html('<div class="text-center"><div class="spinner-border"></div></div>');
+        $('#rolesList').html('<div class="text-center"><div class="spinner-border spinner-border-sm"></div> Loading...</div>');
         $('#viewRolesModal').modal('show');
         
         $.ajax({
@@ -279,18 +267,20 @@
                 html = '<ul class="list-group">';
                 response.roles.forEach(role => {
                   html += `<li class="list-group-item d-flex justify-content-between align-items-center">
-                    <strong>${role.displayName}</strong>
-                    <span class="badge bg-info">Level ${role.level}</span>
+                    <strong>${role.displayName || role.name}</strong>
+                    <span class="badge bg-info">Level ${role.level || 0}</span>
                   </li>`;
                 });
                 html += '</ul>';
               }
               
               $('#rolesList').html(html);
+            } else {
+              $('#rolesList').html('<p class="text-danger text-center">Failed to load roles</p>');
             }
           },
           error: function() {
-            $('#rolesList').html('<p class="text-danger text-center">Failed to load roles</p>');
+            $('#rolesList').html('<p class="text-danger text-center">Error loading roles</p>');
           }
         });
       });
@@ -307,12 +297,18 @@
               const perm = response.permission;
               $('#editPermId').val(perm.id);
               $('#editPermName').val(perm.name);
-              $('#editPermResource').val(perm.resource);
+              // FIXED: Changed from resource to module
+              $('#editPermModule').val(perm.module);
               $('#editPermAction').val(perm.action);
               $('#editPermDescription').val(perm.description || '');
               
               $('#editPermissionModal').modal('show');
+            } else {
+              alert('Failed to load permission details');
             }
+          },
+          error: function() {
+            alert('Error loading permission details');
           }
         });
       });
@@ -324,6 +320,11 @@
         const permId = $('#editPermId').val();
         const description = $('#editPermDescription').val();
         
+        // Show loading state
+        const submitBtn = $(this).find('button[type="submit"]');
+        const originalText = submitBtn.text();
+        submitBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span> Saving...');
+        
         $.ajax({
           url: '/admin/permissions/' + permId,
           method: 'PUT',
@@ -331,13 +332,20 @@
           success: function(response) {
             if (response.success) {
               $('#editPermissionModal').modal('hide');
+              // Show success message and reload
               window.location.reload();
             } else {
               alert(response.error || 'Failed to update permission');
+              submitBtn.prop('disabled', false).text(originalText);
             }
           },
-          error: function() {
-            alert('Failed to update permission');
+          error: function(xhr) {
+            let errorMsg = 'Failed to update permission';
+            if (xhr.responseJSON && xhr.responseJSON.error) {
+              errorMsg = xhr.responseJSON.error;
+            }
+            alert(errorMsg);
+            submitBtn.prop('disabled', false).text(originalText);
           }
         });
       });
@@ -345,6 +353,10 @@
       // Generate permissions
       $('#generatePermissions').on('click', function() {
         if (confirm('This will generate all missing permissions based on models. Continue?')) {
+          const btn = $(this);
+          const originalText = btn.text();
+          btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span> Generating...');
+          
           $.ajax({
             url: '/admin/permissions/generate',
             method: 'POST',
@@ -354,10 +366,12 @@
                 window.location.reload();
               } else {
                 alert(response.error || 'Failed to generate permissions');
+                btn.prop('disabled', false).text(originalText);
               }
             },
             error: function() {
               alert('Failed to generate permissions');
+              btn.prop('disabled', false).text(originalText);
             }
           });
         }
@@ -366,6 +380,10 @@
       // Refresh permissions
       $('#refreshPermissions').on('click', function() {
         if (confirm('This will regenerate all permissions and reassign them to super admin. Continue?')) {
+          const btn = $(this);
+          const originalText = btn.text();
+          btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span> Refreshing...');
+          
           $.ajax({
             url: '/admin/permissions/refresh',
             method: 'POST',
@@ -375,10 +393,12 @@
                 window.location.reload();
               } else {
                 alert(response.error || 'Failed to refresh permissions');
+                btn.prop('disabled', false).text(originalText);
               }
             },
             error: function() {
               alert('Failed to refresh permissions');
+              btn.prop('disabled', false).text(originalText);
             }
           });
         }

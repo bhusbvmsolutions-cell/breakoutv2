@@ -15,31 +15,22 @@ module.exports = (sequelize, DataTypes) => {
             notEmpty: true
           }
         },
-        resource: {
-          type: DataTypes.STRING(50),
+        module: {
+          type: DataTypes.STRING(100),
           allowNull: false,
-          comment: 'e.g., users, products, orders, roles'
+          unique: false,
+          validate: {
+            notEmpty: true
+          }
         },
         action: {
           type: DataTypes.ENUM('view', 'create', 'edit', 'delete', 'manage', 'read', 'update', 'export', 'import'),
           allowNull: false,
-        },
-        moduleId: {
-          type: DataTypes.INTEGER,
-          allowNull: true,
-          references: {
-            model: 'modules',
-            key: 'id'
-          }
+          unique: false,
         },
         description: {
           type: DataTypes.TEXT,
           allowNull: true,
-        },
-        isSystem: {
-          type: DataTypes.BOOLEAN,
-          defaultValue: false,
-          comment: 'System permissions cannot be deleted'
         }
       },
       {

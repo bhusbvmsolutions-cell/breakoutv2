@@ -1,64 +1,52 @@
-<!--start sidebar -->
 <aside class="sidebar-wrapper" data-simplebar="true">
-  <div class="sidebar-header">
-    <div>
-      <h4 class="logo-text">Breakout</h4>
-    </div>
-  </div>
-  <!--navigation-->
-  <ul class="metismenu" id="menu">
-    <% const rawMenu = (typeof sidebarMenu !== 'undefined') ? sidebarMenu : null; %>
-    <% const menuItems = Array.isArray(rawMenu) ? rawMenu : []; %>
-    <% if (menuItems.length > 0) { %>
-      <% menuItems.forEach(item => { %>
-        <% const subItems = item.visibleSubmenu || item.submenu || []; %>
-        <% const hasSub = subItems.length > 0; %>
-        <% const isActiveParent = item.path && currentUrl?.startsWith(item.path); %>
-        <% const isActiveSub = subItems.some(sub => sub.path && currentUrl?.startsWith(sub.path)); %>
-        <% const isOpen = isActiveParent || isActiveSub; %>
-        <li>
-          <% if (hasSub) { %>
-            <a href="javascript:;" class="has-arrow <%= isOpen ? 'mm-active' : '' %>">
+        <div class="sidebar-header">
+          <!-- <div>
+            <img
+            src="<%= baseUrl %>/assets/images/breakout_logo_official.webp"
+            class="logo-icon"
+            alt="logo icon"
+            />
+          </div> -->
+          <div>
+            <h4 class="logo-text">Breakout</h4>
+          </div>
+        </div>
+        <!--navigation-->
+        <ul class="metismenu" id="menu">
+          <li>
+            <a href="<%= baseUrl %>/admin/dashboard">
               <div class="parent-icon">
-                <i class="bi <%= item.icon || 'bi-grid' %>"></i>
+                <ion-icon name="speedometer-outline"></ion-icon>
               </div>
-              <div class="menu-title"><%= item.title %></div>
+              <div class="menu-title">Dashboard</div>
             </a>
-            <ul class="<%= isOpen ? 'mm-show' : '' %>">
-              <% subItems.forEach(sub => { %>
+          </li>
+            <li>
+              <a href="javascript:;" class="has-arrow">
+                <div class="parent-icon">
+                  <ion-icon name="people-outline"></ion-icon>
+                </div>
+                <div class="menu-title">User Management</div>
+              </a>
+              <ul class="shadow-sm">
                 <li>
-                  <a href="<%= sub.path %>" class="<%= currentUrl?.startsWith(sub.path) ? 'mm-active' : '' %>">
-                    <i class="bi <%= sub.icon || 'bi-circle' %>"></i>
-                    <span><%= sub.title %></span>
+                  <a href="<%= baseUrl %>/admin/roles" class="flex gap-2">
+                    <i class="bi bi-person-workspace"></i>List Roles
                   </a>
                 </li>
-              <% }); %>
-            </ul>
-          <% } else { %>
-            <a href="<%= item.path || 'javascript:;' %>" class="<%= isOpen ? 'mm-active' : '' %>">
-              <div class="parent-icon">
-                <i class="bi <%= item.icon || 'bi-grid' %>"></i>
-              </div>
-              <div class="menu-title"><%= item.title %></div>
-            </a>
-          <% } %>
-        </li>
-      <% }); %>
-    <% } else if (typeof sidebarModules !== 'undefined' && sidebarModules && sidebarModules.length > 0) { %>
-      <% sidebarModules.forEach(module => { %>
-        <li>
-          <a href="<%= module.route %>" class="<%= currentUrl?.startsWith(module.route) ? 'mm-active' : '' %>">
-            <div class="parent-icon">
-              <ion-icon name="<%= module.icon || 'grid-outline' %>"></ion-icon>
-            </div>
-            <div class="menu-title"><%= module.name %></div>
-          </a>
-        </li>
-      <% }); %>
-    <% } else { %>
-      <li class="pb-2 pt-2 px-3 text-muted">No accessible modules</li>
-    <% } %>
-  </ul>
-  <!--end navigation-->
-</aside>
-<!--end sidebar -->
+                <li>
+                  <a href="<%= baseUrl %>/admin/permissions" class="flex gap-2">
+                    <i class="bi bi-person-workspace"></i>List Permissions
+                  </a>
+                </li>
+                <li>
+                  <a href="<%= baseUrl %>/admin/users" class="flex gap-2">
+                    <i class="bi bi-person-lines-fill"></i> List Users
+                  </a>
+                </li>
+              </ul>
+            </li>
+        </ul>
+
+        <!--end navigation-->
+      </aside>

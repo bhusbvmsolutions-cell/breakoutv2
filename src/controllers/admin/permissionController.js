@@ -11,46 +11,52 @@ const permissionController = {
       const limit = parseInt(req.query.limit) || 20;
       const offset = (page - 1) * limit;
       const search = req.query.search || '';
-      const resource = req.query.resource || '';
+      // FIXED: Changed from 'resource' to 'module' to match the model
+      const module = req.query.module || '';
 
       const whereClause = {};
       
       if (search) {
         whereClause[Op.or] = [
           { name: { [Op.like]: `%${search}%` } },
-          { description: { [Op.like]: `%${search}%` } }
+          { description: { [Op.like]: `%${search}%` } },
+          { module: { [Op.like]: `%${search}%` } } // Added module to search
         ];
       }
 
-      if (resource) {
-        whereClause.resource = resource;
+      // FIXED: Changed from 'resource' to 'module'
+      if (module) {
+        whereClause.module = module;
       }
 
       const { count, rows: permissions } = await db.Permission.findAndCountAll({
         where: whereClause,
         limit,
         offset,
-        order: [['resource', 'ASC'], ['action', 'ASC']]
+        // FIXED: Changed from 'resource' to 'module' in order by
+        order: [['module', 'ASC'], ['action', 'ASC']],
+        distinct: true
       });
 
-      // Get all unique resources for filter
-      const resources = await db.Permission.findAll({
-        attributes: ['resource'],
-        group: ['resource'],
-        order: [['resource', 'ASC']]
+      // FIXED: Get all unique modules for filter (changed from resource to module)
+      const modules = await db.Permission.findAll({
+        attributes: ['module'],
+        group: ['module'],
+        order: [['module', 'ASC']]
       });
 
-      // Group permissions by resource for display
+      // Group permissions by module for display
       const allPermissions = await db.Permission.findAll({
-        order: [['resource', 'ASC'], ['action', 'ASC']]
+        order: [['module', 'ASC'], ['action', 'ASC']]
       });
 
       const groupedPermissions = {};
       allPermissions.forEach(perm => {
-        if (!groupedPermissions[perm.resource]) {
-          groupedPermissions[perm.resource] = [];
+        // FIXED: Changed from 'resource' to 'module'
+        if (!groupedPermissions[perm.module]) {
+          groupedPermissions[perm.module] = [];
         }
-        groupedPermissions[perm.resource].push(perm);
+        groupedPermissions[perm.module].push(perm);
       });
 
       const currentUser = await db.User.findByPk(req.session.user.id, {
@@ -74,7 +80,8 @@ const permissionController = {
         title: 'Permission Management',
         permissions,
         groupedPermissions,
-        resources: resources.map(r => r.resource),
+        // FIXED: Changed from 'resources' to 'modules'
+        modules: modules.map(m => m.module),
         pagination: {
           page,
           limit,
@@ -82,7 +89,8 @@ const permissionController = {
           pages: Math.ceil(count / limit)
         },
         search,
-        selectedResource: resource,
+        // FIXED: Changed from 'selectedResource' to 'selectedModule'
+        selectedModule: module,
         success: req.query.success,
         error: req.query.error,
         currentUrl: req.originalUrl,

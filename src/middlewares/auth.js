@@ -1,85 +1,93 @@
-const db = require('../../models');
+const db = require("../../models");
 
 // Check if user is authenticated
 const isAuthenticated = async (req, res, next) => {
-  if (req.session && req.session.user) {
-    // Check if user still exists in database
-    const user = await db.User.findByPk(req.session.user.id, {
-      include: [{
-        model: db.Role,
-        as: 'roles',
-        attributes: ['id', 'name', 'level'],
-        through: { attributes: [] }
-      }]
-    });
-    if (user && user.isActive) {
-      req.user = user;
-      return next();
-    } else {
-      // Clear invalid session
-      req.session.destroy((err) => {
-        if (err) console.error('Session destroy error:', err);
-      });
+  try {
+    const userId = req.session?.user?.id;
+
+    if (!userId) {
+      return handleUnauthenticated(req, res);
     }
-  }
-  
-  // For API requests
-  if (req.path.startsWith('/api')) {
-    return res.status(401).json({ 
-      success: false, 
-      error: 'Authentication required' 
+
+    const user = await db.User.findByPk(userId, {
+      include: [
+        {
+          model: db.Role,
+          as: "roles",
+          attributes: ["id", "name", "level"],
+          through: { attributes: [] },
+        },
+      ],
     });
+
+    if (!user || !user.isActive) {
+      req.session.destroy();
+      return handleUnauthenticated(req, res);
+    }
+
+    req.user = user;
+    res.locals.user = user;
+
+    next();
+  } catch (err) {
+    console.error("Auth middleware error:", err);
+    next(err);
   }
-  
-  // For admin panel - redirect to login
-  res.redirect('/admin/login');
 };
 
-// Check if user is admin or super_admin
+function handleUnauthenticated(req, res) {
+  if (req.path.startsWith("/api")) {
+    return res.status(401).json({
+      success: false,
+      error: "Authentication required",
+    });
+  }
+
+  return res.redirect("/admin/login");
+}
+
+// Admin access
 const isAdmin = (req, res, next) => {
-  const user = req.session.user;
-  
-  if (user && (user.role === 'admin' || user.role === 'super_admin')) {
-    return next();
-  }
-  
-  // Check through roles if available
-  if (req.user && req.user.roles) {
-    const hasAdminRole = req.user.roles.some(r => 
-      ['admin', 'super_admin'].includes(r.name)
-    );
-    if (hasAdminRole) {
-      return next();
-    }
+  if (!req.session?.user) {
+    return res.redirect("/admin/login");
   }
 
-  if (req.session.user?.roles) {
-    const hasAdminRole = req.session.user.roles.some(r =>
-      ['admin', 'super_admin'].includes(r.name)
-    );
-    if (hasAdminRole) {
-      return next();
-    }
-  }
-  
-  if (req.path.startsWith('/api')) {
-    return res.status(403).json({ 
-      success: false, 
-      error: 'Admin access required' 
+  const roles = req.session.user.roles || [];
+
+  const hasAdminRole = roles.some(
+    (r) => r.name === "admin" || r.name === "super_admin",
+  );
+
+  if (!hasAdminRole) {
+    return res.status(403).render("error", {
+      title: "Forbidden",
+      message: "You do not have permission to access this page",
+      layout: false,
     });
   }
-  
-  res.status(403).render('error', { 
-    title: 'Access Denied',
-    message: 'Admin privileges required to access this page',
-    error: { status: 403 }
-  });
+
+  next();
 };
 
-// Redirect if already logged in
+function handleForbidden(req, res, message) {
+  if (req.path.startsWith("/api")) {
+    return res.status(403).json({
+      success: false,
+      error: message,
+    });
+  }
+
+  return res.status(403).render("error", {
+    title: "Access Denied",
+    message,
+    error: { status: 403 },
+  });
+}
+
+// Redirect if logged in
 const redirectIfAuthenticated = (req, res, next) => {
-  if (req.session.user) {
-    return res.redirect('/admin/dashboard');
+  if (req.session?.user?.id) {
+    return res.redirect("/admin/dashboard");
   }
   next();
 };
@@ -87,5 +95,5 @@ const redirectIfAuthenticated = (req, res, next) => {
 module.exports = {
   isAuthenticated,
   isAdmin,
-  redirectIfAuthenticated
+  redirectIfAuthenticated,
 };

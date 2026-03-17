@@ -2,14 +2,14 @@ const express = require('express');
 const router = express.Router();
 const permissionController = require('../../controllers/admin/permissionController');
 const { isAuthenticated } = require('../../middlewares/auth');
-const { hasPermission } = require('../../middlewares/rbac');
+const { hasPermission } = require('../../middlewares/rbac'); // Make sure this path is correct
 
 // All routes require authentication
 router.use(isAuthenticated);
 
 // Permission management routes
 router.get('/', 
-  hasPermission('permissions', 'read'),
+  hasPermission('permissions', 'view'), // Changed from 'read' to 'view' to match your enum
   permissionController.listPermissions
 );
 
@@ -20,17 +20,17 @@ router.post('/generate',
 );
 
 router.get('/:id', 
-  hasPermission('permissions', 'read'),
+  hasPermission('permissions', 'view'), // Changed from 'read' to 'view'
   permissionController.getPermission
 );
 
 router.put('/:id', 
-  hasPermission('permissions', 'update'),
+  hasPermission('permissions', 'edit'), // Changed from 'update' to 'edit' to match your enum
   permissionController.updatePermission
 );
 
 router.get('/:id/roles', 
-  hasPermission('permissions', 'read'),
+  hasPermission('permissions', 'view'), // Changed from 'read' to 'view'
   permissionController.getRolesWithPermission
 );
 

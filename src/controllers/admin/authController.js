@@ -1,15 +1,15 @@
-const db = require('../../../models');
-const bcrypt = require('bcryptjs');
+const db = require("../../../models");
+const bcrypt = require("bcryptjs");
 
 const authController = {
   // Display login form
   loginForm: (req, res) => {
-    res.render('admin/login', {
-      title: 'Admin Login',
+    res.render("admin/login", {
+      title: "Admin Login",
       error: null,
-      message: null,  // Always pass message
-      email: '',      // Always pass email
-      layout: false
+      message: null, // Always pass message
+      email: "", // Always pass email
+      layout: false,
     });
   },
 
@@ -24,60 +24,68 @@ const authController = {
         include: [
           {
             model: db.Role,
-            as: 'roles',
-            through: { attributes: [] }
-          }
-        ]
+            as: "roles",
+            through: { attributes: [] },
+          },
+        ],
       });
 
       // Check if user exists
       if (!user) {
-        return res.render('admin/login', {
-          title: 'Admin Login',
-          error: 'Invalid email or password',
+        return res.render("admin/login", {
+          title: "Admin Login",
+          error: "Invalid email or password",
           message: null,
           email,
-          layout: false
+          layout: false,
         });
       }
 
       // Check if user is active
       if (!user.isActive) {
-        return res.render('admin/login', {
-          title: 'Admin Login',
-          error: 'Your account has been deactivated',
+        return res.render("admin/login", {
+          title: "Admin Login",
+          error: "Your account has been deactivated",
           message: null,
           email,
-          layout: false
+          layout: false,
+        });
+      }
+
+      if (!user.roles || user.roles.length === 0) {
+        return res.render("admin/login", {
+          title: "Admin Login",
+          error: "No role assigned to this user",
+          message: null,
+          email,
+          layout: false,
         });
       }
 
       // Verify password
       const isValidPassword = await user.comparePassword(password);
       if (!isValidPassword) {
-        return res.render('admin/login', {
-          title: 'Admin Login',
-          error: 'Invalid email or password',
+        return res.render("admin/login", {
+          title: "Admin Login",
+          error: "Invalid email or password",
           message: null,
           email,
-          layout: false
+          layout: false,
         });
       }
 
       // Check if user has admin role
-      const hasAdminRole = user.role === 'admin' || 
-                          user.role === 'super_admin' ||
-                          (user.roles && user.roles.some(r => 
-                            ['admin', 'super_admin'].includes(r.name)
-                          ));
+      const hasAdminRole = user.roles?.some(
+        (role) => role.name === "admin" || role.name === "super_admin",
+      );
 
       if (!hasAdminRole) {
-        return res.render('admin/login', {
-          title: 'Admin Login',
-          error: 'You do not have admin privileges',
+        return res.render("admin/login", {
+          title: "Admin Login",
+          error: "You do not have admin privileges",
           message: null,
           email,
-          layout: false
+          layout: false,
         });
       }
 
@@ -85,10 +93,12 @@ const authController = {
       await user.update({ lastLogin: new Date() });
 
       // Set session
-      const highestRole = Array.isArray(user.roles) && user.roles.length > 0
-        ? user.roles.reduce((max, role) => (role.level > (max?.level || -Infinity) ? role : max), null)
-        : null;
-      const sessionRoleName = highestRole?.name || user.role;
+      const highestRole = user.roles?.reduce(
+        (max, role) => (role.level > (max?.level || -Infinity) ? role : max),
+        null,
+      );
+
+      const sessionRoleName = highestRole?.name || null;
 
       req.session.user = {
         id: user.id,
@@ -96,37 +106,37 @@ const authController = {
         lastName: user.lastName,
         email: user.email,
         role: sessionRoleName,
-        roles: user.roles ? user.roles.map(r => ({
-          id: r.id,
-          name: r.name,
-          level: r.level
-        })) : []
+        roles:
+          user.roles?.map((r) => ({
+            id: r.id,
+            name: r.name,
+            level: r.level,
+          })) || [],
       };
 
       // Save session
       req.session.save((err) => {
         if (err) {
-          console.error('Session save error:', err);
-          return res.render('admin/login', {
-            title: 'Admin Login',
-            error: 'Login failed. Please try again.',
+          console.error("Session save error:", err);
+          return res.render("admin/login", {
+            title: "Admin Login",
+            error: "Login failed. Please try again.",
             message: null,
             email,
-            layout: false
+            layout: false,
           });
         }
-        
-        res.redirect('/admin/dashboard');
-      });
 
+        res.redirect("/admin/dashboard");
+      });
     } catch (error) {
-      console.error('Login error:', error);
-      res.render('admin/login', {
-        title: 'Admin Login',
-        error: 'An error occurred. Please try again.',
+      console.error("Login error:", error);
+      res.render("admin/login", {
+        title: "Admin Login",
+        error: "An error occurred. Please try again.",
         message: null,
-        email: req.body.email || '',
-        layout: false
+        email: req.body.email || "",
+        layout: false,
       });
     }
   },
@@ -135,21 +145,21 @@ const authController = {
   logout: (req, res) => {
     req.session.destroy((err) => {
       if (err) {
-        console.error('Logout error:', err);
+        console.error("Logout error:", err);
       }
-      res.clearCookie('connect.sid');
-      res.redirect('/admin/login');
+      res.clearCookie("connect.sid");
+      res.redirect("/admin/login");
     });
   },
 
   // Forgot password form
   forgotPasswordForm: (req, res) => {
-    res.render('admin/forgot-password', {
-      title: 'Forgot Password',
+    res.render("admin/forgot-password", {
+      title: "Forgot Password",
       message: null,
       error: null,
-      email: '',
-      layout: 'layouts/admin'
+      email: "",
+      layout: "layouts/admin",
     });
   },
 
@@ -161,12 +171,12 @@ const authController = {
       const user = await db.User.findOne({ where: { email } });
 
       if (!user) {
-        return res.render('admin/forgot-password', {
-          title: 'Forgot Password',
-          error: 'Email not found',
+        return res.render("admin/forgot-password", {
+          title: "Forgot Password",
+          error: "Email not found",
           message: null,
           email,
-          layout: 'layouts/admin'
+          layout: "layouts/admin",
         });
       }
 
@@ -176,28 +186,29 @@ const authController = {
 
       await user.update({
         resetPasswordToken: resetToken,
-        resetPasswordExpires: resetExpires
+        resetPasswordExpires: resetExpires,
       });
 
       // In production, send email here
-      console.log(`Password reset link: http://localhost:${process.env.PORT}/admin/reset-password/${resetToken}`);
+      console.log(
+        `Password reset link: http://localhost:${process.env.PORT}/admin/reset-password/${resetToken}`,
+      );
 
-      res.render('admin/forgot-password', {
-        title: 'Forgot Password',
-        message: 'Password reset instructions have been sent to your email',
+      res.render("admin/forgot-password", {
+        title: "Forgot Password",
+        message: "Password reset instructions have been sent to your email",
         error: null,
-        email: '',
-        layout: 'layouts/admin'
+        email: "",
+        layout: "layouts/admin",
       });
-
     } catch (error) {
-      console.error('Forgot password error:', error);
-      res.render('admin/forgot-password', {
-        title: 'Forgot Password',
-        error: 'An error occurred. Please try again.',
+      console.error("Forgot password error:", error);
+      res.render("admin/forgot-password", {
+        title: "Forgot Password",
+        error: "An error occurred. Please try again.",
         message: null,
-        email: req.body.email || '',
-        layout: 'layouts/admin'
+        email: req.body.email || "",
+        layout: "layouts/admin",
       });
     }
   },
@@ -210,31 +221,30 @@ const authController = {
       const user = await db.User.findOne({
         where: {
           resetPasswordToken: token,
-          resetPasswordExpires: { [db.Sequelize.Op.gt]: new Date() }
-        }
+          resetPasswordExpires: { [db.Sequelize.Op.gt]: new Date() },
+        },
       });
 
       if (!user) {
-        return res.render('admin/login', {
-          title: 'Admin Login',
-          error: 'Password reset link is invalid or has expired',
+        return res.render("admin/login", {
+          title: "Admin Login",
+          error: "Password reset link is invalid or has expired",
           message: null,
-          email: '',
-          layout: false
+          email: "",
+          layout: false,
         });
       }
 
-      res.render('admin/reset-password', {
-        title: 'Reset Password',
+      res.render("admin/reset-password", {
+        title: "Reset Password",
         token,
         error: null,
         message: null,
-        layout: 'layouts/admin'
+        layout: "layouts/admin",
       });
-
     } catch (error) {
-      console.error('Reset password form error:', error);
-      res.redirect('/admin/login');
+      console.error("Reset password form error:", error);
+      res.redirect("/admin/login");
     }
   },
 
@@ -245,29 +255,29 @@ const authController = {
       const { password, confirmPassword } = req.body;
 
       if (password !== confirmPassword) {
-        return res.render('admin/reset-password', {
-          title: 'Reset Password',
+        return res.render("admin/reset-password", {
+          title: "Reset Password",
           token,
-          error: 'Passwords do not match',
+          error: "Passwords do not match",
           message: null,
-          layout: 'layouts/admin'
+          layout: "layouts/admin",
         });
       }
 
       const user = await db.User.findOne({
         where: {
           resetPasswordToken: token,
-          resetPasswordExpires: { [db.Sequelize.Op.gt]: new Date() }
-        }
+          resetPasswordExpires: { [db.Sequelize.Op.gt]: new Date() },
+        },
       });
 
       if (!user) {
-        return res.render('admin/login', {
-          title: 'Admin Login',
-          error: 'Password reset link is invalid or has expired',
+        return res.render("admin/login", {
+          title: "Admin Login",
+          error: "Password reset link is invalid or has expired",
           message: null,
-          email: '',
-          layout: false
+          email: "",
+          layout: false,
         });
       }
 
@@ -277,25 +287,25 @@ const authController = {
       user.resetPasswordExpires = null;
       await user.save();
 
-      res.render('admin/login', {
-        title: 'Admin Login',
-        message: 'Password reset successful. Please login with your new password.',
+      res.render("admin/login", {
+        title: "Admin Login",
+        message:
+          "Password reset successful. Please login with your new password.",
         error: null,
-        email: '',
-        layout: false
+        email: "",
+        layout: false,
       });
-
     } catch (error) {
-      console.error('Reset password error:', error);
-      res.render('admin/reset-password', {
-        title: 'Reset Password',
+      console.error("Reset password error:", error);
+      res.render("admin/reset-password", {
+        title: "Reset Password",
         token: req.params.token,
-        error: 'An error occurred. Please try again.',
+        error: "An error occurred. Please try again.",
         message: null,
-        layout: 'layouts/admin'
+        layout: "layouts/admin",
       });
     }
-  }
+  },
 };
 
 module.exports = authController;

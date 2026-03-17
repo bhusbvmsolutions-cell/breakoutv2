@@ -14,11 +14,7 @@
         <div class="card-header">
           <h5>Role Information</h5>
         </div>
-        <div class="card-body">
-          <% if (typeof error !== 'undefined' && error) { %>
-            <div class="alert alert-danger"><%= error %></div>
-          <% } %>
-  
+        <div class="card-body">  
           <form action="/admin/roles" method="POST">
             <div class="row mb-3">
               <div class="col-md-6">
@@ -56,24 +52,24 @@
             <div class="mb-3">
               <label class="form-label">Assign Permissions</label>
               <div class="row">
-                <% Object.keys(groupedPermissions).forEach(resource => { %>
+                <% Object.keys(groupedPermissions).forEach(module => { %>
                   <div class="col-md-6 mb-3">
                     <div class="card">
                       <div class="card-header bg-light">
                         <div class="form-check">
-                          <input class="form-check-input resource-checkall" type="checkbox" 
-                                 data-resource="<%= resource %>" id="checkAll_<%= resource %>">
-                          <label class="form-check-label fw-bold" for="checkAll_<%= resource %>">
-                            <%= resource.charAt(0).toUpperCase() + resource.slice(1) %>
+                          <input class="form-check-input module-checkall" type="checkbox" 
+                                 data-module="<%= module %>" id="checkAll_<%= module.replace(/\s+/g, '_') %>">
+                          <label class="form-check-label fw-bold" for="checkAll_<%= module.replace(/\s+/g, '_') %>">
+                            <%= module.charAt(0).toUpperCase() + module.slice(1) %>
                           </label>
                         </div>
                       </div>
                       <div class="card-body">
-                        <% groupedPermissions[resource].forEach(perm => { %>
+                        <% groupedPermissions[module].forEach(perm => { %>
                           <div class="form-check mb-2">
                             <input class="form-check-input permission-check" type="checkbox" 
                                    name="permissionIds" value="<%= perm.id %>" 
-                                   id="perm_<%= perm.id %>" data-resource="<%= resource %>">
+                                   id="perm_<%= perm.id %>" data-module="<%= module %>">
                             <label class="form-check-label" for="perm_<%= perm.id %>">
                               <span class="badge bg-secondary"><%= perm.action %></span>
                               <small class="text-muted d-block"><%= perm.description || perm.name %></small>
@@ -99,19 +95,95 @@
   </div>
   
   <script>
+    // Wait for the DOM to be fully loaded
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('DOM loaded - initializing permission checkboxes');
+      
+      // Get all module checkall checkboxes
+      const moduleCheckalls = document.querySelectorAll('.module-checkall');
+      
+      // Add change event to each module checkall
+      moduleCheckalls.forEach(function(checkall) {
+        checkall.addEventListener('change', function(e) {
+          const module = this.getAttribute('data-module');
+          console.log('Module checkall changed:', module, 'checked:', this.checked);
+          
+          // Find all permission checkboxes with this module
+          const permissionChecks = document.querySelectorAll('.permission-check[data-module="' + module + '"]');
+          
+          // Set their checked state to match the checkall
+          permissionChecks.forEach(function(checkbox) {
+            checkbox.checked = e.target.checked;
+          });
+        });
+      });
+      
+      // Get all permission checkboxes
+      const permissionChecks = document.querySelectorAll('.permission-check');
+      
+      // Add change event to each permission checkbox
+      permissionChecks.forEach(function(checkbox) {
+        checkbox.addEventListener('change', function(e) {
+          const module = this.getAttribute('data-module');
+          console.log('Permission changed:', module, 'checked:', this.checked);
+          
+          // Find all permission checkboxes with this module
+          const modulePermissions = document.querySelectorAll('.permission-check[data-module="' + module + '"]');
+          const total = modulePermissions.length;
+          const checked = document.querySelectorAll('.permission-check[data-module="' + module + '"]:checked').length;
+          
+          // Find the module checkall for this module
+          const moduleCheckall = document.querySelector('.module-checkall[data-module="' + module + '"]');
+          
+          // Update checkall state
+          if (moduleCheckall) {
+            moduleCheckall.checked = (total === checked);
+            console.log('Updating checkall for', module, 'checked:', (total === checked));
+          }
+        });
+      });
+      
+      // Initialize checkall states based on any pre-checked permissions
+      permissionChecks.forEach(function(checkbox) {
+        if (checkbox.checked) {
+          // Trigger change event to update the checkall
+          const event = new Event('change', { bubbles: true });
+          checkbox.dispatchEvent(event);
+        }
+      });
+      
+      console.log('Permission checkbox initialization complete');
+    });
+  </script>
+  
+  <!-- Alternative jQuery version if you prefer (uncomment if jQuery is available) -->
+  
+  <script>
     $(document).ready(function() {
-      // Resource checkall
-      $('.resource-checkall').on('change', function() {
-        const resource = $(this).data('resource');
-        $('.permission-check[data-resource="' + resource + '"]').prop('checked', $(this).prop('checked'));
+      console.log('jQuery ready - initializing permission checkboxes');
+      
+      // Module checkall
+      $('.module-checkall').on('change', function() {
+        const module = $(this).data('module');
+        console.log('Module checkall changed:', module, 'checked:', $(this).prop('checked'));
+        $('.permission-check[data-module="' + module + '"]').prop('checked', $(this).prop('checked'));
       });
       
       // Individual permission check
       $('.permission-check').on('change', function() {
-        const resource = $(this).data('resource');
-        const total = $('.permission-check[data-resource="' + resource + '"]').length;
-        const checked = $('.permission-check[data-resource="' + resource + '"]:checked').length;
-        $('.resource-checkall[data-resource="' + resource + '"]').prop('checked', total === checked);
+        const module = $(this).data('module');
+        const total = $('.permission-check[data-module="' + module + '"]').length;
+        const checked = $('.permission-check[data-module="' + module + '"]:checked').length;
+        console.log('Permission changed:', module, 'checked:', checked, 'total:', total);
+        $('.module-checkall[data-module="' + module + '"]').prop('checked', total === checked);
       });
+      
+      // Initialize checkall states
+      $('.permission-check:checked').each(function() {
+        $(this).trigger('change');
+      });
+      
+      console.log('jQuery permission initialization complete');
     });
   </script>
+ 

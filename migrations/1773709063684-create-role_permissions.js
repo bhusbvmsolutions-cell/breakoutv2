@@ -11,7 +11,7 @@ module.exports = {
       roleId: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        unique: false,
+        unique: true,
         references: {
           model: 'roles',
           key: 'id'
@@ -22,7 +22,7 @@ module.exports = {
       permissionId: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        unique: false,
+        unique: true,
         references: {
           model: 'permissions',
           key: 'id'
