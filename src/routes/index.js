@@ -9,6 +9,12 @@ const adminRoleRoutes = require('./admin/roles.route');
 const adminPermissionRoutes = require('./admin/permissions.route');
 const adminImageRoutes = require('./admin/images.route');
 const adminVideoRoutes = require('./admin/videos.route'); 
+const adminLogoRoutes = require('./admin/logos.route'); 
+const adminBlogRoutes = require('./admin/blogs.route'); 
+
+
+
+// import API routes modules
 const apiTestRoutes = require('./api/test.apiroute');
 
 // Admin routes
@@ -19,6 +25,8 @@ router.use('/admin/roles', adminRoleRoutes);
 router.use('/admin/permissions', adminPermissionRoutes);
 router.use('/admin/images', adminImageRoutes); 
 router.use('/admin/videos', adminVideoRoutes); 
+router.use('/admin/logos', adminLogoRoutes); 
+router.use('/admin/blogs', adminBlogRoutes); 
 
 // API routes
 router.use('/api', apiTestRoutes);

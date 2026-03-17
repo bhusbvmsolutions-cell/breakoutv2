@@ -6,6 +6,7 @@ const { isAuthenticated, isAdmin } = require('../../middlewares/auth');
 // Public test endpoints
 router.get('/public', testController.publicTest);
 router.get('/health', testController.health);
+router.get('/test', testController.sitesettingTest);
 
 // Protected test endpoints
 router.get('/protected', isAuthenticated, testController.protectedTest);

@@ -1,0 +1,174 @@
+<%- contentFor('title') %>
+<%- contentFor('head') %>
+<%- contentFor('body') %>
+
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <h4><i class="bi bi-cloud-upload"></i> Upload Logo</h4>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row mt-3">
+  <div class="col-md-8 mx-auto">
+    <div class="card">
+      <div class="card-body">
+        <% if (error && error.length > 0) { %>
+        <div class="alert alert-danger"><%= error %></div>
+        <% } %>
+
+        <form
+          action="/admin/logos/upload"
+          method="POST"
+          enctype="multipart/form-data"
+          id="uploadForm"
+        >
+          <div class="mb-3">
+            <label for="type" class="form-label"
+              >Logo Type <span class="text-danger">*</span></label
+            >
+            <select class="form-select" id="type" name="type" required>
+              <option value="">Select Type</option>
+              <option value="news">News Logo</option>
+              <option value="brands">Brands Logo</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label for="image" class="form-label"
+              >Logo Image <span class="text-danger">*</span></label
+            >
+            <input
+              type="file"
+              class="form-control"
+              id="image"
+              name="image"
+              accept="image/*"
+              required
+            />
+            <small class="text-muted">
+              Allowed: JPEG, PNG, GIF, WEBP, SVG (Max: 2MB)
+            </small>
+          </div>
+
+          <div class="mb-3">
+            <label for="link" class="form-label"
+              >Link URL <span class="text-danger">*</span></label
+            >
+            <input
+              type="url"
+              class="form-control"
+              id="link"
+              name="link"
+              placeholder="https://example.com"
+              required
+            />
+            <small class="text-muted"
+              >Full URL including http:// or https://</small
+            >
+          </div>
+
+          <div class="mb-3">
+            <label for="title" class="form-label">Title/Alt Text</label>
+            <input
+              type="text"
+              class="form-control"
+              id="title"
+              name="title"
+              placeholder="Logo title or description"
+            />
+          </div>
+
+          <div class="mb-3">
+            <label for="order" class="form-label">Display Order</label>
+            <input
+              type="number"
+              class="form-control"
+              id="order"
+              name="order"
+              value="0"
+              min="0"
+            />
+            <small class="text-muted">Lower numbers appear first</small>
+          </div>
+
+          <div class="mb-3">
+            <div
+              id="preview"
+              class="text-center p-3 border rounded"
+              style="display: none; background: #f8f9fa"
+            >
+              <h6>Preview:</h6>
+              <img
+                id="previewImage"
+                src="#"
+                alt="Preview"
+                style="max-width: 200px; max-height: 150px; object-fit: contain"
+              />
+              <div id="imageInfo" class="mt-2 text-start small">
+                <strong>Filename:</strong> <span id="fileName"></span><br />
+                <strong>Size:</strong> <span id="fileSize"></span>
+              </div>
+            </div>
+          </div>
+
+          <hr />
+
+          <div class="d-flex align-items-center">
+            <button type="submit" class="btn btn-primary" id="submitBtn">
+              <i class="bi bi-cloud-upload"></i> Upload Logo
+            </button>
+
+            <div id="loadingSpinner" class="ms-3" style="display: none">
+              <div
+                class="spinner-border spinner-border-sm text-primary"
+                role="status"
+              >
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              <span class="ms-2">Uploading...</span>
+            </div>
+
+            <a href="/admin/logos" class="btn btn-secondary ms-auto">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const imageInput = document.getElementById("image");
+    const uploadForm = document.getElementById("uploadForm");
+    const submitBtn = document.getElementById("submitBtn");
+    const loadingSpinner = document.getElementById("loadingSpinner");
+
+    // Preview functionality
+    imageInput.addEventListener("change", function (e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          document.getElementById("previewImage").src = e.target.result;
+          document.getElementById("preview").style.display = "block";
+
+          // Show file info
+          const size = (file.size / 1024).toFixed(2);
+          document.getElementById("fileName").textContent = file.name;
+          document.getElementById("fileSize").textContent = size + " KB";
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Form submission with loading state
+    uploadForm.addEventListener("submit", function () {
+      submitBtn.disabled = true;
+      loadingSpinner.style.display = "inline-block";
+    });
+  });
+</script>

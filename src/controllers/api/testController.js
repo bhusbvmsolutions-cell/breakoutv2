@@ -1,9 +1,35 @@
+const db = require("../../../models");
+
 const testController = {
     // Public test endpoint
     publicTest: (req, res) => {
       res.json({
         success: true,
         message: 'Public API test endpoint',
+        timestamp: new Date().toISOString(),
+        data: {
+          version: '1.0.0',
+          endpoints: {
+            public: '/api/test/public',
+            protected: '/api/test/protected',
+            admin: '/api/test/admin'
+          }
+        }
+      });
+    },
+
+
+    sitesettingTest: async (req, res) => {
+
+      const settings = await db.SiteSetting.findAll({
+        where: { id: 1 },
+        raw: true
+      });
+    
+      res.json({
+        success: true,
+        message: 'Public API test endpoint',
+        settings: settings,
         timestamp: new Date().toISOString(),
         data: {
           version: '1.0.0',

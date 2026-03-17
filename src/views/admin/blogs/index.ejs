@@ -1,0 +1,397 @@
+<%- contentFor('title') %> List Blogs <%- contentFor('head') %> <%-
+contentFor('body') %>
+
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <div class="row align-items-center">
+          <div class="col-sm-6">
+            <h5><i class="bi bi-journal-text"></i> Blogs Management</h5>
+          </div>
+          <div class="col-sm-6">
+            <div class="d-flex justify-content-end gap-2">
+              <a href="/admin/blogs/create" class="btn btn-primary btn-sm">
+                <i class="bi bi-plus"></i> Add Blog
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- stat cards -->
+<div class="row mt-3">
+  <div class="col-md-4">
+    <div class="card bg-primary text-white">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h6 class="card-title">Total Blogs</h6>
+            <h2 class="mb-0">
+              <%= stats?.totalBlogs ? stats?.totalBlogs : '0' %>
+            </h2>
+          </div>
+          <i class="bi bi-journal-text fs-2"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card bg-success text-white">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h6 class="card-title">Published</h6>
+            <h2 class="mb-0">
+              <%= stats?.activeBlogs ? stats?.activeBlogs : "0" %>
+            </h2>
+          </div>
+          <i class="bi bi-check-circle fs-2"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card bg-warning text-white">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h6 class="card-title">Drafts</h6>
+            <h2 class="mb-0">
+              <%= stats?.draftBlogs ? stats?.draftBlogs : '0' %>
+            </h2>
+          </div>
+          <i class="bi bi-pencil-square fs-2"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Search and Filter Bar -->
+<div class="row mt-3">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body">
+        <form method="GET" action="/admin/blogs" class="row g-3">
+          <div class="col-md-4">
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-search"></i></span>
+              <input 
+                type="text" 
+                class="form-control" 
+                name="search" 
+                placeholder="Search by title, author or excerpt..." 
+                value="<%= search %>"
+              >
+            </div>
+          </div>
+          <div class="col-md-2">
+            <select class="form-select" name="status">
+              <option value="">All Status</option>
+              <option value="published" <%= status === 'published' ? 'selected' : '' %>>Published</option>
+              <option value="draft" <%= status === 'draft' ? 'selected' : '' %>>Draft</option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <select class="form-select" name="sort">
+              <option value="latest" <%= sort === 'latest' ? 'selected' : '' %>>Latest First</option>
+              <option value="oldest" <%= sort === 'oldest' ? 'selected' : '' %>>Oldest First</option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <select class="form-select" name="limit">
+              <option value="12" <%= pagination.limit == 12 ? 'selected' : '' %>>12 per page</option>
+              <option value="24" <%= pagination.limit == 24 ? 'selected' : '' %>>24 per page</option>
+              <option value="48" <%= pagination.limit == 48 ? 'selected' : '' %>>48 per page</option>
+              <option value="96" <%= pagination.limit == 96 ? 'selected' : '' %>>96 per page</option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">
+              <i class="bi bi-filter"></i> Apply Filters
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Blogs Grid -->
+<div class="row mt-3">
+  <% if (blogs && blogs.length > 0) { %> <% blogs.forEach(blog => { %>
+  <div class="col-md-4 mb-4">
+    <div class="card h-100 blog-card">
+      <div class="position-relative">
+        <input
+          type="checkbox"
+          class="form-check-input position-absolute top-0 start-0 m-2 blog-checkbox"
+          value="<%= blog.id %>"
+          style="z-index: 10"
+        />
+        <a href="/admin/blogs/<%= blog.id %>" class="text-decoration-none">
+          <% if (blog.heroImage) { %>
+          <img 
+            src="<%= blog.heroImage %>" 
+            class="card-img-top" 
+            alt="<%= blog.title %>"
+            style="height: 200px; object-fit: cover;"
+          >
+          <% } else { %>
+          <div class="bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+            <i class="bi bi-journal-text fs-1 text-muted"></i>
+          </div>
+          <% } %>
+        </a>
+        
+        <!-- Status Badge -->
+        <div class="position-absolute top-0 end-0 m-2">
+          <% if (blog.status === 'published') { %>
+          <span class="badge bg-success">Published</span>
+          <% } else { %>
+          <span class="badge bg-warning">Draft</span>
+          <% } %>
+        </div>
+        
+        <!-- Blocks Count -->
+        <div class="position-absolute bottom-0 end-0 m-2">
+          <span class="badge bg-info">
+            <i class="bi bi-grid"></i> <%= blog.blocks ? blog.blocks.length : 0 %> blocks
+          </span>
+        </div>
+      </div>
+      
+      <div class="card-body">
+        <h5 class="card-title text-truncate" title="<%= blog.title %>">
+          <a href="/admin/blogs/<%= blog.id %>" class="text-decoration-none text-dark">
+            <%= blog.title %>
+          </a>
+        </h5>
+        
+        <% if (blog.excerpt) { %>
+        <p class="card-text small text-muted mb-2">
+          <%= blog.excerpt.length > 100 ? blog.excerpt.substring(0, 100) + '...' : blog.excerpt %>
+        </p>
+        <% } %>
+        
+        <div class="d-flex flex-wrap gap-2 mb-2">
+          <% if (blog.author) { %>
+          <span class="badge bg-light text-dark">
+            <i class="bi bi-person"></i> <%= blog.author %>
+          </span>
+          <% } %>
+          
+          <% if (blog.readTime) { %>
+          <span class="badge bg-light text-dark">
+            <i class="bi bi-clock"></i> <%= blog.readTime %> min read
+          </span>
+          <% } %>
+        </div>
+        
+        <div class="small text-muted">
+          <div><i class="bi bi-calendar"></i> Created: <%= new Date(blog.createdAt).toLocaleDateString() %></div>
+          <% if (blog.publishedAt) { %>
+          <div><i class="bi bi-calendar-check"></i> Published: <%= new Date(blog.publishedAt).toLocaleDateString() %></div>
+          <% } %>
+          <div><i class="bi bi-link"></i> Slug: /<%= blog.slug %></div>
+        </div>
+      </div>
+      
+      <div class="card-footer bg-transparent">
+        <div class="btn-group w-100">
+          <a
+            href="/admin/blogs/<%= blog.id %>"
+            class="btn btn-sm btn-outline-primary"
+          >
+            <i class="bi bi-eye"></i> View
+          </a>
+          <a
+            href="/admin/blogs/<%= blog.id %>/edit"
+            class="btn btn-sm btn-outline-secondary"
+          >
+            <i class="bi bi-pencil"></i> Edit
+          </a>
+          <button
+            type="button"
+            class="btn btn-sm btn-outline-danger delete-blog"
+            data-id="<%= blog.id %>"
+            data-title="<%= blog.title %>"
+          >
+            <i class="bi bi-trash"></i> Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <% }); %> <% } else { %>
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body text-center py-5">
+        <i class="bi bi-journal-text fs-1 text-muted"></i>
+        <h5 class="mt-3">No Blogs found</h5>
+        <p class="text-muted">
+          <% if (search || status) { %>
+            Try adjusting your search or filter criteria.
+          <% } else { %>
+            Get started by writing your first blog post.
+          <% } %>
+        </p>
+        <a href="/admin/blogs/create" class="btn btn-primary">
+          <i class="bi bi-plus"></i> Create Blog
+        </a>
+        <% if (search || status) { %>
+        <a href="/admin/blogs" class="btn btn-secondary">
+          <i class="bi bi-x-circle"></i> Clear Filters
+        </a>
+        <% } %>
+      </div>
+    </div>
+  </div>
+  <% } %>
+</div>
+
+<!-- Pagination -->
+<% if (pagination && pagination.pages > 1) { %>
+<div class="row mt-3">
+  <div class="col-12">
+    <nav aria-label="Blog pagination">
+      <ul class="pagination justify-content-center">
+        <!-- Previous Page -->
+        <li class="page-item <%= pagination.page === 1 ? 'disabled' : '' %>">
+          <a class="page-link" href="?<%= new URLSearchParams({...query, page: pagination.page - 1}).toString() %>" aria-label="Previous">
+            <span aria-hidden="true">&laquo;</span>
+          </a>
+        </li>
+        
+        <!-- First Page -->
+        <% if (pagination.page > 3) { %>
+        <li class="page-item">
+          <a class="page-link" href="?<%= new URLSearchParams({...query, page: 1}).toString() %>">1</a>
+        </li>
+        <% if (pagination.page > 4) { %>
+        <li class="page-item disabled">
+          <span class="page-link">...</span>
+        </li>
+        <% } %>
+        <% } %>
+        
+        <!-- Page Numbers -->
+        <% for(let i = Math.max(1, pagination.page - 2); i <= Math.min(pagination.pages, pagination.page + 2); i++) { %>
+        <li class="page-item <%= pagination.page === i ? 'active' : '' %>">
+          <a class="page-link" href="?<%= new URLSearchParams({...query, page: i}).toString() %>"><%= i %></a>
+        </li>
+        <% } %>
+        
+        <!-- Last Page -->
+        <% if (pagination.page < pagination.pages - 2) { %>
+        <% if (pagination.page < pagination.pages - 3) { %>
+        <li class="page-item disabled">
+          <span class="page-link">...</span>
+        </li>
+        <% } %>
+        <li class="page-item">
+          <a class="page-link" href="?<%= new URLSearchParams({...query, page: pagination.pages}).toString() %>"><%= pagination.pages %></a>
+        </li>
+        <% } %>
+        
+        <!-- Next Page -->
+        <li class="page-item <%= pagination.page === pagination.pages ? 'disabled' : '' %>">
+          <a class="page-link" href="?<%= new URLSearchParams({...query, page: pagination.page + 1}).toString() %>" aria-label="Next">
+            <span aria-hidden="true">&raquo;</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+<!-- Page Info -->
+<div class="row mt-2">
+  <div class="col-12 text-center text-muted">
+    <small>
+      Showing <%= ((pagination.page - 1) * pagination.limit) + 1 %> 
+      to <%= Math.min(pagination.page * pagination.limit, pagination.total) %> 
+      of <%= pagination.total %> blogs
+    </small>
+  </div>
+</div>
+<% } %>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Confirm Delete</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete "<span id="deleteBlogTitle"></span>"?</p>
+        <p class="text-danger"><small>This action cannot be undone. All associated blocks will also be deleted.</small></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <a href="#" id="confirmDeleteBtn" class="btn btn-danger">Delete</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- JavaScript -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Delete confirmation with modal
+  const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+  const deleteButtons = document.querySelectorAll('.delete-blog');
+  const deleteBlogTitle = document.getElementById('deleteBlogTitle');
+  const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+  
+  deleteButtons.forEach(button => {
+    button.addEventListener('click', function(e) {
+      e.preventDefault();
+      const blogId = this.dataset.id;
+      const blogTitle = this.dataset.title;
+      
+      deleteBlogTitle.textContent = blogTitle;
+      confirmDeleteBtn.href = `/admin/blogs/${blogId}/delete`;
+      deleteModal.show();
+    });
+  });
+  
+  // Bulk actions (if needed)
+  const selectAllCheckbox = document.getElementById('selectAll');
+  if (selectAllCheckbox) {
+    selectAllCheckbox.addEventListener('change', function() {
+      document.querySelectorAll('.blog-checkbox').forEach(checkbox => {
+        checkbox.checked = this.checked;
+      });
+    });
+  }
+});
+</script>
+
+<style>
+.blog-card {
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.blog-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+.blog-checkbox {
+  cursor: pointer;
+}
+.pagination {
+  margin-bottom: 0;
+}
+.page-link {
+  cursor: pointer;
+}
+.badge {
+  font-size: 0.8rem;
+}
+</style>

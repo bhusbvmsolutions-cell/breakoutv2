@@ -39,6 +39,8 @@ function getMigrationType(attribute) {
       return "Sequelize.JSON";
     case "UUID":
       return "Sequelize.UUID";
+    case "UUIDV4":
+      return "Sequelize.UUIDV4";
     default:
       return "Sequelize.STRING";
   }
@@ -91,6 +93,8 @@ function generateMigration(modelName, model) {
           definition += `        defaultValue: Sequelize.NOW,\n`;
         } else if (attr.defaultValue?.toString?.().includes("NOW")) {
           definition += `        defaultValue: Sequelize.NOW,\n`;
+        }else if (attr.defaultValue?.toString?.().includes("UUIDV4")) {
+          definition += `        defaultValue: Sequelize.UUIDV4,\n`;
         } else {
           const defaultValue = formatFieldValue(attr.defaultValue);
           definition += `        defaultValue: ${defaultValue},\n`;

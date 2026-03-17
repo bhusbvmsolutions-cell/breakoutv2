@@ -1,3 +1,8 @@
+<%- contentFor('title') %>
+<%- contentFor('head') %>
+<%- contentFor('body') %>
+
+
 <div class="row">
     <div class="col-12 col-lg-12">
       <div class="card">
@@ -150,7 +155,7 @@
                       <td><%= new Date(userItem.createdAt).toLocaleDateString() %></td>
                       <td>
                         <button class="btn btn-sm btn-outline-primary">
-                          <ion-icon name="eye-outline"></ion-icon>
+                          <i class="bi bi-eye fs-6"></i>
                         </button>
                       </td>
                     </tr>

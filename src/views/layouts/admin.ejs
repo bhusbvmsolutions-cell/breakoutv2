@@ -74,8 +74,8 @@
 
   <link rel="shortcut icon" href="/assets/images/logo-icon-1.png" type="image/x-icon" />
 
-
-  
+  <!-- Page specific head content -->
+  <%- defineContent('head') %>
 
   <script>
     // Auto-hide alerts after 5 seconds
@@ -89,11 +89,7 @@
     });
   </script>
 
-
-
-
-
-  <title><%= title %> - Breakout Admin</title>
+  <title><%= title ? title + ' - ' : '' %>Breakout Admin</title>
 </head>
 
 <body>
@@ -109,7 +105,7 @@
     <header class="top-header">
       <nav class="navbar navbar-expand gap-3">
         <div class="toggle-icon">
-          <ion-icon name="menu-outline"></ion-icon>
+          <i class="bi bi-list"></i>
         </div>
         <div class="top-navbar-right ms-auto">
           <ul class="navbar-nav align-items-center">
@@ -173,7 +169,7 @@
                 <li>
                   <a class="dropdown-item" href="/admin/profile">
                     <div class="d-flex align-items-center">
-                      <ion-icon name="person-outline"></ion-icon>
+                      <i class="bi bi-person"></i>
                       <div class="ms-3"><span>My Profile</span></div>
                     </div>
                   </a>
@@ -183,7 +179,7 @@
                 <li>
                   <a class="dropdown-item" href="/admin/change-password">
                     <div class="d-flex align-items-center">
-                      <ion-icon name="lock-closed-outline"></ion-icon>
+                      <i class="bi bi-lock"></i>
                       <div class="ms-3"><span>Change Password</span></div>
                     </div>
                   </a>
@@ -193,7 +189,7 @@
                 <li>
                   <a class="dropdown-item" href="/admin/settings">
                     <div class="d-flex align-items-center">
-                      <ion-icon name="settings-outline"></ion-icon>
+                      <i class="bi bi-gear"></i>
                       <div class="ms-3"><span>Settings</span></div>
                     </div>
                   </a>
@@ -203,7 +199,7 @@
                 <li>
                   <a class="dropdown-item text-danger" href="/admin/logout">
                     <div class="d-flex align-items-center">
-                      <ion-icon name="log-out-outline"></ion-icon>
+                      <i class="bi bi-box-arrow-left"></i>
                       <div class="ms-3"><span>Logout</span></div>
                     </div>
                   </a>
@@ -219,8 +215,8 @@
     <!-- start page content wrapper-->
     <div class="page-content-wrapper">
       <!-- start page content-->
-      <div class="page-content p-4">
-        <div class="shadow card p-2">
+      <div class="page-content">
+        <div class="card p-4">
           <%- body %>
         </div>
       </div>
@@ -232,13 +228,6 @@
   <!--start overlay-->
   <div class="overlay nav-toggle-icon"></div>
   <!--end overlay-->
-
-
-
-
-
-
-  <!-- footer JS Files -->
 
   <!-- JS Files-->
   <script src="/assets/plugins/simplebar/js/simplebar.min.js"></script>
@@ -252,7 +241,7 @@
 
   <!-- Main JS-->
   <script src="/assets/js/main.js"></script>
-
+  
 </body>
 
 </html>

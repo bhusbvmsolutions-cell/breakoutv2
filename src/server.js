@@ -16,7 +16,7 @@ const flash = require('express-flash');
 const db = require('../models');
 
 // Import routes
-const loadPermissions = require('./middlewares/loadPermissions');
+// const loadPermissions = require('./middlewares/loadPermissions');
 const routes = require('./routes');
 
 const app = express();
@@ -94,7 +94,7 @@ app.use((req, res, next) => {
 });
 
 // Load user permissions and sidebar modules before routes
-app.use(loadPermissions);
+// app.use(loadPermissions);
 
 // View engine setup
 app.use(expressLayouts);
