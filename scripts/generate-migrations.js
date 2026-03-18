@@ -11,8 +11,18 @@ function getMigrationType(attribute) {
 
   switch (typeKey) {
     case "STRING":
+      if (attribute.type._length) {
+        return `Sequelize.STRING(${attribute.type._length})`;
+      }
       return "Sequelize.STRING";
     case "TEXT":
+      if (attribute.type._length) {
+        const length = attribute.type._length.toLowerCase();
+
+        if (["tiny", "medium", "long"].includes(length)) {
+          return `Sequelize.TEXT('${length}')`;
+        }
+      }
       return "Sequelize.TEXT";
     case "INTEGER":
       return "Sequelize.INTEGER";
@@ -30,7 +40,7 @@ function getMigrationType(attribute) {
       return "Sequelize.BOOLEAN";
     case "ENUM":
       if (attribute.type.values && attribute.type.values.length) {
-        const values = attribute.type.values.map(v => `'${v}'`).join(", ");
+        const values = attribute.type.values.map((v) => `'${v}'`).join(", ");
         return `Sequelize.ENUM(${values})`;
       }
       return "Sequelize.STRING";
@@ -47,21 +57,21 @@ function getMigrationType(attribute) {
 }
 
 function formatFieldValue(value) {
-    if (value === undefined || value === null) return null;
-  
-    if (value === "NOW") return "Sequelize.NOW";
-  
-    if (typeof value === "string") {
-      if (value.startsWith("Sequelize.")) return value;
-      return `'${value}'`;
-    }
-  
-    if (typeof value === "boolean" || typeof value === "number") return value;
-  
-    if (value?.key === "NOW") return "Sequelize.NOW";
-  
-    return value;
+  if (value === undefined || value === null) return null;
+
+  if (value === "NOW") return "Sequelize.NOW";
+
+  if (typeof value === "string") {
+    if (value.startsWith("Sequelize.")) return value;
+    return `'${value}'`;
   }
+
+  if (typeof value === "boolean" || typeof value === "number") return value;
+
+  if (value?.key === "NOW") return "Sequelize.NOW";
+
+  return value;
+}
 
 function generateMigration(modelName, model) {
   const timestamp = Date.now() + migrationCounter++;
@@ -70,7 +80,7 @@ function generateMigration(modelName, model) {
 
   const fields = [];
 
-  Object.keys(attributes).forEach(attrName => {
+  Object.keys(attributes).forEach((attrName) => {
     const attr = attributes[attrName];
 
     let definition = `      ${attrName}: {\n`;
@@ -79,27 +89,28 @@ function generateMigration(modelName, model) {
     if (attr.allowNull !== undefined)
       definition += `        allowNull: ${attr.allowNull},\n`;
 
-    if (attr.autoIncrement)
-      definition += `        autoIncrement: true,\n`;
+    if (attr.autoIncrement) definition += `        autoIncrement: true,\n`;
 
-    if (attr.primaryKey)
-      definition += `        primaryKey: true,\n`;
+    if (attr.primaryKey) definition += `        primaryKey: true,\n`;
 
-    if ((attr.unique === true || typeof attr.unique === "string") && !attr.primaryKey)
+    if (
+      (attr.unique === true || typeof attr.unique === "string") &&
+      !attr.primaryKey
+    )
       definition += `        unique: true,\n`;
 
     if (attr.defaultValue !== undefined) {
-        if (attr.defaultValue === "NOW" || attr.defaultValue?.key === "NOW") {
-          definition += `        defaultValue: Sequelize.NOW,\n`;
-        } else if (attr.defaultValue?.toString?.().includes("NOW")) {
-          definition += `        defaultValue: Sequelize.NOW,\n`;
-        }else if (attr.defaultValue?.toString?.().includes("UUIDV4")) {
-          definition += `        defaultValue: Sequelize.UUIDV4,\n`;
-        } else {
-          const defaultValue = formatFieldValue(attr.defaultValue);
-          definition += `        defaultValue: ${defaultValue},\n`;
-        }
+      if (attr.defaultValue === "NOW" || attr.defaultValue?.key === "NOW") {
+        definition += `        defaultValue: Sequelize.NOW,\n`;
+      } else if (attr.defaultValue?.toString?.().includes("NOW")) {
+        definition += `        defaultValue: Sequelize.NOW,\n`;
+      } else if (attr.defaultValue?.toString?.().includes("UUIDV4")) {
+        definition += `        defaultValue: Sequelize.UUIDV4,\n`;
+      } else {
+        const defaultValue = formatFieldValue(attr.defaultValue);
+        definition += `        defaultValue: ${defaultValue},\n`;
       }
+    }
 
     if (attr.references) {
       definition += `        references: {\n`;
@@ -177,7 +188,7 @@ async function generateAllMigrations() {
     const modelNames = Object.keys(models);
 
     console.log(`📊 Found ${modelNames.length} models:\n`);
-    modelNames.forEach(name => console.log(`   - ${name}`));
+    modelNames.forEach((name) => console.log(`   - ${name}`));
 
     console.log("");
 
@@ -186,9 +197,8 @@ async function generateAllMigrations() {
     if (fs.existsSync(migrationsDir)) {
       const files = fs.readdirSync(migrationsDir);
 
-      files.forEach(file => {
-        if (file.endsWith(".js"))
-          fs.unlinkSync(path.join(migrationsDir, file));
+      files.forEach((file) => {
+        if (file.endsWith(".js")) fs.unlinkSync(path.join(migrationsDir, file));
       });
 
       console.log("🧹 Cleared existing migration files\n");
@@ -200,17 +210,17 @@ async function generateAllMigrations() {
       "Module",
       "Permission",
       "UserRole",
-      "RolePermission"
+      "RolePermission",
     ];
 
-    migrationOrder.forEach(modelName => {
+    migrationOrder.forEach((modelName) => {
       if (models[modelName]) {
         console.log(`📦 Processing model: ${modelName}`);
         generateMigration(modelName, models[modelName]);
       }
     });
 
-    modelNames.forEach(modelName => {
+    modelNames.forEach((modelName) => {
       if (!migrationOrder.includes(modelName)) {
         console.log(`📦 Processing model: ${modelName}`);
         generateMigration(modelName, models[modelName]);
@@ -222,15 +232,13 @@ async function generateAllMigrations() {
     const files = fs.readdirSync(migrationsDir);
 
     console.log("\n📝 Generated migration files:");
-    files.sort().forEach(file => {
-      if (file.endsWith(".js"))
-        console.log(`   - ${file}`);
+    files.sort().forEach((file) => {
+      if (file.endsWith(".js")) console.log(`   - ${file}`);
     });
 
     console.log("\nNext steps:");
     console.log("1. Review migration files");
     console.log("2. Run: npm run db:migrate");
-
   } catch (error) {
     console.error("❌ Error generating migrations:", error);
     process.exit(1);

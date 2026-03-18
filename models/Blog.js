@@ -35,7 +35,21 @@ module.exports = (sequelize, DataTypes) => {
       readTime: {
         type: DataTypes.INTEGER
       },
-
+      tags: {
+        type: DataTypes.JSON,
+        defaultValue: null,
+        allowNull: true
+      },
+      locations:{
+        type: DataTypes.JSON,
+        defaultValue: null,
+        allowNull: true
+      },
+      looking_for:{
+        type: DataTypes.JSON,
+        defaultValue: null,
+        allowNull: true
+      },
       status: {
         type: DataTypes.ENUM("draft", "published"),
         defaultValue: "draft"

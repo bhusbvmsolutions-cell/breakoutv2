@@ -1,0 +1,440 @@
+<%- contentFor('title') %> <%= blog.title %>
+<%- contentFor('head') %>
+<style>
+  .blog-hero { width: 100%; height: 400px; object-fit: cover; }
+  .blog-content { font-size: 1.1rem; line-height: 1.8; }
+  .blog-content h1 { font-size: 2.5rem; margin-top: 2rem; margin-bottom: 1rem; }
+  .blog-content h2 { font-size: 2rem; margin-top: 1.8rem; margin-bottom: 1rem; }
+  .blog-content h3 { font-size: 1.75rem; margin-top: 1.6rem; margin-bottom: 0.8rem; }
+  .blog-content p { margin-bottom: 1.5rem; }
+  .blog-content blockquote {
+    border-left: 4px solid #0d6efd;
+    padding-left: 1rem;
+    margin: 1.5rem 0;
+    font-style: italic;
+    color: #6c757d;
+  }
+  .blog-content pre {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 4px;
+    overflow-x: auto;
+  }
+  .blog-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin: 1.5rem 0;
+  }
+  .blog-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #6c757d;
+  }
+</style>
+
+<%- contentFor('body') %>
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <!-- Header -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+              <i class="bi bi-eye"></i> View Blog: <%= blog.title %>
+            </h5>
+            <div>
+              <span class="badge <%= blog.status === 'published' ? 'bg-success' : 'bg-warning' %> me-2">
+                <%= blog.status %>
+              </span>
+              <a href="/admin/blogs/<%= blog.id %>/edit" class="btn btn-primary btn-sm">
+                <i class="bi bi-pencil"></i> Edit
+              </a>
+              <button type="button" class="btn btn-danger btn-sm delete-blog" 
+                      data-id="<%= blog.id %>" data-title="<%= blog.title %>">
+                <i class="bi bi-trash"></i> Delete
+              </button>
+              <a href="/admin/blogs" class="btn btn-secondary btn-sm">
+                <i class="bi bi-arrow-left"></i> Back to List
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Blog Content -->
+      <div class="row">
+        <div class="col-lg-8">
+          <!-- Hero Image -->
+          <% if (blog.heroImage) { %>
+          <div class="card mb-4">
+            <img src="<%= blog.heroImage %>" class="blog-hero card-img-top" alt="<%= blog.title %>"
+                 onerror="this.onerror=null; this.src='/images/placeholder.jpg';">
+          </div>
+          <% } %>
+
+          <!-- Title and Excerpt -->
+          <div class="card mb-4">
+            <div class="card-body">
+              <h1 class="card-title"><%= blog.title %></h1>
+              
+              <% if (blog.excerpt) { %>
+              <div class="lead text-muted border-start border-primary ps-3 py-2 my-3">
+                <%= blog.excerpt %>
+              </div>
+              <% } %>
+
+              <!-- Blog Meta -->
+              <div class="d-flex flex-wrap gap-4 mb-4">
+                <% if (blog.author) { %>
+                <div class="blog-meta-item">
+                  <i class="bi bi-person-circle"></i>
+                  <span><%= blog.author %></span>
+                </div>
+                <% } %>
+                
+                <div class="blog-meta-item">
+                  <i class="bi bi-calendar"></i>
+                  <span>Created: <%= new Date(blog.createdAt).toLocaleDateString() %></span>
+                </div>
+                
+                <% if (blog.publishedAt) { %>
+                <div class="blog-meta-item">
+                  <i class="bi bi-calendar-check"></i>
+                  <span>Published: <%= new Date(blog.publishedAt).toLocaleDateString() %></span>
+                </div>
+                <% } %>
+                
+                <% if (blog.readTime) { %>
+                <div class="blog-meta-item">
+                  <i class="bi bi-clock"></i>
+                  <span><%= blog.readTime %> min read</span>
+                </div>
+                <% } %>
+              </div>
+
+              <!-- Last Updated -->
+              <% if (blog.updatedAt && blog.updatedAt !== blog.createdAt) { %>
+              <div class="small text-muted">
+                <i class="bi bi-pencil-square"></i> Last updated: <%= new Date(blog.updatedAt).toLocaleString() %>
+              </div>
+              <% } %>
+            </div>
+          </div>
+
+          <!-- Content Blocks -->
+          <% if (blog.blocks && blog.blocks.length > 0) { %>
+            <div class="card">
+              <div class="card-header">
+                <h6 class="mb-0">Content</h6>
+              </div>
+              <div class="card-body blog-content">
+                <% blog.blocks.forEach(block => { %>
+                  <% if (block.type === 'hero') { %>
+                    <div class="hero-block" style="background: <%= block.settings?.bgColor || '#f8f9fa' %>; color: <%= block.settings?.textColor || '#000' %>; padding: <%= block.settings?.padding === 'large' ? '60px' : block.settings?.padding === 'small' ? '20px' : '40px' %> 0;">
+                      <% if (block.content) { %>
+                      <div class="hero-image mb-4">
+                        <img src="<%= block.content %>" class="img-fluid" alt="<%= block.title %>">
+                      </div>
+                      <% } %>
+                      <h1><%= block.title %></h1>
+                      <% if (block.subtitle) { %>
+                      <p class="lead"><%= block.subtitle %></p>
+                      <% } %>
+                      <% if (block.settings?.buttonText) { %>
+                      <a href="<%= block.settings?.buttonLink || '#' %>" class="btn btn-primary"><%= block.settings.buttonText %></a>
+                      <% } %>
+                    </div>
+                  <% } else if (block.type === 'text') { %>
+                    <div style="padding: <%= block.settings?.padding === 'large' ? '40px' : block.settings?.padding === 'small' ? '10px' : '20px' %> 0;">
+                      <%- block.content %>
+                    </div>
+                  <% } else if (block.type === 'image') { %>
+                    <figure style="padding: <%= block.settings?.padding === 'large' ? '40px' : block.settings?.padding === 'small' ? '10px' : '20px' %> 0;">
+                      <img src="<%= block.content %>" class="img-fluid rounded" alt="<%= block.settings?.alt || '' %>">
+                      <% if (block.settings?.caption) { %>
+                      <figcaption class="text-muted mt-2"><%= block.settings.caption %></figcaption>
+                      <% } %>
+                    </figure>
+                  <% } else if (block.type === 'gallery' && block.items) { %>
+                    <div style="padding: <%= block.settings?.padding === 'large' ? '40px' : block.settings?.padding === 'small' ? '10px' : '20px' %> 0;">
+                      <div class="row g-3">
+                        <% block.items.forEach(item => { %>
+                        <div class="col-md-<%= block.settings?.layout === 'grid-4' ? '3' : '4' %>">
+                          <img src="<%= item.image %>" class="img-fluid rounded" alt="Gallery image">
+                        </div>
+                        <% }) %>
+                      </div>
+                    </div>
+                  <% } else if (block.type === 'cards' && block.items) { %>
+                    <div style="padding: <%= block.settings?.padding === 'large' ? '40px' : block.settings?.padding === 'small' ? '10px' : '20px' %> 0;">
+                      <div class="row g-4">
+                        <% block.items.forEach(item => { %>
+                        <div class="col-md-<%= block.settings?.cardsPerRow === '2' ? '6' : block.settings?.cardsPerRow === '4' ? '3' : '4' %>">
+                          <div class="card h-100">
+                            <% if (item.image) { %>
+                            <img src="<%= item.image %>" class="card-img-top" alt="<%= item.title %>">
+                            <% } %>
+                            <div class="card-body">
+                              <h5 class="card-title"><%= item.title %></h5>
+                              <p class="card-text"><%= item.description %></p>
+                              <% if (item.link && item.extraData?.buttonText) { %>
+                              <a href="<%= item.link %>" class="btn btn-primary"><%= item.extraData.buttonText %></a>
+                              <% } %>
+                            </div>
+                          </div>
+                        </div>
+                        <% }) %>
+                      </div>
+                    </div>
+                  <% } else if (block.type === 'faq' && block.items) { %>
+                    <div style="padding: <%= block.settings?.padding === 'large' ? '40px' : block.settings?.padding === 'small' ? '10px' : '20px' %> 0;">
+                      <h2><%= block.title || 'Frequently Asked Questions' %></h2>
+                      <div class="accordion mt-4" id="faqAccordion-<%= block.id %>">
+                        <% block.items.forEach((item, idx) => { %>
+                        <div class="accordion-item">
+                          <h2 class="accordion-header">
+                            <button class="accordion-button <%= idx === 0 ? '' : 'collapsed' %>" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse-<%= block.id %>-<%= idx %>">
+                              <%= item.title %>
+                            </button>
+                          </h2>
+                          <div id="faqCollapse-<%= block.id %>-<%= idx %>" class="accordion-collapse collapse <%= idx === 0 ? 'show' : '' %>" data-bs-parent="#faqAccordion-<%= block.id %>">
+                            <div class="accordion-body">
+                              <%= item.description %>
+                            </div>
+                          </div>
+                        </div>
+                        <% }) %>
+                      </div>
+                    </div>
+                  <% } else if (block.type === 'locations' && block.items) { %>
+                    <div style="padding: <%= block.settings?.padding === 'large' ? '40px' : block.settings?.padding === 'small' ? '10px' : '20px' %> 0;">
+                      <h2><%= block.title || 'Our Locations' %></h2>
+                      <div class="row mt-4">
+                        <% block.items.forEach(item => { %>
+                        <div class="col-md-6 mb-4">
+                          <div class="card h-100">
+                            <div class="card-body">
+                              <h5 class="card-title"><%= item.title %></h5>
+                              <p class="card-text"><%= item.description %></p>
+                              <% if (item.extraData) { %>
+                                <% if (item.extraData.phone) { %>
+                                <p><i class="bi bi-telephone"></i> <%= item.extraData.phone %></p>
+                                <% } %>
+                                <% if (item.extraData.hours) { %>
+                                <p><i class="bi bi-clock"></i> <%= item.extraData.hours %></p>
+                                <% } %>
+                                <% if (item.extraData.map && block.settings?.showMap) { %>
+                                <a href="<%= item.extraData.map %>" target="_blank" class="btn btn-sm btn-outline-primary">View on Map</a>
+                                <% } %>
+                              <% } %>
+                            </div>
+                          </div>
+                        </div>
+                        <% }) %>
+                      </div>
+                    </div>
+                  <% } else if (block.type === 'cta') { %>
+                    <div class="cta-block text-white text-center" style="background: <%= block.settings?.bgColor || '#007bff' %>; <%= block.settings?.bgImage ? 'background-image: url(' + block.settings.bgImage + '); background-size: cover;' : '' %> padding: <%= block.settings?.padding === 'large' ? '60px' : block.settings?.padding === 'small' ? '20px' : '40px' %> 0;">
+                      <div class="container">
+                        <h2><%= block.title || 'Ready to get started?' %></h2>
+                        <% if (block.subtitle) { %>
+                        <p class="lead"><%= block.subtitle %></p>
+                        <% } %>
+                        <% if (block.settings?.buttonText) { %>
+                        <a href="<%= block.settings?.buttonLink || '#' %>" class="btn btn-light btn-lg"><%= block.settings.buttonText %></a>
+                        <% } %>
+                      </div>
+                    </div>
+                  <% } else if (block.type === 'paragraph') { %>
+                    <div><%- block.content %></div>
+                  <% } else if (block.type === 'heading') { %>
+                    <h2><%= block.content %></h2>
+                  <% } else if (block.type === 'quote') { %>
+                    <blockquote><p><%= block.content %></p></blockquote>
+                  <% } else if (block.type === 'code') { %>
+                    <pre><code><%= block.content %></code></pre>
+                  <% } %>
+                  <hr>
+                <% }); %>
+                
+              </div>
+            </div>
+            <% } %>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+          <!-- Quick Actions -->
+          <div class="card mb-4">
+            <div class="card-header">
+              <h6 class="mb-0">Quick Actions</h6>
+            </div>
+            <div class="card-body">
+              <div class="d-grid gap-2">
+                <a href="/admin/blogs/<%= blog.id %>/toggle-status" class="btn btn-outline-success">
+                  <i class="bi bi-toggle-on"></i> 
+                  <%= blog.status === 'published' ? 'Switch to Draft' : 'Publish Now' %>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stats -->
+          <div class="card mb-4">
+            <div class="card-header">
+              <h6 class="mb-0">Statistics</h6>
+            </div>
+            <div class="card-body">
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  Total Blocks
+                  <span class="badge bg-primary rounded-pill"><%= blog.blocks ? blog.blocks.length : 0 %></span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  Status
+                  <span class="badge <%= blog.status === 'published' ? 'bg-success' : 'bg-warning' %>">
+                    <%= blog.status %>
+                  </span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- SEO Preview -->
+          <div class="card">
+            <div class="card-header">
+              <h6 class="mb-0">Filters</h6>
+            </div>
+            <div class="card-body">
+              <div class="google-preview p-3 border rounded">
+                <div class="d-flex gap-2 flex-wrap">
+                  <div>Blog Tags:</div>
+                
+                  <div>
+                    <% 
+                      let tags = [];
+                
+                      if (Array.isArray(blog.tags)) {
+                        tags = blog.tags;
+                      } else if (typeof blog.tags === 'string') {
+                        tags = blog.tags.split(',').map(tag => tag.trim());
+                      }
+                    %>
+                
+                    <% tags.filter(Boolean).forEach(tag => { %>
+                      <span class="badge bg-primary me-1 mb-1"><%= tag %></span>
+                    <% }) %>
+                  </div>
+                </div>
+                <div class="d-flex gap-2 flex-wrap">
+                  <div>Blog Locations:</div>
+                
+                  <div>
+                    <% 
+                      let locations = [];
+                
+                      if (Array.isArray(blog.locations)) {
+                        locations = blog.locations;
+                      } else if (typeof blog.locations === 'string') {
+                        locations = blog.locations.split(',').map(item => item.trim());
+                      }
+                    %>
+                
+                    <% locations.filter(Boolean).forEach(item => { %>
+                      <span class="badge bg-success me-1 mb-1"><%= item %></span>
+                    <% }) %>
+                  </div>
+                </div>
+                <div class="d-flex gap-2 flex-wrap">
+                  <div>Blog Looking For:</div>
+                
+                  <div>
+                    <% 
+                      let lookingFor = [];
+                
+                      if (Array.isArray(blog.looking_for)) {
+                        lookingFor = blog.looking_for;
+                      } else if (typeof blog.looking_for === 'string') {
+                        lookingFor = blog.looking_for.split(',').map(item => item.trim());
+                      }
+                    %>
+                
+                    <% lookingFor.filter(Boolean).forEach(item => { %>
+                      <span class="badge bg-warning text-dark me-1 mb-1"><%= item %></span>
+                    <% }) %>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Confirm Delete</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete "<span id="deleteBlogTitle"></span>"?</p>
+        <p class="text-danger"><small>This action cannot be undone. All associated blocks will also be deleted.</small></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <a href="#" id="confirmDeleteBtn" class="btn btn-danger">Delete</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- contentFor('js') %>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Delete confirmation
+  const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+  const deleteButtons = document.querySelectorAll('.delete-blog');
+  const deleteBlogTitle = document.getElementById('deleteBlogTitle');
+  const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+  
+  deleteButtons.forEach(button => {
+    button.addEventListener('click', function(e) {
+      e.preventDefault();
+      const blogId = this.dataset.id;
+      const blogTitle = this.dataset.title;
+      
+      deleteBlogTitle.textContent = blogTitle;
+      confirmDeleteBtn.href = `/admin/blogs/${blogId}/delete`;
+      deleteModal.show();
+    });
+  });
+
+  // Copy link
+  const copyLinkBtn = document.querySelector('.copy-link');
+  if (copyLinkBtn) {
+    copyLinkBtn.addEventListener('click', function() {
+      const link = this.dataset.link;
+      const fullUrl = window.location.origin + link;
+      
+      navigator.clipboard.writeText(fullUrl).then(() => {
+        const originalText = this.innerHTML;
+        this.innerHTML = '<i class="bi bi-check"></i> Copied!';
+        setTimeout(() => {
+          this.innerHTML = originalText;
+        }, 2000);
+      }).catch(err => {
+        console.error('Failed to copy:', err);
+      });
+    });
+  }
+});
+</script>

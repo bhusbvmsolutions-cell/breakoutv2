@@ -12,7 +12,7 @@
     </div>
   </div>
   <!--navigation-->
-  <ul class="metismenu" id="menu">
+  <ul class="metismenu d-flex flex-column gap-2 menu-main-item" id="menu">
     <li>
       <a href="<%= baseUrl %>/admin/dashboard">
         <div class="parent-icon">
@@ -67,6 +67,36 @@
         <li>
           <a href="<%= baseUrl %>/admin/logos" class="flex gap-2">
             <i class="bi bi-file-earmark-image"></i>Logos
+          </a>
+        </li>
+      </ul>
+    </li>
+    <li>
+      <a href="javascript:;" class="has-arrow">
+        <div class="parent-icon">
+          <i class="bi bi-body-text"></i>
+        </div>
+        <div class="menu-title">Blogs Management</div>
+      </a>
+      <ul class="shadow-sm">
+        <li>
+          <a href="<%= baseUrl %>/admin/blogs" class="flex gap-2">
+            <i class="bi bi-browser-edge"></i>SEO Blogs
+          </a>
+        </li>
+      </ul>
+    </li>
+    <li>
+      <a href="javascript:;" class="has-arrow">
+        <div class="parent-icon">
+          <i class="bi bi-house-gear-fill"></i>
+        </div>
+        <div class="menu-title">Settings</div>
+      </a>
+      <ul class="shadow-sm">
+        <li>
+          <a href="<%= baseUrl %>/admin/site/settings" class="flex gap-2">
+            <i class="bi bi-building-gear"></i>Site Settings
           </a>
         </li>
       </ul>

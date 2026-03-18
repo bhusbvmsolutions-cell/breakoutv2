@@ -19,22 +19,22 @@ module.exports = {
         onDelete: 'CASCADE'
       },
       title: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(255)
       },
       subtitle: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(255)
       },
       description: {
         type: Sequelize.TEXT
       },
       image: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(255)
       },
       icon: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(255)
       },
       link: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(255)
       },
       extraData: {
         type: Sequelize.JSON

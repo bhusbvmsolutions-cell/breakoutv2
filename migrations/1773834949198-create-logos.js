@@ -14,15 +14,15 @@ module.exports = {
         defaultValue: 'brands'
       },
       image: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(255),
         allowNull: false
       },
       link: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(500),
         allowNull: false
       },
       title: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(255),
         allowNull: true
       },
       order: {

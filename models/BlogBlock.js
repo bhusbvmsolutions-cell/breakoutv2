@@ -17,17 +17,20 @@ module.exports = (sequelize, DataTypes) => {
 
       type: {
         type: DataTypes.ENUM(
+          "paragraph",
+          "heading",
+          "image",
+          "quote",
+          "code",
           "hero",
           "text",
-          "image",
           "gallery",
           "cards",
           "faq",
           "locations",
           "cta"
-        )
+        ),
       },
-
       title: {
         type: DataTypes.STRING
       },
@@ -37,7 +40,7 @@ module.exports = (sequelize, DataTypes) => {
       },
 
       content: {
-        type: DataTypes.TEXT
+        type: DataTypes.TEXT('long')
       },
 
       settings: {

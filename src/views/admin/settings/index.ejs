@@ -1,0 +1,420 @@
+<%- contentFor('title') %> Site Settings
+<%- contentFor('head') %>
+
+<%- contentFor('body') %>
+
+<div class="container-fluid">
+    <div class="row card p-3">
+        <div class="col-12">
+            <div class="page-title-box d-flex align-items-center justify-content-between">
+                <h4 class="mb-0">Site Settings</h4>
+            </div>
+        </div>
+    </div>
+
+    <form action="/admin/site/settings/update" method="POST" enctype="multipart/form-data" id="siteSettingsForm">
+        <div class="row">
+            <!-- General Settings -->
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">General Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="siteName" class="form-label">Site Name <span class="text-danger">*</span></label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="siteName" 
+                                       name="siteName" 
+                                       value="<%= site_settings.siteName || '' %>" 
+                                       placeholder="Enter site name"
+                                       required>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="siteTagline" class="form-label">Site Tagline</label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="siteTagline" 
+                                       name="siteTagline" 
+                                       value="<%= site_settings.siteTagline || '' %>" 
+                                       placeholder="Enter site tagline">
+                            </div>
+                            
+                            <div class="col-12 mb-3">
+                                <label for="siteDescription" class="form-label">Site Description</label>
+                                <textarea class="form-control" 
+                                          id="siteDescription" 
+                                          name="siteDescription" 
+                                          rows="3" 
+                                          placeholder="Enter site description"><%= site_settings.siteDescription || '' %></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Information -->
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Contact Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="contactEmail" class="form-label">Contact Email</label>
+                                <input type="email" 
+                                       class="form-control" 
+                                       id="contactEmail" 
+                                       name="contactEmail" 
+                                       value="<%= site_settings.contactEmail || '' %>" 
+                                       placeholder="Enter contact email">
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="contactPhone" class="form-label">Contact Phone</label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="contactPhone" 
+                                       name="contactPhone" 
+                                       value="<%= site_settings.contactPhone || '' %>" 
+                                       placeholder="Enter contact phone">
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="alternatePhone" class="form-label">Alternate Phone</label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="alternatePhone" 
+                                       name="alternatePhone" 
+                                       value="<%= site_settings.alternatePhone || '' %>" 
+                                       placeholder="Enter alternate phone">
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="whatsappNumber" class="form-label">WhatsApp Number</label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="whatsappNumber" 
+                                       name="whatsappNumber" 
+                                       value="<%= site_settings.whatsappNumber || '' %>" 
+                                       placeholder="Enter WhatsApp number">
+                            </div>
+                            
+                            <div class="col-12 mb-3">
+                                <label for="address" class="form-label">Address</label>
+                                <textarea class="form-control" 
+                                          id="address" 
+                                          name="address" 
+                                          rows="3" 
+                                          placeholder="Enter address"><%= site_settings.address || '' %></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Social Media Links -->
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Social Media Links</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="facebookUrl" class="form-label">
+                                    <i class="fab fa-facebook text-primary me-1"></i> Facebook URL
+                                </label>
+                                <input type="url" 
+                                       class="form-control" 
+                                       id="facebookUrl" 
+                                       name="facebookUrl" 
+                                       value="<%= site_settings.facebookUrl || '' %>" 
+                                       placeholder="https://facebook.com/yourpage">
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="twitterUrl" class="form-label">
+                                    <i class="fab fa-twitter text-info me-1"></i> Twitter URL
+                                </label>
+                                <input type="url" 
+                                       class="form-control" 
+                                       id="twitterUrl" 
+                                       name="twitterUrl" 
+                                       value="<%= site_settings.twitterUrl || '' %>" 
+                                       placeholder="https://twitter.com/yourhandle">
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="instagramUrl" class="form-label">
+                                    <i class="fab fa-instagram text-danger me-1"></i> Instagram URL
+                                </label>
+                                <input type="url" 
+                                       class="form-control" 
+                                       id="instagramUrl" 
+                                       name="instagramUrl" 
+                                       value="<%= site_settings.instagramUrl || '' %>" 
+                                       placeholder="https://instagram.com/yourprofile">
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="linkedinUrl" class="form-label">
+                                    <i class="fab fa-linkedin text-primary me-1"></i> LinkedIn URL
+                                </label>
+                                <input type="url" 
+                                       class="form-control" 
+                                       id="linkedinUrl" 
+                                       name="linkedinUrl" 
+                                       value="<%= site_settings.linkedinUrl || '' %>" 
+                                       placeholder="https://linkedin.com/company/yourcompany">
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="youtubeUrl" class="form-label">
+                                    <i class="fab fa-youtube text-danger me-1"></i> YouTube URL
+                                </label>
+                                <input type="url" 
+                                       class="form-control" 
+                                       id="youtubeUrl" 
+                                       name="youtubeUrl" 
+                                       value="<%= site_settings.youtubeUrl || '' %>" 
+                                       placeholder="https://youtube.com/c/yourchannel">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Sidebar -->
+            <div class="col-lg-4">
+                <!-- Logos & Favicon -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Logo & Favicon</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="siteLogo" class="form-label">Site Logo</label>
+                            <input type="file" 
+                                   class="form-control" 
+                                   id="siteLogo" 
+                                   name="siteLogo" 
+                                   accept="image/*">
+                            <% if(site_settings.siteLogo) { %>
+                                <div class="mt-2">
+                                    <img src="<%= site_settings.siteLogo %>" 
+                                         alt="Site Logo" 
+                                         class="img-thumbnail" 
+                                         style="max-height: 100px;">
+                                    <div class="form-check mt-1">
+                                        <input class="form-check-input" 
+                                               type="checkbox" 
+                                               name="removeSiteLogo" 
+                                               id="removeSiteLogo">
+                                        <label class="form-check-label" for="removeSiteLogo">
+                                            Remove current logo
+                                        </label>
+                                    </div>
+                                </div>
+                            <% } %>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="siteFavicon" class="form-label">Site Favicon</label>
+                            <input type="file" 
+                                   class="form-control" 
+                                   id="siteFavicon" 
+                                   name="siteFavicon" 
+                                   accept="image/x-icon,image/png">
+                            <% if(site_settings.siteFavicon) { %>
+                                <div class="mt-2">
+                                    <img src="<%= site_settings.siteFavicon %>" 
+                                         alt="Site Favicon" 
+                                         class="img-thumbnail" 
+                                         style="max-height: 32px;">
+                                    <div class="form-check mt-1">
+                                        <input class="form-check-input" 
+                                               type="checkbox" 
+                                               name="removeSiteFavicon" 
+                                               id="removeSiteFavicon">
+                                        <label class="form-check-label" for="removeSiteFavicon">
+                                            Remove current favicon
+                                        </label>
+                                    </div>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Maintenance Mode -->
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Maintenance Mode</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" 
+                                       type="checkbox" 
+                                       id="maintenanceMode" 
+                                       name="maintenanceMode" 
+                                       value="1"
+                                       <%= site_settings.maintenanceMode == 1 ? 'checked' : '' %>>
+                                <label class="form-check-label" for="maintenanceMode">
+                                    Enable Maintenance Mode
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3" id="maintenanceMessageField" style="<%= site_settings.maintenanceMode == 1 ? '' : 'display: none;' %>">
+                            <label for="maintenanceMessage" class="form-label">Maintenance Message</label>
+                            <textarea class="form-control" 
+                                      id="maintenanceMessage" 
+                                      name="maintenanceMessage" 
+                                      rows="3" 
+                                      placeholder="Enter maintenance message"><%= site_settings.maintenanceMessage || '' %></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Status -->
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Site Status</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" 
+                                       type="checkbox" 
+                                       id="isActive" 
+                                       name="isActive" 
+                                       value="1"
+                                       <%= site_settings.isActive == 1 ? 'checked' : '' %>>
+                                <label class="form-check-label" for="isActive">
+                                    Site Active
+                                </label>
+                            </div>
+                            <small class="text-muted">Toggle to enable/disable the entire site</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="card mt-3">
+                    <div class="card-body">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-save me-1"></i> Save Settings
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<%- contentFor('js') %>
+
+<script>
+$(document).ready(function() {
+    // Toggle maintenance message field
+    $('#maintenanceMode').change(function() {
+        if($(this).is(':checked')) {
+            $('#maintenanceMessageField').slideDown();
+        } else {
+            $('#maintenanceMessageField').slideUp();
+        }
+    });
+
+    // Form validation
+    $('#siteSettingsForm').submit(function(e) {
+        let isValid = true;
+        
+        // Validate site name
+        if($('#siteName').val().trim() === '') {
+            toastr.error('Site name is required');
+            isValid = false;
+        }
+        
+        // Validate email if provided
+        const email = $('#contactEmail').val();
+        if(email && !isValidEmail(email)) {
+            toastr.error('Please enter a valid contact email');
+            isValid = false;
+        }
+        
+        // Validate URLs if provided
+        const urlFields = ['#facebookUrl', '#twitterUrl', '#instagramUrl', '#linkedinUrl', '#youtubeUrl'];
+        urlFields.forEach(field => {
+            const value = $(field).val();
+            if(value && !isValidUrl(value)) {
+                toastr.error(`Please enter a valid URL in ${$(field).prev('label').text().trim()}`);
+                isValid = false;
+            }
+        });
+        
+        if(!isValid) {
+            e.preventDefault();
+        }
+    });
+
+    // Helper functions
+    function isValidEmail(email) {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(email);
+    }
+
+    function isValidUrl(string) {
+        try {
+            new URL(string);
+            return true;
+        } catch (_) {
+            return false;
+        }
+    }
+
+    // Preview image before upload
+    $('#siteLogo').change(function() {
+        const file = this.files[0];
+        if(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                // You can add preview functionality here if needed
+                console.log('Logo selected:', file.name);
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+
+    $('#siteFavicon').change(function() {
+        const file = this.files[0];
+        if(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                // You can add preview functionality here if needed
+                console.log('Favicon selected:', file.name);
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+});
+
+// Display success/error messages if they exist in flash
+<% if (success_msg && success_msg.length > 0) { %>
+    toastr.success('<%= success_msg %>');
+<% } %>
+
+<% if (error_msg && error_msg.length > 0) { %>
+    toastr.error('<%= error_msg %>');
+<% } %>
+
+<% if (error && error.length > 0) { %>
+    toastr.error('<%= error %>');
+<% } %>
+</script>
+
+
+
+
+<%- contentFor('js') %>

@@ -9,29 +9,29 @@ module.exports = {
         primaryKey: true
       },
       firstName: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(255),
         allowNull: true
       },
       lastName: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(255),
         allowNull: true
       },
       username: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(255),
         allowNull: true,
         unique: true
       },
       email: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(255),
         allowNull: false,
         unique: true
       },
       phone: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(255),
         allowNull: true
       },
       avatar: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(255),
         allowNull: true
       },
       bio: {
@@ -39,7 +39,7 @@ module.exports = {
         allowNull: true
       },
       password: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(255),
         allowNull: false
       },
       role: {
@@ -56,7 +56,7 @@ module.exports = {
         defaultValue: false
       },
       resetPasswordToken: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(255),
         allowNull: true
       },
       resetPasswordExpires: {
@@ -64,7 +64,7 @@ module.exports = {
         allowNull: true
       },
       emailVerificationToken: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(255),
         allowNull: true
       },
       lastLogin: {

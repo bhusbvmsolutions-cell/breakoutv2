@@ -19,16 +19,16 @@ module.exports = {
         onDelete: 'CASCADE'
       },
       type: {
-        type: Sequelize.ENUM('hero', 'text', 'image', 'gallery', 'cards', 'faq', 'locations', 'cta')
+        type: Sequelize.ENUM('paragraph', 'heading', 'image', 'quote', 'code', 'hero', 'text', 'gallery', 'cards', 'faq', 'locations', 'cta')
       },
       title: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(255)
       },
       subtitle: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(255)
       },
       content: {
-        type: Sequelize.TEXT
+        type: Sequelize.TEXT('long')
       },
       settings: {
         type: Sequelize.JSON

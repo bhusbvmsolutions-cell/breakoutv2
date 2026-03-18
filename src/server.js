@@ -9,7 +9,7 @@ const session = require('express-session');
 const expressLayouts = require('express-ejs-layouts');
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
 require('dotenv').config();
-
+const methodOverride = require('method-override');
 const flash = require('express-flash');
 
 // Database
@@ -38,6 +38,7 @@ app.use(
   })
 );
 
+app.use(methodOverride('_method'));
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
     ? process.env.APP_URL 
@@ -47,8 +48,8 @@ app.use(cors({
 
 app.use(compression());
 app.use(morgan('dev'));
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(express.json({ limit: '100mb' }));
+app.use(express.urlencoded({ extended: true, limit: '100mb' }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 console.log("STATIC PATH:", path.join(__dirname, 'public'));
@@ -81,6 +82,7 @@ app.use((req, res, next) => {
   res.locals.user = req.session.user || null;
   res.locals.currentUrl = req.url;
   res.locals.baseUrl = process.env.APP_URL || `http://localhost:${PORT}`;
+  res.locals.frontUrl = process.env.FRONTEND_URL || `http://localhost:${PORT}`;
 
   
   
@@ -98,11 +100,11 @@ app.use((req, res, next) => {
 
 // View engine setup
 app.use(expressLayouts);
-app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
 app.set('layout', 'layouts/admin');
-app.set("layout extractScripts", true);
-app.set("layout extractStyles", true);
+app.set('layout extractScripts', true);
+app.set('layout extractStyles', true);
 
 // Routes
 app.use('/', routes);

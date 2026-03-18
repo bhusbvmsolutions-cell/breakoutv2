@@ -2,39 +2,35 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('videos', {
+    await queryInterface.createTable('images', {
       id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
         primaryKey: true
       },
       filename: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(255),
         allowNull: false
       },
       uniqueName: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(255),
         allowNull: false,
         unique: true
       },
       path: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(500),
         allowNull: false
       },
       url: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(500),
         allowNull: false
       },
       title: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(255),
         allowNull: true
       },
-      description: {
-        type: Sequelize.TEXT,
-        allowNull: true
-      },
-      thumbnail: {
-        type: Sequelize.STRING,
+      altText: {
+        type: Sequelize.STRING(255),
         allowNull: true
       },
       size: {
@@ -42,16 +38,8 @@ module.exports = {
         allowNull: false,
         defaultValue: 0
       },
-      duration: {
-        type: Sequelize.INTEGER,
-        allowNull: true
-      },
-      format: {
-        type: Sequelize.STRING,
-        allowNull: true
-      },
       mimeType: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(100),
         allowNull: false
       },
       width: {
@@ -61,15 +49,6 @@ module.exports = {
       height: {
         type: Sequelize.INTEGER,
         allowNull: true
-      },
-      quality: {
-        type: Sequelize.STRING,
-        allowNull: true
-      },
-      status: {
-        type: Sequelize.ENUM('active', 'inactive', 'processing', 'failed'),
-        allowNull: false,
-        defaultValue: 'active'
       },
       createdAt: {
         type: Sequelize.DATE,
@@ -83,6 +62,6 @@ module.exports = {
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('videos');
+    await queryInterface.dropTable('images');
   }
 };
