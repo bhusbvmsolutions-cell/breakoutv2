@@ -1,0 +1,488 @@
+<%- contentFor('title') %><%= title ? title : '' %>
+
+<%- contentFor('head') %>
+<style>
+  .gallery-item {
+    display: inline-block;
+    margin-right: 10px;
+    margin-bottom: 10px;
+  }
+
+  .grab-handle {
+    cursor: move;
+  }
+
+  .image-upload-wrapper {
+    transition: all 0.2s ease;
+  }
+
+  .image-upload-wrapper:hover {
+    border-color: #0d6efd;
+  }
+</style>
+
+
+
+<%- contentFor('body') %>
+<div class="container-fluid px-0">
+  <!-- Page Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h5 class="mb-1">Add New Escape Room</h5>
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mb-0 fs-6">
+          <li class="breadcrumb-item"><a href="<%= basePath %>/admin/dashboard">Dashboard</a></li>
+          <li class="breadcrumb-item"><a href="<%= basePath %>/admin/escape/rooms">Escape Rooms</a></li>
+          <li class="breadcrumb-item active">Add New</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Form -->
+  <div class="card shadow-sm border-0">
+    <div class="card-body p-4">
+      <form id="room-form" method="POST" enctype="multipart/form-data">
+        <!-- Basic Information -->
+        <div class="mb-4">
+          <h6 class="mb-3 pb-2 border-bottom">Basic Information</h6>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label small fw-medium">Title <span class="text-danger">*</span></label>
+              <input type="text" class="form-control form-control-sm" name="title" id="title" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-medium">Slug</label>
+              <input type="text" class="form-control form-control-sm" name="slug" id="slug">
+              <small class="text-muted">Leave empty to auto-generate</small>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-medium">Locations <span class="text-danger">*</span></label>
+              <select class="form-select form-select-sm select2" name="locations" multiple required>
+                <% locations?.forEach(loc => { %>
+                <option value="<%= loc.id %>"><%= loc.title %></option>
+                <% }) %>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-medium">Tags</label>
+              <select class="form-select form-select-sm select2-tags" name="tags" multiple>
+                <option value="Extreme">Extreme</option>
+                <option value="Ultra">Ultra</option>
+                <option value="Family">Family</option>
+                <option value="Horror">Horror</option>
+                <option value="Adventure">Adventure</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Banner Section -->
+        <div class="mb-4">
+          <h6 class="mb-3 pb-2 border-bottom">Banner Section</h6>
+          <div class="row g-3">
+            <div class="col-md-12">
+              <label class="form-label small fw-medium">Heading</label>
+              <input type="text" class="form-control form-control-sm" name="banner_heading">
+            </div>
+
+            <!-- Banner Image -->
+            <div class="col-md-6">
+              <label class="form-label small fw-medium">Banner Image</label>
+              <div class="image-upload-wrapper p-3 border rounded bg-light">
+                <input type="file" class="d-none" id="banner_image_input" name="banner_image" accept="image/*">
+                <button type="button" class="btn btn-sm btn-outline-primary" id="select_banner_image">
+                  <i class="fas fa-cloud-upload-alt me-1"></i> Choose Image
+                </button>
+                <div id="banner_preview" class="mt-2 text-center d-none">
+                  <img src="" class="img-thumbnail" style="max-height: 100px;">
+                  <button type="button" class="btn btn-sm btn-link text-danger p-0 ms-2" id="remove_banner">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Video Trailer -->
+            <div class="col-md-6">
+              <label class="form-label small fw-medium">Video Trailer URL</label>
+              <input type="url" class="form-control form-control-sm" name="banner_video_trailer" placeholder="https://youtube.com/...">
+            </div>
+
+            <!-- Banner Details -->
+            <div class="col-md-4">
+              <label class="form-label small fw-medium">Description</label>
+              <textarea class="form-control form-control-sm" name="banner_description" rows="2"></textarea>
+            </div>
+            <div class="col-md-2">
+              <label class="form-label small fw-medium">Success Rate</label>
+              <input type="text" class="form-control form-control-sm" name="banner_success_rate" placeholder="85%">
+            </div>
+            <div class="col-md-2">
+              <label class="form-label small fw-medium">Age Group</label>
+              <input type="text" class="form-control form-control-sm" name="banner_age_group" placeholder="9+">
+            </div>
+            <div class="col-md-2">
+              <label class="form-label small fw-medium">Character</label>
+              <input type="text" class="form-control form-control-sm" name="banner_character" placeholder="Detective">
+            </div>
+            <div class="col-md-2">
+              <label class="form-label small fw-medium">Min Team</label>
+              <input type="text" class="form-control form-control-sm" name="banner_min_team" placeholder="2">
+            </div>
+            <div class="col-md-2">
+              <label class="form-label small fw-medium">Scare Factor</label>
+              <input type="text" class="form-control form-control-sm" name="banner_scare_factor" placeholder="3/5">
+            </div>
+            <div class="col-md-2">
+              <label class="form-label small fw-medium">Duration</label>
+              <input type="text" class="form-control form-control-sm" name="banner_duration" placeholder="60 mins">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label small fw-medium">CTA Label</label>
+              <input type="text" class="form-control form-control-sm" name="banner_cta_label" placeholder="Book Now">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label small fw-medium">CTA Link</label>
+              <input type="text" class="form-control form-control-sm" name="banner_cta_link" placeholder="/book-now">
+            </div>
+            <div class="col-md-12">
+              <label class="form-label small fw-medium">Important Note</label>
+              <textarea class="form-control form-control-sm" name="banner_important_note" rows="2"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Gallery Images -->
+        <div class="mb-4">
+          <h6 class="mb-3 pb-2 border-bottom">Gallery Images</h6>
+          <div class="gallery-container" id="gallery">
+            <!-- Images will be added here -->
+          </div>
+          <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="add_gallery_image">
+            <i class="fas fa-plus me-1"></i> Add Image
+          </button>
+          <small class="text-muted d-block mt-1">Drag to reorder</small>
+        </div>
+
+        <!-- Pricing Cards -->
+        <div class="mb-4">
+          <h6 class="mb-3 pb-2 border-bottom">Pricing Cards</h6>
+          <div id="pricing-container">
+            <!-- Initial pricing card -->
+            <div class="pricing-card border rounded p-3 mb-3 bg-light">
+              <div class="row g-2 align-items-center">
+                <div class="col-md-5">
+                  <input type="text" class="form-control form-control-sm" name="pricing[0][day_range]" placeholder="Day Range (e.g. Mon-Thu)">
+                </div>
+                <div class="col-md-3">
+                  <input type="text" class="form-control form-control-sm" name="pricing[0][price_2_3]" placeholder="2-3 Players">
+                </div>
+                <div class="col-md-3">
+                  <input type="text" class="form-control form-control-sm" name="pricing[0][price_4_6]" placeholder="4-6 Players">
+                </div>
+                <div class="col-md-1">
+                  <button type="button" class="btn btn-sm btn-link text-danger remove-pricing p-0">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <button type="button" class="btn btn-sm btn-outline-primary" id="add_pricing">
+            <i class="fas fa-plus me-1"></i> Add Pricing Card
+          </button>
+        </div>
+
+        <!-- Pricing Note -->
+        <div class="mb-4">
+          <label class="form-label small fw-medium">Pricing Note</label>
+          <textarea class="form-control form-control-sm" name="pricing_note" rows="2" placeholder="Additional pricing information..."></textarea>
+        </div>
+
+        <!-- Status -->
+        <div class="mb-4">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" name="isActive" id="isActive" checked>
+            <label class="form-check-label small" for="isActive">Active</label>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-primary btn-sm px-4">
+            <i class="fas fa-save me-1"></i> Save Room
+          </button>
+          <a href="<%= basePath %>/admin/escape/rooms" class="btn btn-light btn-sm px-4">
+            Cancel
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Image Upload Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1">
+  <div class="modal-dialog modal-md">
+    <div class="modal-content">
+      <div class="modal-header p-3">
+        <h6 class="modal-title">Upload Image</h6>
+        <button type="button" class="btn-close btn-sm" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-3">
+        <form id="image-upload-form">
+          <div class="mb-3">
+            <label class="form-label small">Choose Image</label>
+            <input type="file" class="form-control form-control-sm" id="gallery-image-file" accept="image/*">
+          </div>
+          <button type="submit" class="btn btn-primary btn-sm w-100">
+            <i class="fas fa-upload me-1"></i> Upload
+          </button>
+        </form>
+        <hr class="my-3">
+        <div class="recent-images" id="recent-images">
+          <h6 class="small mb-2">Recent Images</h6>
+          <div class="row g-2" id="image-library">
+            <!-- Images will be loaded here -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<%- contentFor('js') %>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Select2
+    $('.select2').select2({
+      placeholder: 'Select locations',
+      width: '100%'
+    });
+
+    $('.select2-tags').select2({
+      placeholder: 'Select tags',
+      tags: true,
+      width: '100%'
+    });
+
+    // Auto-generate slug
+    document.getElementById('title')?.addEventListener('input', function() {
+      const slug = document.getElementById('slug');
+      if (!slug.value) {
+        slug.value = this.value.toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-|-$/g, '');
+      }
+    });
+
+    // Banner image handling
+    document.getElementById('select_banner_image')?.addEventListener('click', function() {
+      document.getElementById('banner_image_input').click();
+    });
+
+    document.getElementById('banner_image_input')?.addEventListener('change', function(e) {
+      if (this.files && this.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const preview = document.getElementById('banner_preview');
+          preview.querySelector('img').src = e.target.result;
+          preview.classList.remove('d-none');
+        };
+        reader.readAsDataURL(this.files[0]);
+      }
+    });
+
+    document.getElementById('remove_banner')?.addEventListener('click', function() {
+      document.getElementById('banner_image_input').value = '';
+      document.getElementById('banner_preview').classList.add('d-none');
+    });
+
+    // Gallery images with Sortable
+    const gallery = document.getElementById('gallery');
+    new Sortable(gallery, {
+      animation: 150,
+      handle: '.grab-handle',
+      ghostClass: 'bg-light'
+    });
+
+    // Add gallery image
+    document.getElementById('add_gallery_image')?.addEventListener('click', function() {
+      $('#imageModal').modal('show');
+    });
+
+    // Handle image upload
+    document.getElementById('image-upload-form')?.addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const fileInput = document.getElementById('gallery-image-file');
+      if (!fileInput.files.length) return;
+
+      const formData = new FormData();
+      formData.append('image', fileInput.files[0]);
+
+      try {
+        const response = await fetch('<%= basePath %>/admin/escape/rooms/upload', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          },
+          body: formData
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          addImageToGallery(result.imageUrl);
+          $('#imageModal').modal('hide');
+          fileInput.value = '';
+        } else {
+          alert(result.message || 'Upload failed');
+        }
+      } catch (error) {
+        console.error('Upload error:', error);
+        alert('Failed to upload image');
+      }
+    });
+
+    function addImageToGallery(imageUrl) {
+      const imageId = 'img_' + Date.now();
+      const html = `
+            <div class="gallery-item" data-id="${imageId}">
+                <div class="position-relative">
+                    <img src="${imageUrl}" class="img-thumbnail" style="width: 100px; height: 70px; object-fit: cover;">
+                    <input type="hidden" name="gallery[]" value="${imageUrl}">
+                    <div class="position-absolute top-0 end-0 d-flex">
+                        <span class="grab-handle btn btn-sm btn-light p-0 px-1 me-1" style="cursor: move;">
+                            <i class="fas fa-grip-vertical"></i>
+                        </span>
+                        <button type="button" class="btn btn-sm btn-danger p-0 px-1 remove-gallery">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+      gallery.insertAdjacentHTML('beforeend', html);
+
+      // Add remove handler
+      gallery.lastElementChild.querySelector('.remove-gallery').addEventListener('click', function() {
+        this.closest('.gallery-item').remove();
+      });
+    }
+
+    // Remove gallery image handler (for existing)
+    document.querySelectorAll('.remove-gallery').forEach(btn => {
+      btn.addEventListener('click', function() {
+        this.closest('.gallery-item').remove();
+      });
+    });
+
+    // Pricing cards
+    let pricingCount = 1;
+
+    document.getElementById('add_pricing')?.addEventListener('click', function() {
+      const html = `
+            <div class="pricing-card border rounded p-3 mb-3 bg-light">
+                <div class="row g-2 align-items-center">
+                    <div class="col-md-5">
+                        <input type="text" class="form-control form-control-sm" name="pricing[${pricingCount}][day_range]" placeholder="Day Range">
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" class="form-control form-control-sm" name="pricing[${pricingCount}][price_2_3]" placeholder="2-3 Players">
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" class="form-control form-control-sm" name="pricing[${pricingCount}][price_4_6]" placeholder="4-6 Players">
+                    </div>
+                    <div class="col-md-1">
+                        <button type="button" class="btn btn-sm btn-link text-danger remove-pricing p-0">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+      document.getElementById('pricing-container').insertAdjacentHTML('beforeend', html);
+      pricingCount++;
+
+      // Add remove handler
+      document.querySelectorAll('.remove-pricing').forEach(btn => {
+        btn.removeEventListener('click', removePricing);
+        btn.addEventListener('click', removePricing);
+      });
+    });
+
+    function removePricing() {
+      if (document.querySelectorAll('.pricing-card').length > 1) {
+        this.closest('.pricing-card').remove();
+      } else {
+        alert('At least one pricing card is required');
+      }
+    }
+
+    // Add remove handler to existing remove buttons
+    document.querySelectorAll('.remove-pricing').forEach(btn => {
+      btn.addEventListener('click', removePricing);
+    });
+
+    // Form submission
+    document.getElementById('room-form')?.addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const formData = new FormData(this);
+
+      try {
+        const submitBtn = this.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Saving...';
+
+        const response = await fetch('<%= basePath %>/admin/escape/rooms', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          },
+          body: formData
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          showNotification('Escape room created successfully!', 'success');
+          setTimeout(() => {
+            window.location.href = '<%= basePath %>/admin/escape/rooms';
+          }, 1500);
+        } else {
+          showNotification(result.message || 'Failed to create room', 'error');
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '<i class="fas fa-save me-1"></i> Save Room';
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        showNotification('An error occurred', 'error');
+
+        const submitBtn = this.querySelector('button[type="submit"]');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-save me-1"></i> Save Room';
+      }
+    });
+
+    function showNotification(message, type) {
+      const notification = document.createElement('div');
+      notification.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed top-0 end-0 m-3`;
+      notification.style.zIndex = '9999';
+      notification.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close btn-sm" data-bs-dismiss="alert"></button>
+        `;
+      document.body.appendChild(notification);
+
+      setTimeout(() => {
+        notification.remove();
+      }, 3000);
+    }
+  });
+</script>

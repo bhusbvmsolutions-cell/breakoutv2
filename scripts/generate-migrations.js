@@ -38,6 +38,20 @@ function getMigrationType(attribute) {
       return "Sequelize.DATE";
     case "BOOLEAN":
       return "Sequelize.BOOLEAN";
+    case "ARRAY":
+      if (attribute.type.type) {
+        const innerType = attribute.type.type;
+
+        if (innerType.key === "ENUM" && innerType.values?.length) {
+          const values = innerType.values.map((v) => `'${v}'`).join(", ");
+          return `Sequelize.ARRAY(Sequelize.ENUM(${values}))`;
+        }
+
+        const innerTypeStr = getMigrationType({ type: innerType });
+        return `Sequelize.ARRAY(${innerTypeStr})`;
+      }
+      return "Sequelize.ARRAY(Sequelize.STRING)";
+
     case "ENUM":
       if (attribute.type.values && attribute.type.values.length) {
         const values = attribute.type.values.map((v) => `'${v}'`).join(", ");

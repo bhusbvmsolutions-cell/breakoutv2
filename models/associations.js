@@ -327,7 +327,83 @@ module.exports = (db) => {
     });
   }
 
-  
+  // ==================== EscapeRoom Associations ====================
+
+  const {
+    EscapeRoom,
+    EscapeRoomLocationMapping, // New junction model
+    EscapeRoomPricingCard,
+    EscapeRoomImage,
+  } = db;
+
+  if (EscapeRoom && EscapeRoomLocation && EscapeRoomLocationMapping) {
+    // Many-to-many relationship between EscapeRoom and EscapeRoomLocation
+    EscapeRoom.belongsToMany(EscapeRoomLocation, {
+      through: EscapeRoomLocationMapping,
+      foreignKey: "escape_room_id",
+      otherKey: "location_id",
+      as: "locations",
+    });
+
+    EscapeRoomLocation.belongsToMany(EscapeRoom, {
+      through: EscapeRoomLocationMapping,
+      foreignKey: "location_id",
+      otherKey: "escape_room_id",
+      as: "escapeRooms",
+    });
+
+    // Direct associations with junction table
+    EscapeRoom.hasMany(EscapeRoomLocationMapping, {
+      foreignKey: "escape_room_id",
+      as: "locationMappings",
+      onDelete: "CASCADE",
+    });
+
+    EscapeRoomLocation.hasMany(EscapeRoomLocationMapping, {
+      foreignKey: "location_id",
+      as: "escapeRoomMappings",
+      onDelete: "CASCADE",
+    });
+
+    EscapeRoomLocationMapping.belongsTo(EscapeRoom, {
+      foreignKey: "escape_room_id",
+      as: "escapeRoom",
+    });
+
+    EscapeRoomLocationMapping.belongsTo(EscapeRoomLocation, {
+      foreignKey: "location_id",
+      as: "location",
+    });
+  }
+
+  // Rest of the associations remain the same...
+  if (EscapeRoom && EscapeRoomPricingCard) {
+    EscapeRoom.hasMany(EscapeRoomPricingCard, {
+      foreignKey: "escape_room_id",
+      as: "pricingCards",
+      onDelete: "CASCADE",
+    });
+
+    EscapeRoomPricingCard.belongsTo(EscapeRoom, {
+      foreignKey: "escape_room_id",
+      as: "escapeRoom",
+      onDelete: "CASCADE",
+    });
+  }
+
+  if (EscapeRoom && EscapeRoomImage) {
+    EscapeRoom.hasMany(EscapeRoomImage, {
+      foreignKey: "escape_room_id",
+      as: "images",
+      onDelete: "CASCADE",
+    });
+
+    EscapeRoomImage.belongsTo(EscapeRoom, {
+      foreignKey: "escape_room_id",
+      as: "escapeRoom",
+      onDelete: "CASCADE",
+    });
+  }
 
   console.log("✓ All model associations have been established successfully");
 };

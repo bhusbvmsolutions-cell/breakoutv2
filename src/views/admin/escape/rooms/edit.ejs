@@ -1,0 +1,332 @@
+<%- contentFor('title') %><%= title ? title : '' %>
+
+<%- contentFor('head') %>
+<style>
+    .gallery-item {
+      display: inline-block;
+      margin-right: 10px;
+      margin-bottom: 10px;
+    }
+  
+    .grab-handle {
+      cursor: move;
+    }
+  
+    .image-upload-wrapper {
+      transition: all 0.2s ease;
+    }
+  
+    .image-upload-wrapper:hover {
+      border-color: #0d6efd;
+    }
+  </style>
+
+
+<%- contentFor('body') %>
+<div class="container-fluid px-0">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h5 class="mb-1">Edit Escape Room</h5>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0 fs-6">
+                    <li class="breadcrumb-item"><a href="<%= basePath %>/admin/dashboard">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="<%= basePath %>/admin/escape/rooms">Escape Rooms</a></li>
+                    <li class="breadcrumb-item active">Edit</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Form -->
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+            <form id="room-form" method="POST" enctype="multipart/form-data" data-id="<%= room.id %>">
+                <!-- Basic Information -->
+                <div class="mb-4">
+                    <h6 class="mb-3 pb-2 border-bottom">Basic Information</h6>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-medium">Title <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control form-control-sm" name="title" id="title" value="<%= room.title %>" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-medium">Slug</label>
+                            <input type="text" class="form-control form-control-sm" name="slug" id="slug" value="<%= room.slug %>">
+                            <small class="text-muted">Leave empty to auto-generate</small>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-medium">Locations <span class="text-danger">*</span></label>
+                            <select class="form-select form-select-sm select2" name="locations" multiple required>
+                                <% locations?.forEach(loc => { %>
+                                    <option value="<%= loc.id %>" <%= room.locations?.includes(loc.id) ? 'selected' : '' %>>
+                                        <%= loc.title %>
+                                    </option>
+                                <% }) %>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-medium">Tags</label>
+                            <select class="form-select form-select-sm select2-tags" name="tags" multiple>
+                                <option value="Extreme" <%= room.tag?.includes('Extreme') ? 'selected' : '' %>>Extreme</option>
+                                <option value="Ultra" <%= room.tag?.includes('Ultra') ? 'selected' : '' %>>Ultra</option>
+                                <option value="Family" <%= room.tag?.includes('Family') ? 'selected' : '' %>>Family</option>
+                                <option value="Horror" <%= room.tag?.includes('Horror') ? 'selected' : '' %>>Horror</option>
+                                <option value="Adventure" <%= room.tag?.includes('Adventure') ? 'selected' : '' %>>Adventure</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Banner Section -->
+                <div class="mb-4">
+                    <h6 class="mb-3 pb-2 border-bottom">Banner Section</h6>
+                    <div class="row g-3">
+                        <div class="col-md-12">
+                            <label class="form-label small fw-medium">Heading</label>
+                            <input type="text" class="form-control form-control-sm" name="banner_heading" value="<%= room.banner_heading || '' %>">
+                        </div>
+                        
+                        <!-- Banner Image -->
+                        <div class="col-md-6">
+                            <label class="form-label small fw-medium">Banner Image</label>
+                            <div class="image-upload-wrapper p-3 border rounded bg-light">
+                                <input type="file" class="d-none" id="banner_image_input" name="banner_image" accept="image/*">
+                                <button type="button" class="btn btn-sm btn-outline-primary" id="select_banner_image">
+                                    <i class="fas fa-cloud-upload-alt me-1"></i> Change Image
+                                </button>
+                                <div id="banner_preview" class="mt-2 text-center <%= room.banner_image ? '' : 'd-none' %>">
+                                    <img src="<%= room.banner_image || '' %>" class="img-thumbnail" style="max-height: 100px;">
+                                    <button type="button" class="btn btn-sm btn-link text-danger p-0 ms-2" id="remove_banner">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                                <input type="hidden" name="existing_banner_image" value="<%= room.banner_image || '' %>">
+                            </div>
+                        </div>
+
+                        <!-- Video Trailer -->
+                        <div class="col-md-6">
+                            <label class="form-label small fw-medium">Video Trailer URL</label>
+                            <input type="url" class="form-control form-control-sm" name="banner_video_trailer" value="<%= room.banner_video_trailer || '' %>">
+                        </div>
+
+                        <!-- Banner Details -->
+                        <div class="col-md-4">
+                            <label class="form-label small fw-medium">Description</label>
+                            <textarea class="form-control form-control-sm" name="banner_description" rows="2"><%= room.banner_description || '' %></textarea>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label small fw-medium">Success Rate</label>
+                            <input type="text" class="form-control form-control-sm" name="banner_success_rate" value="<%= room.banner_success_rate || '' %>">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label small fw-medium">Age Group</label>
+                            <input type="text" class="form-control form-control-sm" name="banner_age_group" value="<%= room.banner_age_group || '' %>">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label small fw-medium">Character</label>
+                            <input type="text" class="form-control form-control-sm" name="banner_character" value="<%= room.banner_character || '' %>">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label small fw-medium">Min Team</label>
+                            <input type="text" class="form-control form-control-sm" name="banner_min_team" value="<%= room.banner_min_team || '' %>">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label small fw-medium">Scare Factor</label>
+                            <input type="text" class="form-control form-control-sm" name="banner_scare_factor" value="<%= room.banner_scare_factor || '' %>">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label small fw-medium">Duration</label>
+                            <input type="text" class="form-control form-control-sm" name="banner_duration" value="<%= room.banner_duration || '' %>">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-medium">CTA Label</label>
+                            <input type="text" class="form-control form-control-sm" name="banner_cta_label" value="<%= room.banner_cta_label || '' %>">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-medium">CTA Link</label>
+                            <input type="text" class="form-control form-control-sm" name="banner_cta_link" value="<%= room.banner_cta_link || '' %>">
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label small fw-medium">Important Note</label>
+                            <textarea class="form-control form-control-sm" name="banner_important_note" rows="2"><%= room.banner_important_note || '' %></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gallery Images -->
+                <div class="mb-4">
+                    <h6 class="mb-3 pb-2 border-bottom">Gallery Images</h6>
+                    <div class="gallery-container" id="gallery">
+                        <% if (room.images && room.images.length > 0) { %>
+                            <% room.images.sort((a, b) => a.sort_order - b.sort_order).forEach(img => { %>
+                                <div class="gallery-item" data-id="<%= img.id %>">
+                                    <div class="position-relative">
+                                        <img src="<%= img.image_url %>" class="img-thumbnail" style="width: 100px; height: 70px; object-fit: cover;">
+                                        <input type="hidden" name="gallery[]" value="<%= img.image_url %>">
+                                        <input type="hidden" name="gallery_ids[]" value="<%= img.id %>">
+                                        <div class="position-absolute top-0 end-0 d-flex">
+                                            <span class="grab-handle btn btn-sm btn-light p-0 px-1 me-1" style="cursor: move;">
+                                                <i class="fas fa-grip-vertical"></i>
+                                            </span>
+                                            <button type="button" class="btn btn-sm btn-danger p-0 px-1 remove-gallery">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }) %>
+                        <% } %>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="add_gallery_image">
+                        <i class="fas fa-plus me-1"></i> Add Image
+                    </button>
+                    <small class="text-muted d-block mt-1">Drag to reorder</small>
+                </div>
+
+                <!-- Pricing Cards -->
+                <div class="mb-4">
+                    <h6 class="mb-3 pb-2 border-bottom">Pricing Cards</h6>
+                    <div id="pricing-container">
+                        <% if (room.pricingCards && room.pricingCards.length > 0) { %>
+                            <% room.pricingCards.sort((a, b) => a.sort_order - b.sort_order).forEach((card, index) => { %>
+                                <div class="pricing-card border rounded p-3 mb-3 bg-light">
+                                    <input type="hidden" name="pricing[<%= index %>][id]" value="<%= card.id %>">
+                                    <div class="row g-2 align-items-center">
+                                        <div class="col-md-5">
+                                            <input type="text" class="form-control form-control-sm" 
+                                                   name="pricing[<%= index %>][day_range]" 
+                                                   value="<%= card.day_range || '' %>" 
+                                                   placeholder="Day Range">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <input type="text" class="form-control form-control-sm" 
+                                                   name="pricing[<%= index %>][price_2_3]" 
+                                                   value="<%= card.price_2_3_players || '' %>" 
+                                                   placeholder="2-3 Players">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <input type="text" class="form-control form-control-sm" 
+                                                   name="pricing[<%= index %>][price_4_6]" 
+                                                   value="<%= card.price_4_6_players || '' %>" 
+                                                   placeholder="4-6 Players">
+                                        </div>
+                                        <div class="col-md-1">
+                                            <button type="button" class="btn btn-sm btn-link text-danger remove-pricing p-0">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }) %>
+                        <% } else { %>
+                            <div class="pricing-card border rounded p-3 mb-3 bg-light">
+                                <div class="row g-2 align-items-center">
+                                    <div class="col-md-5">
+                                        <input type="text" class="form-control form-control-sm" name="pricing[0][day_range]" placeholder="Day Range">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input type="text" class="form-control form-control-sm" name="pricing[0][price_2_3]" placeholder="2-3 Players">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input type="text" class="form-control form-control-sm" name="pricing[0][price_4_6]" placeholder="4-6 Players">
+                                    </div>
+                                    <div class="col-md-1">
+                                        <button type="button" class="btn btn-sm btn-link text-danger remove-pricing p-0">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        <% } %>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-primary" id="add_pricing">
+                        <i class="fas fa-plus me-1"></i> Add Pricing Card
+                    </button>
+                </div>
+
+                <!-- Pricing Note -->
+                <div class="mb-4">
+                    <label class="form-label small fw-medium">Pricing Note</label>
+                    <textarea class="form-control form-control-sm" name="pricing_note" rows="2"><%= room.pricing_note || '' %></textarea>
+                </div>
+
+                <!-- Status -->
+                <div class="mb-4">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="isActive" id="isActive" <%= room.isActive ? 'checked' : '' %>>
+                        <label class="form-check-label small" for="isActive">Active</label>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary btn-sm px-4">
+                        <i class="fas fa-save me-1"></i> Update Room
+                    </button>
+                    <a href="<%= basePath %>/admin/escape/rooms" class="btn btn-light btn-sm px-4">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Image Upload Modal (same as add.ejs) -->
+<!-- ... (copy modal from add.ejs) ... -->
+
+
+
+
+<%- contentFor('js') %>
+<script>
+// Same JavaScript as add.ejs with modifications for edit mode
+document.addEventListener('DOMContentLoaded', function() {
+    // ... (copy all JavaScript from add.ejs) ...
+    
+    // Modify form submission for edit
+    document.getElementById('room-form')?.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        const roomId = this.dataset.id;
+        
+        try {
+            const submitBtn = this.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Updating...';
+
+            const response = await fetch(`<%= basePath %>/admin/escape/rooms/${roomId}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: formData
+            });
+
+            const result = await response.json();
+            
+            if (response.ok) {
+                showNotification('Escape room updated successfully!', 'success');
+                setTimeout(() => {
+                    window.location.href = '<%= basePath %>/admin/escape/rooms';
+                }, 1500);
+            } else {
+                showNotification(result.message || 'Failed to update room', 'error');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-save me-1"></i> Update Room';
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showNotification('An error occurred', 'error');
+            
+            const submitBtn = this.querySelector('button[type="submit"]');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-save me-1"></i> Update Room';
+        }
+    });
+});
+</script>
+
