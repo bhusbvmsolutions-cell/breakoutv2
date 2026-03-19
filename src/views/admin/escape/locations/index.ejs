@@ -1,0 +1,437 @@
+<%- contentFor('title') %><%= title %>
+
+<%- contentFor('head') %> 
+<style>
+    :root {
+        --primary: #fcad00;
+        --primary-dark: #e09c00;
+        --primary-light: #fff3e0;
+        --success: #00b894;
+        --danger: #d63031;
+        --info: #0984e3;
+        --dark: #2d3436;
+        --light: #f5f6fa;
+    }
+
+    /* Compact styles */
+    .compact {
+        --spacing-xs: 0.25rem;
+        --spacing-sm: 0.5rem;
+        --spacing-md: 0.75rem;
+        --font-xs: 0.65rem;
+        --font-sm: 0.7rem;
+        --font-md: 0.75rem;
+    }
+
+    .page-title-box {
+        background: linear-gradient(135deg, var(--primary) 0%, #ff7e5f 100%);
+        padding: 12px 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        box-shadow: 0 5px 15px rgba(252, 173, 0, 0.2);
+    }
+
+    .page-title-box h4 {
+        color: white;
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .page-title-box .btn-primary {
+        background: rgba(255,255,255,0.2);
+        border: 1px solid white;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 30px;
+        font-size: 0.7rem;
+    }
+
+    .stats-card {
+        border: none;
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 15px;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stats-card h5 {
+        font-size: 0.7rem;
+        margin-bottom: 5px;
+        opacity: 0.9;
+    }
+
+    .stats-card h2 {
+        font-size: 1.2rem;
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .stats-card i {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        font-size: 1.5rem;
+        opacity: 0.3;
+    }
+
+    .bg-gradient-primary { background: linear-gradient(135deg, var(--primary) 0%, #ff7e5f 100%); }
+    .bg-gradient-success { background: linear-gradient(135deg, var(--success) 0%, #00d68f 100%); }
+    .bg-gradient-info { background: linear-gradient(135deg, var(--info) 0%, #74b9ff 100%); }
+    .bg-gradient-warning { background: linear-gradient(135deg, #fdcb6e 0%, #f39c12 100%); }
+
+    .card {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .card-header {
+        background: var(--light);
+        border-bottom: 2px solid var(--primary);
+        padding: 10px 15px;
+    }
+
+    .card-header h5 {
+        font-size: 0.9rem;
+        margin: 0;
+    }
+
+    .table {
+        margin-bottom: 0;
+        font-size: 0.75rem;
+    }
+
+    .table thead th {
+        background: #f8f9fa;
+        border-bottom: 1px solid var(--primary);
+        padding: 8px 10px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .table tbody td {
+        padding: 8px 10px;
+        vertical-align: middle;
+    }
+
+    .badge {
+        padding: 4px 8px;
+        border-radius: 20px;
+        font-size: 0.6rem;
+        font-weight: 500;
+    }
+
+    .badge-success {
+        background: var(--success);
+        color: white;
+    }
+
+    .badge-danger {
+        background: var(--danger);
+        color: white;
+    }
+
+    .badge-dark {
+        background: var(--dark);
+        color: white;
+    }
+
+    .btn-action {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 2px;
+        font-size: 0.7rem;
+        color: white;
+    }
+
+    .btn-edit {
+        background: var(--info);
+    }
+
+    .btn-delete {
+        background: var(--danger);
+    }
+
+    .code-badge {
+        background: #2d3436;
+        color: #00ff9d;
+        padding: 3px 6px;
+        border-radius: 4px;
+        font-size: 0.65rem;
+        font-family: monospace;
+    }
+
+    .city-badge {
+        background: #d4edda;
+        color: #155724;
+        padding: 3px 8px;
+        border-radius: 15px;
+        font-size: 0.65rem;
+    }
+
+    .empty-state {
+        padding: 40px 20px;
+        text-align: center;
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        color: var(--primary);
+        margin-bottom: 10px;
+    }
+
+    .empty-state h5 {
+        font-size: 1rem;
+        margin-bottom: 8px;
+    }
+
+    .empty-state p {
+        font-size: 0.75rem;
+        color: #888;
+        margin-bottom: 15px;
+    }
+
+    .empty-state .btn {
+        font-size: 0.75rem;
+        padding: 5px 15px;
+    }
+
+    .input-group {
+        width: 200px;
+    }
+
+    .input-group .form-control {
+        height: 28px;
+        font-size: 0.7rem;
+        border-radius: 20px 0 0 20px;
+    }
+
+    .input-group .input-group-text {
+        height: 28px;
+        padding: 0 10px;
+        border-radius: 0 20px 20px 0;
+        font-size: 0.7rem;
+    }
+
+    .alert {
+        padding: 8px 12px;
+        font-size: 0.75rem;
+        border-radius: 6px;
+        margin-bottom: 15px;
+    }
+
+    .rounded-circle {
+        width: 30px;
+        height: 30px;
+    }
+
+    small {
+        font-size: 0.6rem;
+    }
+    .wrap-text {
+        white-space: normal !important;
+        word-break: break-word;
+        overflow-wrap: anywhere;
+      }
+</style>
+
+<%- contentFor('body') %> 
+
+<div class="container-fluid compact">
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">
+                    <i class="fas fa-map-marker-alt me-2"></i>
+                    <%= title %>
+                </h4>
+                <a href="/admin/escape/locations/create" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Add New
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-3">
+        <div class="col-md-3">
+            <div class="stats-card bg-gradient-primary">
+                <h5>Total Locations</h5>
+                <h2><%= locations ? locations.length : 0 %></h2>
+                <i class="fas fa-map-marker-alt"></i>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card bg-gradient-success">
+                <h5>Active</h5>
+                <h2><%= locations ? locations.filter(l => l.isActive).length : 0 %></h2>
+                <i class="fas fa-check-circle"></i>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card bg-gradient-info">
+                <h5>Cities</h5>
+                <h2><%= locations ? [...new Set(locations.map(l => l.location_city).filter(c => c))].length : 0 %></h2>
+                <i class="fas fa-city"></i>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card bg-gradient-warning">
+                <h5>Capacity</h5>
+                <h2><%= locations ? locations.reduce((acc, l) => acc + (l.location_total_capacity || 0), 0) : 0 %></h2>
+                <i class="fas fa-users"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-2">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-list me-2 text-primary"></i>All Locations</h5>
+                    <!-- <div class="input-group">
+                        <input type="text" class="form-control" id="searchInput" placeholder="Search...">
+                        <span class="input-group-text bg-primary text-white">
+                            <i class="fas fa-search"></i>
+                        </span>
+                    </div> -->
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0" id="locationsTable">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Location</th>
+                                    <th>Slug</th>
+                                    <th>Status</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (locations && locations.length > 0) { 
+                                    locations.forEach((location, index) => { %>
+                                    <tr>
+                                        <td><span class="badge badge-dark">#<%= index + 1 %></span></td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <% if (location.banner_featured_image) { %>
+                                                    <img src="<%= location.banner_featured_image %>" 
+                                                         class="rounded-circle me-2" 
+                                                         onerror="this.src='/assets/images/placeholder.jpg'">
+                                                <% } else { %>
+                                                    <div class="rounded-circle bg-light d-flex align-items-center justify-content-center me-2">
+                                                        <i class="fas fa-map-marker-alt text-primary" style="font-size: 0.8rem;"></i>
+                                                    </div>
+                                                <% } %>
+                                                <div class="wrap-text">
+                                                    <strong><%= location.title %></strong>
+                                                    <% if (location.banner_video) { %>
+                                                        <small class="d-block text-muted">
+                                                            <i class="fas fa-video me-1"></i>Video
+                                                        </small>
+                                                    <% } %>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td><code class="bg-secondary p-1 text-white rounded wrap-text"><%= location.slug %></code></td>
+                                        <td>
+                                            <% if (location.isActive) { %>
+                                                <span class="badge badge-success">Active</span>
+                                            <% } else { %>
+                                                <span class="badge badge-danger">Inactive</span>
+                                            <% } %>
+                                        </td>
+                                        <td>
+                                            <small class="text-muted">
+                                                <%= new Date(location.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %>
+                                            </small>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+
+                                                <a href="/admin/escape/locations/edit/<%= location.id %>" 
+                                                    class="bg-primary p-1 text-white rounded me-2" 
+                                                    title="Edit" style="font-size: 14px;">
+                                                    <i class="bi bi-pencil-square fs-6"></i>
+                                                </a>
+                                                <a href="javascript:void();"
+                                                class="bg-danger p-1 text-white rounded" 
+                                                onclick="deleteLocation(<%= location.id %>)" 
+                                                title="Delete" style="font-size: 14px;">
+                                                <i class="bi bi-trash fs-6"></i>
+                                            </a>
+                                        </div>
+                                        </td>
+                                    </tr>
+                                <% }); } else { %>
+                                    <tr>
+                                        <td colspan="7" class="empty-state">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                            <h5>No Locations Found</h5>
+                                            <p>Get started by creating your first location</p>
+                                            <a href="/admin/escape/locations/create" class="btn-sm btn-primary">
+                                                <i class="fas fa-plus me-2"></i>Add Location
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- contentFor('js') %> 
+<script>
+function deleteLocation(id) {
+    if (confirm('Delete this location?')) {
+        $.ajax({
+            url: `/admin/escape/locations/${id}`,
+            type: 'DELETE',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            success: function(response) {
+                if (response.success) {
+                    toastr.success('Location deleted');
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    toastr.error('Delete failed');
+                }
+            },
+            error: function() {
+                toastr.error('Delete failed');
+            }
+        });
+    }
+}
+
+toastr.options = {
+    "closeButton": true,
+    "progressBar": true,
+    "positionClass": "toast-top-right",
+    "timeOut": "2000"
+};
+
+$('#searchInput').on('keyup', function() {
+    const value = $(this).val().toLowerCase();
+    $('#locationsTable tbody tr').filter(function() {
+        if (!$(this).find('.empty-state').length) {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+        }
+    });
+});
+</script>

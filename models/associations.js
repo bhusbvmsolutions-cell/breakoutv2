@@ -157,5 +157,177 @@ module.exports = (db) => {
     as: "block",
   });
 
+  // ==================== EscapeRoomArchive Associations ====================
+
+  const {
+    EscapeRoomArchive,
+    EscapeRoomArchiveIcon,
+    EscapeRoomArchiveCounter,
+    EscapeRoomArchiveImage,
+    EscapeRoomArchiveVideo,
+    Video,
+  } = db;
+
+  if (EscapeRoomArchive && EscapeRoomArchiveIcon) {
+    EscapeRoomArchive.hasMany(EscapeRoomArchiveIcon, {
+      foreignKey: "archive_id",
+      as: "icons",
+      onDelete: "CASCADE",
+    });
+
+    EscapeRoomArchiveIcon.belongsTo(EscapeRoomArchive, {
+      foreignKey: "archive_id",
+      as: "archive",
+      onDelete: "CASCADE",
+    });
+  }
+
+  if (EscapeRoomArchive && EscapeRoomArchiveCounter) {
+    EscapeRoomArchive.hasMany(EscapeRoomArchiveCounter, {
+      foreignKey: "archive_id",
+      as: "counters",
+      onDelete: "CASCADE",
+    });
+
+    EscapeRoomArchiveCounter.belongsTo(EscapeRoomArchive, {
+      foreignKey: "archive_id",
+      as: "archive",
+      onDelete: "CASCADE",
+    });
+  }
+
+  if (EscapeRoomArchive && EscapeRoomArchiveImage) {
+    EscapeRoomArchive.hasMany(EscapeRoomArchiveImage, {
+      foreignKey: "archive_id",
+      as: "images",
+      onDelete: "CASCADE",
+    });
+
+    EscapeRoomArchiveImage.belongsTo(EscapeRoomArchive, {
+      foreignKey: "archive_id",
+      as: "archive",
+      onDelete: "CASCADE",
+    });
+  }
+
+  if (EscapeRoomArchive && EscapeRoomArchiveVideo) {
+    EscapeRoomArchive.hasMany(EscapeRoomArchiveVideo, {
+      foreignKey: "archive_id",
+      as: "videos",
+      onDelete: "CASCADE",
+    });
+
+    EscapeRoomArchiveVideo.belongsTo(EscapeRoomArchive, {
+      foreignKey: "archive_id",
+      as: "archive",
+      onDelete: "CASCADE",
+    });
+  }
+
+  // Video Associations
+  if (Video && EscapeRoomArchiveVideo) {
+    Video.hasMany(EscapeRoomArchiveVideo, {
+      foreignKey: "video_id",
+      as: "archiveVideos",
+      onDelete: "CASCADE",
+    });
+
+    EscapeRoomArchiveVideo.belongsTo(Video, {
+      foreignKey: "video_id",
+      as: "videoDetails",
+      onDelete: "CASCADE",
+    });
+  }
+
+  // ==================== EscapeRoomLocations Associations ====================
+
+  const {
+    EscapeRoomLocation,
+    EscapeRoomLocationPricing,
+    EscapeRoomLocationEventSpace,
+    EscapeRoomLocationImageCard,
+    EscapeRoomLocationVideo,
+  } = db;
+
+  if (EscapeRoomLocation && EscapeRoomLocationPricing) {
+    EscapeRoomLocation.hasMany(EscapeRoomLocationPricing, {
+      foreignKey: "location_id",
+      as: "pricings",
+      onDelete: "CASCADE",
+    });
+
+    EscapeRoomLocationPricing.belongsTo(EscapeRoomLocation, {
+      foreignKey: "location_id",
+      as: "location",
+      onDelete: "CASCADE",
+    });
+  }
+
+  if (EscapeRoomLocation && EscapeRoomLocationEventSpace) {
+    EscapeRoomLocation.hasMany(EscapeRoomLocationEventSpace, {
+      foreignKey: "location_id",
+      as: "eventSpaces",
+      onDelete: "CASCADE",
+    });
+
+    EscapeRoomLocationEventSpace.belongsTo(EscapeRoomLocation, {
+      foreignKey: "location_id",
+      as: "location",
+      onDelete: "CASCADE",
+    });
+  }
+
+  if (EscapeRoomLocation && EscapeRoomLocationImageCard) {
+    EscapeRoomLocation.hasMany(EscapeRoomLocationImageCard, {
+      foreignKey: "location_id",
+      as: "imageCards",
+      onDelete: "CASCADE",
+    });
+
+    EscapeRoomLocationImageCard.belongsTo(EscapeRoomLocation, {
+      foreignKey: "location_id",
+      as: "location",
+      onDelete: "CASCADE",
+    });
+  }
+
+  if (EscapeRoomLocation && EscapeRoomLocationVideo) {
+    EscapeRoomLocation.hasMany(EscapeRoomLocationVideo, {
+      foreignKey: "location_id",
+      as: "videos",
+      onDelete: "CASCADE",
+    });
+
+    EscapeRoomLocationVideo.belongsTo(EscapeRoomLocation, {
+      foreignKey: "location_id",
+      as: "location",
+      onDelete: "CASCADE",
+    });
+  }
+
+  if (Video && EscapeRoomLocationVideo) {
+    Video.hasMany(EscapeRoomLocationVideo, {
+      foreignKey: "video_id",
+      as: "locationVideos",
+      onDelete: "CASCADE",
+    });
+
+    EscapeRoomLocationVideo.belongsTo(Video, {
+      foreignKey: "video_id",
+      as: "videoDetails",
+      onDelete: "CASCADE",
+    });
+  }
+  // NEW ASSOCIATION for banner_video_id
+  if (EscapeRoomLocation && Video) {
+    EscapeRoomLocation.belongsTo(Video, {
+      foreignKey: "banner_video_id",
+      as: "bannerVideo",
+      onDelete: "SET NULL",
+    });
+  }
+
+  
+
   console.log("✓ All model associations have been established successfully");
 };

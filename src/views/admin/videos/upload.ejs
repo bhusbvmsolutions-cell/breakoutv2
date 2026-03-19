@@ -1,5 +1,53 @@
-<%- contentFor('title') %>
+<%- contentFor('title') %> Upload Videos
 <%- contentFor('head') %>
+<style>
+  /* Optional: Add some animation to the progress bar */
+  .progress-bar {
+    transition: width 0.3s ease;
+  }
+  
+  /* Style for the preview video */
+  #previewVideo {
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    max-width: 100%;
+    max-height: 300px;
+  }
+  
+  /* Loading spinner animation */
+  @keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+  }
+  
+  #loadingSpinner {
+    animation: pulse 1.5s infinite;
+  }
+  
+  /* Progress bar container */
+  #uploadProgressContainer {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+  }
+  
+  /* Disabled button style */
+  .btn-primary:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+  }
+  
+  /* Upload speed text */
+  #uploadSpeed {
+    font-size: 0.875rem;
+    color: #6c757d;
+  }
+</style>
+
+
 <%- contentFor('body') %>
 
 <div class="row">
@@ -39,7 +87,7 @@
           <div class="mb-3">
             <div id="preview" class="text-center p-3 border rounded" style="display: none; background: #f8f9fa;">
               <h6>Preview:</h6>
-              <video id="previewVideo" controls style="max-width: 100%; max-height: 300px;">
+              <video id="previewVideo" controls>
                 <source src="#" id="videoSource">
                 Your browser does not support the video tag.
               </video>
@@ -51,18 +99,19 @@
           </div>
           
           <!-- Upload Progress Section -->
-          <div id="uploadProgressContainer" style="display: none;" class="mb-3">
+          <div id="uploadProgressContainer" style="display: none;">
             <div class="d-flex justify-content-between mb-1">
-              <span>Uploading...</span>
-              <span id="uploadPercentage">0%</span>
+              <span><i class="bi bi-arrow-up-circle"></i> Uploading...</span>
+              <span id="uploadPercentage" class="fw-bold">0%</span>
             </div>
-            <div class="progress" style="height: 20px;">
-              <div id="uploadProgressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-success" 
+            <div class="progress" style="height: 25px;">
+              <div id="uploadProgressBar" class="progress-bar progress-bar-striped progress-bar-animated" 
                    role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
                 <span id="progressText">0%</span>
               </div>
             </div>
-            <div id="uploadSpeed" class="small text-muted mt-1 text-end"></div>
+            <div id="uploadSpeed" class="small text-muted mt-2 text-end"></div>
+            <div id="uploadStatus" class="small text-muted mt-1"></div>
           </div>
           
           <hr>
@@ -72,15 +121,15 @@
               <i class="bi bi-cloud-upload"></i> Upload Video
             </button>
             
-            <!-- Loading Spinner -->
+            <!-- Loading Spinner (initially hidden) -->
             <div id="loadingSpinner" class="ms-3" style="display: none;">
               <div class="spinner-border spinner-border-sm text-primary" role="status">
                 <span class="visually-hidden">Loading...</span>
               </div>
-              <span class="ms-2">Uploading video, please wait...</span>
+              <span class="ms-2">Upload in progress...</span>
             </div>
             
-            <a href="/admin/videos" class="btn btn-secondary ms-auto">Cancel</a>
+            <a href="/admin/videos" class="btn btn-secondary ms-auto" id="cancelBtn">Cancel</a>
           </div>
         </form>
       </div>
@@ -88,8 +137,11 @@
   </div>
 </div>
 
+
+<%- contentFor('js') %> 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
+    // Get DOM elements
     const videoInput = document.getElementById('video');
     const uploadForm = document.getElementById('uploadForm');
     const submitBtn = document.getElementById('submitBtn');
@@ -99,14 +151,40 @@
     const uploadPercentage = document.getElementById('uploadPercentage');
     const progressText = document.getElementById('progressText');
     const uploadSpeed = document.getElementById('uploadSpeed');
+    const uploadStatus = document.getElementById('uploadStatus');
+    const cancelBtn = document.getElementById('cancelBtn');
     
     let startTime = null;
     let uploadedBytes = 0;
+    let currentXHR = null;
+    let isUploading = false; // Flag to track upload state
 
     // Preview functionality
     videoInput.addEventListener('change', function(e) {
       const file = e.target.files[0];
       if (file) {
+        // Check file size (500MB limit - matching backend)
+        const maxSize = 500 * 1024 * 1024; // 500MB in bytes
+        if (file.size > maxSize) {
+          alert('File size exceeds 500MB limit. Please select a smaller file.');
+          videoInput.value = '';
+          document.getElementById('preview').style.display = 'none';
+          return;
+        }
+
+        // Check file type (basic validation)
+        const validTypes = ['video/mp4', 'video/webm', 'video/ogg', 'video/quicktime', 'video/x-msvideo'];
+        const fileName = file.name.toLowerCase();
+        const validExtensions = ['.mp4', '.webm', '.ogg', '.mov', '.avi'];
+        const hasValidExtension = validExtensions.some(ext => fileName.endsWith(ext));
+        
+        if (!validTypes.includes(file.type) && !hasValidExtension) {
+          alert('Invalid file type. Please select MP4, WEBM, OGG, MOV, or AVI file.');
+          videoInput.value = '';
+          document.getElementById('preview').style.display = 'none';
+          return;
+        }
+
         // Show preview
         const videoURL = URL.createObjectURL(file);
         document.getElementById('videoSource').src = videoURL;
@@ -114,9 +192,9 @@
         document.getElementById('preview').style.display = 'block';
         
         // Show basic file info
-        const size = (file.size / (1024 * 1024)).toFixed(2);
+        const sizeInMB = (file.size / (1024 * 1024)).toFixed(2);
         document.getElementById('fileName').textContent = file.name;
-        document.getElementById('fileSize').textContent = size + ' MB';
+        document.getElementById('fileSize').textContent = sizeInMB + ' MB';
       }
     });
 
@@ -130,22 +208,38 @@
         return;
       }
 
-      // Disable submit button and show loading
+      // Double-check file size
+      const maxSize = 500 * 1024 * 1024;
+      if (file.size > maxSize) {
+        alert('File size exceeds 500MB limit. Please select a smaller file.');
+        return;
+      }
+
+      // Disable submit button and show loading UI
       submitBtn.disabled = true;
+      cancelBtn.classList.add('disabled');
       loadingSpinner.style.display = 'inline-block';
       uploadProgressContainer.style.display = 'block';
+      
+      // Set uploading flag
+      isUploading = true;
       
       // Reset progress
       updateProgress(0);
       startTime = Date.now();
       uploadedBytes = 0;
+      
+      if (uploadStatus) {
+        uploadStatus.textContent = 'Preparing upload...';
+      }
 
       const formData = new FormData(uploadForm);
       
-      const xhr = new XMLHttpRequest();
+      // Create new XHR request
+      currentXHR = new XMLHttpRequest();
       
       // Track upload progress
-      xhr.upload.addEventListener('progress', function(e) {
+      currentXHR.upload.addEventListener('progress', function(e) {
         if (e.lengthComputable) {
           const percentComplete = Math.round((e.loaded / e.total) * 100);
           updateProgress(percentComplete);
@@ -156,6 +250,7 @@
             const speed = e.loaded / elapsedSeconds; // bytes per second
             uploadedBytes = e.loaded;
             
+            // Format speed
             let speedText;
             if (speed > 1024 * 1024) {
               speedText = (speed / (1024 * 1024)).toFixed(2) + ' MB/s';
@@ -165,29 +260,57 @@
               speedText = speed.toFixed(2) + ' B/s';
             }
             
+            // Calculate remaining time
             const remainingBytes = e.total - e.loaded;
             const remainingSeconds = remainingBytes / speed;
             const remainingTime = formatTime(remainingSeconds);
             
-            uploadSpeed.textContent = `Speed: ${speedText} | Remaining: ${remainingTime}`;
+            // Update UI
+            if (uploadSpeed) {
+              uploadSpeed.textContent = `Speed: ${speedText} | Remaining: ${remainingTime}`;
+            }
+            
+            // Update status with file info
+            if (uploadStatus) {
+              const uploadedMB = (e.loaded / (1024 * 1024)).toFixed(2);
+              const totalMB = (e.total / (1024 * 1024)).toFixed(2);
+              uploadStatus.textContent = `Uploaded: ${uploadedMB} MB of ${totalMB} MB`;
+            }
           }
         }
       });
 
       // Handle completion
-      xhr.addEventListener('load', function() {
-        if (xhr.status === 200) {
-          // Success - redirect to videos page
+      currentXHR.addEventListener('load', function() {
+        // Clear uploading flag
+        isUploading = false;
+        
+        if (currentXHR.status === 200) {
+          // Success - update progress to 100%
+          updateProgress(100);
+          if (uploadStatus) {
+            uploadStatus.textContent = 'Upload complete! Redirecting...';
+          }
+          
+          // Remove beforeunload event listener before redirect
+          window.removeEventListener('beforeunload', beforeUnloadHandler);
+          
+          // Redirect immediately
           window.location.href = '/admin/videos';
         } else {
-          // Error
+          // Error - try to parse error message from response
           let errorMessage = 'Upload failed';
           try {
-            const response = JSON.parse(xhr.responseText);
-            errorMessage = response.error || errorMessage;
+            const response = JSON.parse(currentXHR.responseText);
+            errorMessage = response.error || response.message || errorMessage;
           } catch(e) {
-            // If response is not JSON, use status text
-            errorMessage = xhr.statusText || errorMessage;
+            // If response is HTML, try to extract flash message
+            const match = currentXHR.responseText.match(/alert-danger[^>]*>([^<]+)/);
+            if (match) {
+              errorMessage = match[1].trim();
+            } else {
+              errorMessage = currentXHR.statusText || 'Server error occurred';
+            }
           }
           
           alert('Error: ' + errorMessage);
@@ -195,45 +318,53 @@
         }
       });
 
-      // Handle error
-      xhr.addEventListener('error', function() {
-        alert('Network error occurred during upload');
+      // Handle network error
+      currentXHR.addEventListener('error', function() {
+        isUploading = false;
+        alert('Network error occurred during upload. Please check your connection and try again.');
         resetUploadForm();
       });
 
       // Handle abort
-      xhr.addEventListener('abort', function() {
-        alert('Upload aborted');
+      currentXHR.addEventListener('abort', function() {
+        isUploading = false;
+        alert('Upload was cancelled');
         resetUploadForm();
       });
 
-      // Open and send
-      xhr.open('POST', uploadForm.action, true);
-      xhr.send(formData);
+      // Open and send (no timeout - removed as requested)
+      currentXHR.open('POST', uploadForm.action, true);
+      currentXHR.send(formData);
     });
 
     // Helper function to update progress bar
     function updateProgress(percent) {
+      if (!uploadProgressBar || !uploadPercentage || !progressText) return;
+      
+      // Ensure percent is between 0 and 100
+      percent = Math.min(100, Math.max(0, percent));
+      
       uploadProgressBar.style.width = percent + '%';
       uploadProgressBar.setAttribute('aria-valuenow', percent);
       uploadPercentage.textContent = percent + '%';
       progressText.textContent = percent + '%';
       
       // Change color based on progress
+      uploadProgressBar.className = 'progress-bar progress-bar-striped progress-bar-animated';
       if (percent < 30) {
-        uploadProgressBar.className = 'progress-bar progress-bar-striped progress-bar-animated bg-info';
+        uploadProgressBar.classList.add('bg-info');
       } else if (percent < 70) {
-        uploadProgressBar.className = 'progress-bar progress-bar-striped progress-bar-animated bg-primary';
+        uploadProgressBar.classList.add('bg-primary');
       } else if (percent < 90) {
-        uploadProgressBar.className = 'progress-bar progress-bar-striped progress-bar-animated bg-warning';
+        uploadProgressBar.classList.add('bg-warning');
       } else {
-        uploadProgressBar.className = 'progress-bar progress-bar-striped progress-bar-animated bg-success';
+        uploadProgressBar.classList.add('bg-success');
       }
     }
 
     // Helper function to format time
     function formatTime(seconds) {
-      if (seconds < 0 || !isFinite(seconds)) return 'calculating...';
+      if (!seconds || seconds < 0 || !isFinite(seconds)) return 'calculating...';
       
       const hrs = Math.floor(seconds / 3600);
       const mins = Math.floor((seconds % 3600) / 60);
@@ -251,43 +382,56 @@
     // Helper function to reset form after error
     function resetUploadForm() {
       submitBtn.disabled = false;
+      cancelBtn.classList.remove('disabled');
       loadingSpinner.style.display = 'none';
       uploadProgressContainer.style.display = 'none';
-      uploadSpeed.textContent = '';
+      if (uploadSpeed) uploadSpeed.textContent = '';
+      if (uploadStatus) uploadStatus.textContent = '';
+      
+      // Reset progress bar
+      updateProgress(0);
+      
+      currentXHR = null;
     }
 
-    // Add confirmation for leaving page during upload
-    window.addEventListener('beforeunload', function(e) {
-      if (submitBtn.disabled) {
-        // Cancel the event
+    // Before unload handler function
+    function beforeUnloadHandler(e) {
+      if (isUploading) {
+        // Cancel the event and show confirmation
         e.preventDefault();
-        // Chrome requires returnValue to be set
-        e.returnValue = '';
+        e.returnValue = 'Upload in progress. Are you sure you want to leave?';
+        return e.returnValue;
+      }
+    }
+
+    // Add beforeunload event listener
+    window.addEventListener('beforeunload', beforeUnloadHandler);
+
+    // Clean up object URLs when leaving
+    window.addEventListener('unload', function() {
+      const videoSource = document.getElementById('videoSource');
+      if (videoSource && videoSource.src) {
+        URL.revokeObjectURL(videoSource.src);
       }
     });
+
+    // Add keyboard shortcut to cancel upload (Escape key)
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && currentXHR && isUploading) {
+        if (confirm('Cancel upload?')) {
+          currentXHR.abort();
+        }
+      }
+    });
+
+    // Auto-hide flash messages after 5 seconds
+    setTimeout(() => {
+      document.querySelectorAll('.alert').forEach(alert => {
+        alert.classList.add('fade');
+        setTimeout(() => {
+          alert.remove();
+        }, 500);
+      });
+    }, 5000);
   });
 </script>
-
-<style>
-  /* Optional: Add some animation to the progress bar */
-  .progress-bar {
-    transition: width 0.3s ease;
-  }
-  
-  /* Style for the preview video */
-  #previewVideo {
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  }
-  
-  /* Loading spinner animation */
-  @keyframes pulse {
-    0% { opacity: 1; }
-    50% { opacity: 0.5; }
-    100% { opacity: 1; }
-  }
-  
-  #loadingSpinner {
-    animation: pulse 1.5s infinite;
-  }
-</style>

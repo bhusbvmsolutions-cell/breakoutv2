@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const roleController = require('../../controllers/admin/roleController');
+const roleController = require('../../controllers/admin/role.controller');
 const { isAuthenticated } = require('../../middlewares/auth');
 const { hasPermission } = require('../../middlewares/rbac');
 

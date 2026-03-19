@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const dashboardController = require('../../controllers/admin/dashboardController');
+const dashboardController = require('../../controllers/admin/dashboard.controller');
 const { isAuthenticated, isAdmin } = require('../../middlewares/auth');
 
 // All dashboard routes require authentication and admin role

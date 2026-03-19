@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const permissionController = require('../../controllers/admin/permissionController');
+const permissionController = require('../../controllers/admin/permission.controller');
 const { isAuthenticated } = require('../../middlewares/auth');
 const { hasPermission } = require('../../middlewares/rbac'); // Make sure this path is correct
 

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const imageController = require('../../controllers/admin/imageController');
+const imageController = require('../../controllers/admin/image.controller');
 const { isAuthenticated } = require('../../middlewares/auth');
 
 // All routes require authentication

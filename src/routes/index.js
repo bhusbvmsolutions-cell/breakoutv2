@@ -2,16 +2,18 @@ const express = require('express');
 const router = express.Router();
 
 // Import route modules
-const adminAuthRoutes = require('./admin/auth.route');
-const adminDashboardRoutes = require('./admin/dashboard.route');
-const adminUserRoutes = require('./admin/users.route');
-const adminRoleRoutes = require('./admin/roles.route');
-const adminPermissionRoutes = require('./admin/permissions.route');
-const adminImageRoutes = require('./admin/images.route');
-const adminVideoRoutes = require('./admin/videos.route'); 
-const adminLogoRoutes = require('./admin/logos.route'); 
-const adminBlogRoutes = require('./admin/blogs.route'); 
-const adminSiteSettingsRoutes = require('./admin/site_settings.route'); 
+const adminAuthRoutes = require('./admin/auth.routes');
+const adminDashboardRoutes = require('./admin/dashboard.routes');
+const adminUserRoutes = require('./admin/users.routes');
+const adminRoleRoutes = require('./admin/roles.routes');
+const adminPermissionRoutes = require('./admin/permissions.routes');
+const adminImageRoutes = require('./admin/images.routes');
+const adminVideoRoutes = require('./admin/videos.routes'); 
+const adminLogoRoutes = require('./admin/logos.routes'); 
+const adminBlogRoutes = require('./admin/blogs.routes'); 
+const adminSiteSettingsRoutes = require('./admin/site_settings.routes'); 
+const adminEscapeRoomArchiveRoutes = require('./admin/escaperoomarchive.routes'); 
+const adminEscapeRoomLocationRoutes = require('./admin/escaperoomlocations.routes'); 
 
 
 
@@ -29,6 +31,8 @@ router.use('/admin/videos', adminVideoRoutes);
 router.use('/admin/logos', adminLogoRoutes); 
 router.use('/admin/blogs', adminBlogRoutes); 
 router.use('/admin/site', adminSiteSettingsRoutes); 
+router.use('/admin/escape', adminEscapeRoomArchiveRoutes); 
+router.use('/admin/escape/locations', adminEscapeRoomLocationRoutes); 
 
 // API routes
 router.use('/api', apiTestRoutes);

@@ -1,0 +1,1083 @@
+<%- contentFor('title') %><%= title %>
+
+<%- contentFor('head') %> 
+<!-- CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+  /* Modern Variables - Medium Size */
+  :root {
+    --primary-color: #fcad00;
+    --primary-dark: #e09c00;
+    --primary-light: #ffe6b3;
+    --secondary-color: #6c757d;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --info-color: #17a2b8;
+    --dark-color: #343a40;
+    --light-color: #f8f9fa;
+    --border-radius: 10px;
+    --box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    --transition: all 0.2s ease;
+    --font-size-sm: 0.85rem;
+    --font-size-base: 0.9rem;
+    --font-size-lg: 1rem;
+    --spacing-xs: 0.35rem;
+    --spacing-sm: 0.65rem;
+    --spacing-md: 0.85rem;
+    --spacing-lg: 1.25rem;
+    --spacing-xl: 1.5rem;
+  }
+
+  /* Page Header - Medium */
+  .page-title-box {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    padding: 16px 25px;
+    border-radius: var(--border-radius);
+    color: white;
+    margin-bottom: 25px;
+    box-shadow: var(--box-shadow);
+  }
+
+  .page-title-box h4 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .page-title-box .btn-secondary {
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.5);
+    color: white;
+    padding: 6px 16px;
+    border-radius: 30px;
+    font-size: var(--font-size-sm);
+    transition: var(--transition);
+  }
+
+  .page-title-box .btn-secondary:hover {
+    background: white;
+    color: var(--primary-color);
+  }
+
+  /* Section Cards - Medium */
+  .section-card {
+    border: 1px solid #e9ecef;
+    border-radius: var(--border-radius);
+    margin-bottom: 20px;
+    background: #fff;
+    box-shadow: var(--box-shadow);
+    overflow: hidden;
+  }
+
+  .section-header {
+    background: #f8f9fa;
+    padding: 14px 20px;
+    border-bottom: 2px solid var(--primary-color);
+    font-weight: 600;
+    font-size: var(--font-size-base);
+    color: var(--dark-color);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-header i {
+    color: var(--primary-color);
+    font-size: 1.1rem;
+  }
+
+  .section-body {
+    padding: 20px;
+  }
+
+  /* Form Controls - Medium */
+  .form-label {
+    font-weight: 500;
+    color: var(--dark-color);
+    margin-bottom: 5px;
+    font-size: var(--font-size-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
+  .form-control, .form-select {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 8px 12px;
+    transition: var(--transition);
+    font-size: var(--font-size-sm);
+    height: auto;
+    min-height: 38px;
+  }
+
+  .form-control:focus, .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(252, 173, 0, 0.15);
+    outline: none;
+  }
+
+  textarea.form-control {
+    min-height: 70px;
+    resize: vertical;
+  }
+
+  /* Image Preview - Medium */
+  .image-preview-container {
+    margin-top: 8px;
+    padding: 8px;
+    background: var(--light-color);
+    border-radius: 6px;
+    border: 1px dashed #dee2e6;
+  }
+
+  .image-preview {
+    max-width: 70px;
+    max-height: 70px;
+    border-radius: 6px;
+    border: 2px solid white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+
+  /* Upload Area - Medium */
+  .upload-area {
+    border: 2px dashed var(--primary-color);
+    border-radius: 8px;
+    padding: 15px;
+    text-align: center;
+    background: var(--light-color);
+    cursor: pointer;
+    transition: var(--transition);
+  }
+
+  .upload-area:hover {
+    background: var(--primary-light);
+    border-color: var(--primary-dark);
+  }
+
+  .upload-area i {
+    font-size: 28px;
+    color: var(--primary-color);
+    margin-bottom: 6px;
+  }
+
+  .upload-area h5 {
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    color: var(--dark-color);
+    margin-bottom: 3px;
+  }
+
+  .upload-area p {
+    color: var(--secondary-color);
+    margin: 0;
+    font-size: 0.75rem;
+  }
+
+  /* Repeater Items - Medium */
+  .repeater-item {
+    background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%);
+    padding: 16px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+    border-left: 4px solid var(--primary-color);
+    position: relative;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+  }
+
+  .repeater-item:hover {
+    box-shadow: 0 4px 12px rgba(252, 173, 0, 0.08);
+  }
+
+  .repeater-item .delete-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--danger-color);
+    color: white;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition);
+    opacity: 0;
+    transform: scale(0.8);
+    font-size: 0.8rem;
+  }
+
+  .repeater-item:hover .delete-btn {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .repeater-item .delete-btn:hover {
+    background: #c82333;
+    transform: scale(1.1);
+  }
+
+  /* Select2 Customization - Medium */
+  .select2-container--default .select2-selection--multiple {
+    min-height: 38px;
+    border: 1px solid #e9ecef !important;
+    border-radius: 8px !important;
+    padding: 3px;
+  }
+
+  .select2-container--default .select2-selection--multiple .select2-selection__choice {
+    background-color: var(--primary-color);
+    border-color: var(--primary-dark);
+    color: white;
+    padding: 3px 20px 3px 8px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    margin: 2px;
+  }
+
+  .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+    color: white;
+    right: 4px;
+    left: auto;
+  }
+
+  .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+    background: rgba(255,255,255,0.2);
+    color: white;
+  }
+
+  .select2-search--dropdown .select2-search__field {
+    padding: 6px;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+  }
+
+  /* Video Items - Medium */
+  .video-item {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 10px;
+    border: 1px solid transparent;
+    transition: var(--transition);
+  }
+
+  .video-item:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 2px 8px rgba(252, 173, 0, 0.1);
+  }
+
+  .video-thumb {
+    width: 70px;
+    height: 45px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 2px solid white;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+
+  /* Submit Button - Medium */
+  .btn-submit {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    border: none;
+    padding: 10px 35px;
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    border-radius: 40px;
+    box-shadow: 0 4px 12px rgba(252, 173, 0, 0.25);
+  }
+
+  .btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(252, 173, 0, 0.35);
+  }
+
+  /* Add Button - Medium */
+  .btn-add {
+    background: white;
+    border: 1px dashed var(--primary-color);
+    color: var(--primary-color);
+    padding: 7px 18px;
+    border-radius: 25px;
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    transition: var(--transition);
+  }
+
+  .btn-add:hover {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+  }
+
+  /* Grid System - Medium Gaps */
+  .row {
+    margin-right: -10px;
+    margin-left: -10px;
+  }
+  
+  .col, [class*="col-"] {
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+
+  .mb-3 {
+    margin-bottom: 1rem !important;
+  }
+
+  .mt-3 {
+    margin-top: 1rem !important;
+  }
+
+  .mt-4 {
+    margin-top: 1.25rem !important;
+  }
+
+  .mt-5 {
+    margin-top: 2rem !important;
+  }
+
+  .mb-5 {
+    margin-bottom: 2rem !important;
+  }
+
+  .gap-2 {
+    gap: 0.65rem !important;
+  }
+
+  .p-3 {
+    padding: 1rem !important;
+  }
+
+  /* Headings */
+  h6 {
+    font-size: 0.9rem;
+    margin-bottom: 0.65rem;
+  }
+
+  .fw-bold {
+    font-weight: 600 !important;
+  }
+
+  /* Badges and icons */
+  .badge {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.5rem;
+  }
+
+  .ms-2 {
+    margin-left: 0.4rem !important;
+  }
+
+  .me-2 {
+    margin-right: 0.4rem !important;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .page-title-box {
+      flex-direction: column;
+      gap: 10px;
+      text-align: center;
+    }
+    
+    .repeater-item .delete-btn {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+</style>
+
+<%- contentFor('body') %> 
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <div class="page-title-box d-flex justify-content-between align-items-center">
+        <h4 class="mb-0"><i class="fas fa-archive me-2"></i><%= title %></h4>
+        <a href="/admin/dashboard" class="btn btn-secondary btn-sm">
+          <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <form action="/admin/escape/archive" method="POST" enctype="multipart/form-data" id="archiveForm">
+    <input type="hidden" name="_method" value="PUT">
+
+    <!-- Banner Section -->
+    <div class="section-card">
+      <div class="section-header">
+        <i class="fas fa-image"></i>
+        <span>Banner Section</span>
+      </div>
+      <div class="section-body">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Heading</label>
+            <input type="text" class="form-control" name="banner_heading" 
+                   value="<%= archive.banner_heading || '' %>" placeholder="Enter banner heading">
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Banner Image</label>
+            <div class="upload-area" onclick="document.getElementById('bannerImage').click()">
+              <i class="fas fa-cloud-upload-alt"></i>
+              <h5>Click to upload banner image</h5>
+              <p>PNG, JPG, GIF (Max 5MB)</p>
+              <input type="file" id="bannerImage" name="banner_image" accept="image/*" style="display: none;">
+            </div>
+            <% if (archive.banner_image) { %>
+              <div class="image-preview-container text-center">
+                <img src="<%= archive.banner_image %>" class="image-preview" alt="Banner">
+                <small class="d-block text-muted mt-1">Current image</small>
+              </div>
+            <% } %>
+          </div>
+          <div class="col-12 mb-3">
+            <label class="form-label">Description</label>
+            <textarea class="form-control" name="banner_description" rows="2" placeholder="Enter banner description"><%= archive.banner_description || '' %></textarea>
+          </div>
+          <div class="col-md-3 mb-3">
+            <label class="form-label">CTA Label 1</label>
+            <input type="text" class="form-control" name="banner_cta_label1" 
+                   value="<%= archive.banner_cta_label1 || '' %>" placeholder="e.g., Learn More">
+          </div>
+          <div class="col-md-3 mb-3">
+            <label class="form-label">CTA Link 1</label>
+            <input type="text" class="form-control" name="banner_cta_link1" 
+                   value="<%= archive.banner_cta_link1 || '' %>" placeholder="https://example.com">
+          </div>
+          <div class="col-md-3 mb-3">
+            <label class="form-label">CTA Label 2</label>
+            <input type="text" class="form-control" name="banner_cta_label2" 
+                   value="<%= archive.banner_cta_label2 || '' %>" placeholder="e.g., Get Started">
+          </div>
+          <div class="col-md-3 mb-3">
+            <label class="form-label">CTA Link 2</label>
+            <input type="text" class="form-control" name="banner_cta_link2" 
+                   value="<%= archive.banner_cta_link2 || '' %>" placeholder="https://example.com">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Icon Section -->
+    <div class="section-card">
+      <div class="section-header">
+        <i class="fas fa-icons"></i>
+        <span>Icon Section</span>
+      </div>
+      <div class="section-body">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Section Heading</label>
+            <input type="text" class="form-control" name="icon_heading" 
+                   value="<%= archive.icon_heading || '' %>" placeholder="Enter section heading">
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Section Description</label>
+            <textarea class="form-control" name="icon_description" rows="1" placeholder="Enter section description"><%= archive.icon_description || '' %></textarea>
+          </div>
+        </div>
+
+        <h6 class="mt-3 mb-3 fw-bold">
+          <i class="fas fa-list me-2 text-primary"></i>Icon Items
+        </h6>
+        <div id="iconRepeater">
+          <% if (icons && icons.length > 0) { 
+            icons.forEach((icon, index) => { %>
+            <div class="repeater-item" data-id="<%= icon.id %>">
+              <div class="row align-items-center">
+                <div class="col-md-5">
+                  <label class="form-label">Heading</label>
+                  <input type="text" class="form-control" name="icon_headings[]" 
+                         value="<%= icon.heading || '' %>" placeholder="Enter icon heading">
+                </div>
+                <div class="col-md-5">
+                  <label class="form-label">Icon Image</label>
+                  <input type="file" class="form-control" name="icon_images" accept="image/*" 
+                         onchange="previewImage(this, 'iconPreview_<%= index %>')">
+                  <% if (icon.image) { %>
+                    <input type="hidden" name="icon_existing_image_<%= index %>" value="<%= icon.image %>">
+                    <div class="mt-1" id="iconPreview_<%= index %>">
+                      <img src="<%= icon.image %>" style="max-height: 35px; border-radius: 4px;" alt="Icon">
+                      <button type="button" class="btn btn-sm btn-link text-danger p-0 ms-2" 
+                              onclick="deleteIcon(<%= icon.id %>, this)">
+                        <small><i class="fas fa-trash"></i> Remove</small>
+                      </button>
+                    </div>
+                  <% } else { %>
+                    <div class="mt-1" id="iconPreview_<%= index %>"></div>
+                  <% } %>
+                </div>
+              </div>
+              <button type="button" class="delete-btn" onclick="removeRepeaterItem(this)">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          <% }); } else { %>
+            <div class="repeater-item">
+              <div class="row align-items-center">
+                <div class="col-md-5">
+                  <label class="form-label">Heading</label>
+                  <input type="text" class="form-control" name="icon_headings[]" placeholder="Enter icon heading">
+                </div>
+                <div class="col-md-5">
+                  <label class="form-label">Icon Image</label>
+                  <input type="file" class="form-control" name="icon_images" accept="image/*"
+                         onchange="previewImage(this, 'iconPreview_0')">
+                  <div class="mt-1" id="iconPreview_0"></div>
+                </div>
+              </div>
+              <button type="button" class="delete-btn" onclick="removeRepeaterItem(this)">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          <% } %>
+        </div>
+        <button type="button" class="btn btn-add mt-2" onclick="addIconItem()">
+          <i class="fas fa-plus me-1"></i>Add Icon Item
+        </button>
+      </div>
+    </div>
+
+    <!-- Counter Section -->
+    <div class="section-card">
+      <div class="section-header">
+        <i class="fas fa-chart-simple"></i>
+        <span>Counter Section</span>
+      </div>
+      <div class="section-body">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Counter Heading</label>
+            <input type="text" class="form-control" name="counter_heading" 
+                   value="<%= archive.counter_heading || '' %>" placeholder="Enter counter heading">
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Rating (0-5)</label>
+            <input type="number" class="form-control" name="counter_rating" step="0.1" min="0" max="5"
+                   value="<%= archive.counter_rating || '' %>" placeholder="4.5">
+          </div>
+        </div>
+
+        <h6 class="mt-3 mb-3 fw-bold">
+          <i class="fas fa-list me-2 text-primary"></i>Counter Items
+        </h6>
+        <div id="counterRepeater">
+          <% if (counters && counters.length > 0) { 
+            counters.forEach((counter, index) => { %>
+            <div class="repeater-item" data-id="<%= counter.id %>">
+              <div class="row align-items-center">
+                <div class="col-md-3">
+                  <label class="form-label">Image</label>
+                  <input type="file" class="form-control" name="counter_images" accept="image/*"
+                         onchange="previewImage(this, 'counterPreview_<%= index %>')">
+                  <% if (counter.image) { %>
+                    <input type="hidden" name="counter_existing_image_<%= index %>" value="<%= counter.image %>">
+                    <div class="mt-1" id="counterPreview_<%= index %>">
+                      <img src="<%= counter.image %>" style="max-height: 35px; border-radius: 4px;" alt="Counter">
+                      <button type="button" class="btn btn-sm btn-link text-danger p-0 ms-2" 
+                              onclick="deleteCounter(<%= counter.id %>, this)">
+                        <small><i class="fas fa-trash"></i> Remove</small>
+                      </button>
+                    </div>
+                  <% } else { %>
+                    <div class="mt-1" id="counterPreview_<%= index %>"></div>
+                  <% } %>
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label">Count</label>
+                  <input type="text" class="form-control" name="counter_counts[]" 
+                         value="<%= counter.count || '' %>" placeholder="e.g., 500+">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Description</label>
+                  <input type="text" class="form-control" name="counter_descriptions[]" 
+                         value="<%= counter.description || '' %>" placeholder="Enter description">
+                </div>
+              </div>
+              <button type="button" class="delete-btn" onclick="removeRepeaterItem(this)">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          <% }); } else { %>
+            <div class="repeater-item">
+              <div class="row align-items-center">
+                <div class="col-md-3">
+                  <label class="form-label">Image</label>
+                  <input type="file" class="form-control" name="counter_images" accept="image/*"
+                         onchange="previewImage(this, 'counterPreview_0')">
+                  <div class="mt-1" id="counterPreview_0"></div>
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label">Count</label>
+                  <input type="text" class="form-control" name="counter_counts[]" placeholder="e.g., 500+">
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Description</label>
+                  <input type="text" class="form-control" name="counter_descriptions[]" placeholder="Enter description">
+                </div>
+              </div>
+              <button type="button" class="delete-btn" onclick="removeRepeaterItem(this)">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          <% } %>
+        </div>
+        <button type="button" class="btn btn-add mt-2" onclick="addCounterItem()">
+          <i class="fas fa-plus me-1"></i>Add Counter Item
+        </button>
+      </div>
+    </div>
+
+    <!-- Gallery Section -->
+    <div class="section-card">
+      <div class="section-header">
+        <i class="fas fa-images"></i>
+        <span>Gallery Section</span>
+      </div>
+      <div class="section-body">
+        <h6 class="mt-0 mb-3 fw-bold">
+          <i class="fas fa-images me-2 text-primary"></i>Gallery Images
+        </h6>
+        
+        <div id="galleryRepeater">
+          <% if (images && images.length > 0) { 
+            images.forEach((image, index) => { %>
+            <div class="repeater-item" data-id="<%= image.id %>" id="galleryItem_<%= image.id %>">
+              <div class="row align-items-center">
+                <div class="col-md-2">
+                  <% if (image.image) { %>
+                    <img src="<%= image.image %>" style="max-height: 60px; max-width: 60px; border-radius: 6px;" alt="Gallery">
+                  <% } else { %>
+                    <div style="height: 60px; width: 60px; background: #f0f0f0; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                      <i class="fas fa-image text-muted" style="font-size: 24px;"></i>
+                    </div>
+                  <% } %>
+                </div>
+                <div class="col-md-8">
+                  <label class="form-label">Image</label>
+                  <input type="file" class="form-control" name="gallery_images" accept="image/*"
+                         onchange="previewGalleryImage(this, 'galleryPreview_<%= image.id %>')">
+                  <input type="hidden" name="gallery_existing_image_<%= index %>" value="<%= image.image %>" id="galleryHidden_<%= image.id %>">
+                  <div class="mt-1" id="galleryPreview_<%= image.id %>"></div>
+                </div>
+              </div>
+              <button type="button" class="delete-btn" onclick="deleteGalleryImage(<%= image.id %>, this)">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          <% }); } else { %>
+            <div class="repeater-item" id="galleryItem_new">
+              <div class="row align-items-center">
+                <div class="col-md-2">
+                  <div style="height: 60px; width: 60px; background: #f0f0f0; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-image text-muted" style="font-size: 24px;"></i>
+                  </div>
+                </div>
+                <div class="col-md-8">
+                  <label class="form-label">Image</label>
+                  <input type="file" class="form-control" name="gallery_images" accept="image/*"
+                         onchange="previewGalleryImage(this, 'galleryPreview_new')">
+                  <div class="mt-1" id="galleryPreview_new"></div>
+                </div>
+              </div>
+              <button type="button" class="delete-btn" onclick="removeGalleryItem(this)">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          <% } %>
+        </div>
+        
+        <button type="button" class="btn btn-add mt-3" onclick="addGalleryItem()">
+          <i class="fas fa-plus me-1"></i>Add Gallery Image
+        </button>
+        
+        <input type="hidden" name="gallery_images_data" id="galleryImagesData" value="">
+      </div>
+    </div>
+
+    <!-- Video Testimonials Section -->
+    <div class="section-card">
+      <div class="section-header">
+        <i class="fas fa-video"></i>
+        <span>Video Testimonials</span>
+      </div>
+      <div class="section-body">
+        <div class="row">
+          <div class="col-12 mb-3">
+            <label class="form-label">Select Videos</label>
+            <select class="form-control select2-multiple" name="video_ids[]" multiple style="width: 100%">
+              <% allVideos.forEach(video => { 
+                const isSelected = selectedVideos.some(sv => sv.video_id == video.id);
+              %>
+                <option value="<%= video.id %>" <%= isSelected ? 'selected' : '' %>>
+                  <%= video.title || 'Video ' + video.id %> 
+                  <% if (video.duration) { %>(<%= Math.floor(video.duration/60) %>:<%= String(video.duration%60).padStart(2,'0') %>)<% } %>
+                </option>
+              <% }); %>
+            </select>
+            <small class="text-muted">Type to search videos</small>
+          </div>
+          
+          <div id="videoTitlesContainer" class="col-12 mt-2">
+            <% selectedVideos.forEach(video => { %>
+              <div class="video-item">
+                <div class="row align-items-center">
+                  <div class="col-md-1">
+                    <% if (video.videoDetails?.thumbnail) { %>
+                      <img src="<%= video.videoDetails.thumbnail %>" class="video-thumb" alt="Thumb">
+                    <% } %>
+                  </div>
+                  <div class="col-md-3">
+                    <strong><%= video.videoDetails?.title || 'Video' %></strong>
+                  </div>
+                  <div class="col-md-8">
+                    <label class="form-label">Custom Title (optional)</label>
+                    <input type="text" class="form-control" name="video_title_<%= video.video_id %>" 
+                           value="<%= video.title || '' %>" placeholder="Enter custom video title">
+                  </div>
+                </div>
+              </div>
+            <% }); %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Section -->
+    <div class="section-card">
+      <div class="section-header">
+        <i class="fas fa-footer"></i>
+        <span>Footer Section</span>
+      </div>
+      <div class="section-body">
+        <div class="row">
+          <div class="col-12 mb-3">
+            <label class="form-label">Heading</label>
+            <input type="text" class="form-control" name="footer_heading" 
+                   value="<%= archive.footer_heading || '' %>" placeholder="Enter footer heading">
+          </div>
+          <div class="col-12 mb-3">
+            <label class="form-label">Description 1</label>
+            <textarea class="form-control" name="footer_description1" rows="1" 
+                      placeholder="Enter first description"><%= archive.footer_description1 || '' %></textarea>
+          </div>
+          <div class="col-12 mb-3">
+            <label class="form-label">Description 2</label>
+            <textarea class="form-control" name="footer_description2" rows="1" 
+                      placeholder="Enter second description"><%= archive.footer_description2 || '' %></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="row mt-5 mb-4">
+      <div class="col-12 text-center">
+        <button type="submit" class="btn btn-primary btn-submit" id="submitBtn">
+          <i class="fas fa-save me-2"></i> Save All Changes
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<%- contentFor('js') %> 
+<!-- JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+  let iconCount = <%= icons ? icons.length : 1 %>;
+  let counterCount = <%= counters ? counters.length : 1 %>;
+  let galleryCount = <%= images ? images.length : 1 %>;
+
+  $(document).ready(function() {
+    // Initialize Select2 with search enabled
+    $('.select2-multiple').select2({
+      placeholder: '🔍 Search and select videos...',
+      allowClear: true,
+      width: '100%',
+      language: {
+        noResults: function() {
+          return "No videos found";
+        }
+      },
+      matcher: function(params, data) {
+        // Custom matcher for better search
+        if ($.trim(params.term) === '') {
+          return data;
+        }
+        
+        if (typeof data.text === 'undefined') {
+          return null;
+        }
+        
+        var searchTerm = params.term.toLowerCase();
+        var text = data.text.toLowerCase();
+        
+        if (text.indexOf(searchTerm) > -1) {
+          return data;
+        }
+        
+        return null;
+      }
+    });
+
+    // Handle video selection change
+    $('.select2-multiple').on('change', function() {
+      const selectedIds = $(this).val() || [];
+      const container = $('#videoTitlesContainer');
+      
+      if (selectedIds.length === 0) {
+        container.empty();
+        return;
+      }
+
+      // Get selected video details
+      const videos = {};
+      $('.select2-multiple option:selected').each(function() {
+        const id = $(this).val();
+        const title = $(this).text().split('(')[0].trim();
+        videos[id] = title;
+      });
+
+      let html = '';
+      selectedIds.forEach((id, index) => {
+        html += `
+          <div class="video-item" style="animation: slideIn 0.3s ease ${index * 0.1}s forwards;">
+            <div class="row align-items-center">
+              <div class="col-md-4">
+                <strong>${videos[id] || 'Video'}</strong>
+              </div>
+              <div class="col-md-8">
+                <label class="form-label">Custom Title</label>
+                <input type="text" class="form-control" name="video_title_${id}" 
+                       value="" placeholder="Enter custom video title">
+              </div>
+            </div>
+          </div>
+        `;
+      });
+      
+      container.html(html);
+    });
+
+    // Form submission with loading state
+    $('#archiveForm').on('submit', function() {
+      $('#submitBtn').prop('disabled', true)
+        .html('<i class="fas fa-spinner fa-spin me-2"></i> Saving Changes...');
+    });
+  });
+
+  // Image preview function for icons and counters
+  function previewImage(input, previewId) {
+    const preview = document.getElementById(previewId);
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        preview.innerHTML = `
+          <img src="${e.target.result}" style="max-height: 35px; border-radius: 4px;" alt="Preview">
+        `;
+      }
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+
+  // Gallery image preview function
+  function previewGalleryImage(input, previewId) {
+    const preview = document.getElementById(previewId);
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        preview.innerHTML = `
+          <img src="${e.target.result}" style="max-height: 45px; border-radius: 4px;" alt="Preview">
+        `;
+      }
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+
+  function addIconItem() {
+    iconCount++;
+    const html = `
+      <div class="repeater-item" style="animation: slideIn 0.3s ease forwards;">
+        <div class="row align-items-center">
+          <div class="col-md-5">
+            <label class="form-label">Heading</label>
+            <input type="text" class="form-control" name="icon_headings[]" placeholder="Enter icon heading">
+          </div>
+          <div class="col-md-5">
+            <label class="form-label">Icon Image</label>
+            <input type="file" class="form-control" name="icon_images" accept="image/*"
+                   onchange="previewImage(this, 'iconPreview_${iconCount}')">
+            <div class="mt-1" id="iconPreview_${iconCount}"></div>
+          </div>
+        </div>
+        <button type="button" class="delete-btn" onclick="removeRepeaterItem(this)">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    `;
+    $('#iconRepeater').append(html);
+  }
+
+  function addCounterItem() {
+    counterCount++;
+    const html = `
+      <div class="repeater-item" style="animation: slideIn 0.3s ease forwards;">
+        <div class="row align-items-center">
+          <div class="col-md-3">
+            <label class="form-label">Image</label>
+            <input type="file" class="form-control" name="counter_images" accept="image/*"
+                   onchange="previewImage(this, 'counterPreview_${counterCount}')">
+            <div class="mt-1" id="counterPreview_${counterCount}"></div>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Count</label>
+            <input type="text" class="form-control" name="counter_counts[]" placeholder="e.g., 500+">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Description</label>
+            <input type="text" class="form-control" name="counter_descriptions[]" placeholder="Enter description">
+          </div>
+        </div>
+        <button type="button" class="delete-btn" onclick="removeRepeaterItem(this)">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    `;
+    $('#counterRepeater').append(html);
+  }
+
+  function addGalleryItem() {
+    galleryCount++;
+    const newId = 'new_' + Date.now();
+    const html = `
+      <div class="repeater-item" id="galleryItem_${newId}" style="animation: slideIn 0.3s ease forwards;">
+        <div class="row align-items-center">
+          <div class="col-md-2">
+            <div style="height: 60px; width: 60px; background: #f0f0f0; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+              <i class="fas fa-image text-muted" style="font-size: 24px;"></i>
+            </div>
+          </div>
+          <div class="col-md-8">
+            <label class="form-label">Image</label>
+            <input type="file" class="form-control" name="gallery_images" accept="image/*"
+                   onchange="previewGalleryImage(this, 'galleryPreview_${newId}')">
+            <div class="mt-1" id="galleryPreview_${newId}"></div>
+          </div>
+        </div>
+        <button type="button" class="delete-btn" onclick="removeGalleryItem(this)">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    `;
+    $('#galleryRepeater').append(html);
+  }
+
+  function removeRepeaterItem(btn) {
+    if (confirm('Are you sure you want to remove this item?')) {
+      $(btn).closest('.repeater-item').slideUp(300, function() {
+        $(this).remove();
+      });
+    }
+  }
+
+  function removeGalleryItem(btn) {
+    if (confirm('Are you sure you want to remove this image?')) {
+      $(btn).closest('.repeater-item').slideUp(300, function() {
+        $(this).remove();
+      });
+    }
+  }
+
+  function deleteGalleryImage(id, btn) {
+    if (!confirm('Are you sure you want to delete this image?')) return;
+    
+    $.ajax({
+      url: `/admin/escape/archive/image/${id}`,
+      type: 'DELETE',
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      success: function(response) {
+        if (response.success) {
+          $(btn).closest('.repeater-item').slideUp(300, function() {
+            $(this).remove();
+          });
+          showAlert('success', 'Image deleted successfully');
+        } else {
+          showAlert('danger', response.message || 'Delete failed');
+        }
+      },
+      error: function() {
+        showAlert('danger', 'Failed to delete image');
+      }
+    });
+  }
+
+  function deleteIcon(id, btn) {
+    if (!confirm('Are you sure you want to delete this icon?')) return;
+    
+    $.ajax({
+      url: `/admin/escape/archive/icon/${id}`,
+      type: 'DELETE',
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      success: function(response) {
+        if (response.success) {
+          $(btn).closest('.repeater-item').slideUp(300, function() {
+            $(this).remove();
+          });
+          showAlert('success', 'Icon deleted successfully');
+        } else {
+          showAlert('danger', response.message || 'Delete failed');
+        }
+      },
+      error: function() {
+        showAlert('danger', 'Failed to delete icon');
+      }
+    });
+  }
+
+  function deleteCounter(id, btn) {
+    if (!confirm('Are you sure you want to delete this counter?')) return;
+    
+    $.ajax({
+      url: `/admin/escape/archive/counter/${id}`,
+      type: 'DELETE',
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      success: function(response) {
+        if (response.success) {
+          $(btn).closest('.repeater-item').slideUp(300, function() {
+            $(this).remove();
+          });
+          showAlert('success', 'Counter deleted successfully');
+        } else {
+          showAlert('danger', response.message || 'Delete failed');
+        }
+      },
+      error: function() {
+        showAlert('danger', 'Failed to delete counter');
+      }
+    });
+  }
+
+  function showAlert(type, message) {
+    const alertHtml = `
+      <div class="alert alert-${type} alert-dismissible fade show" role="alert" style="position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 250px; padding: 12px 16px; font-size: 0.9rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-radius: 8px;">
+        <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} me-2"></i> 
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" style="font-size: 0.7rem;"></button>
+      </div>
+    `;
+    $('body').append(alertHtml);
+    setTimeout(() => $('.alert').fadeOut(300, function() { $(this).remove(); }), 4000);
+  }
+</script>

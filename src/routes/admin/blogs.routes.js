@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const BlogController = require("../../controllers/admin/blogController");
+const BlogController = require("../../controllers/admin/blog.controller");
 const { isAuthenticated } = require("../../middlewares/auth");
 const multer = require("multer");
 const path = require("path");

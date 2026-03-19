@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const videoController = require('../../controllers/admin/videoController');
+const videoController = require('../../controllers/admin/video.controller');
 const { isAuthenticated } = require('../../middlewares/auth');
 
 // All routes require authentication

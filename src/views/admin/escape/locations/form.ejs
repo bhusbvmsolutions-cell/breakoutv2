@@ -1,0 +1,1029 @@
+<%- contentFor('title') %><%= title %>
+
+<%- contentFor('head') %>
+<!-- CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+  :root {
+    --primary: #fcad00;
+    --primary-dark: #e09c00;
+    --primary-light: #fff3e0;
+    --danger: #d63031;
+    --info: #0984e3;
+    --dark: #2d3436;
+    --light: #f5f6fa;
+  }
+
+  /* Compact variables */
+  .compact {
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 0.75rem;
+    --spacing-lg: 1rem;
+    --font-xs: 0.7rem;
+    --font-sm: 0.75rem;
+    --font-md: 0.8rem;
+    --font-lg: 0.9rem;
+  }
+
+  .page-title-box {
+    background: linear-gradient(135deg, var(--primary) 0%, #ff7e5f 100%);
+    padding: 12px 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 5px 15px rgba(252, 173, 0, 0.2);
+  }
+
+  .page-title-box h4 {
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .page-title-box .btn-light {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid white;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 30px;
+    font-size: 0.75rem;
+  }
+
+  .section-card {
+    border: 1px solid #e9ecef;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    background: white;
+    overflow: hidden;
+  }
+
+  .section-header {
+    background: var(--light);
+    padding: 10px 15px;
+    border-bottom: 2px solid var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-header i {
+    font-size: 1rem;
+    color: var(--primary);
+    background: var(--primary-light);
+    padding: 6px;
+    border-radius: 8px;
+  }
+
+  .section-header span {
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  .section-body {
+    padding: 15px;
+  }
+
+  .form-label {
+    font-weight: 500;
+    margin-bottom: 4px;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
+  .form-control,
+  .form-select {
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 0.8rem;
+    min-height: 32px;
+  }
+
+  .form-control:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 0.1rem rgba(252, 173, 0, 0.2);
+  }
+
+  .repeater-item {
+    background: #fafafa;
+    padding: 12px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    border-left: 3px solid var(--primary);
+    position: relative;
+  }
+
+  .repeater-item .delete-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--danger);
+    color: white;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 0.7rem;
+    opacity: 0;
+    transition: all 0.2s;
+  }
+
+  .repeater-item:hover .delete-btn {
+    opacity: 1;
+  }
+
+  .btn-add {
+    background: white;
+    border: 1px dashed var(--primary);
+    color: var(--primary);
+    padding: 5px 15px;
+    border-radius: 30px;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+
+  .btn-submit {
+    background: linear-gradient(135deg, var(--primary) 0%, #ff7e5f 100%);
+    border: none;
+    padding: 8px 30px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: 30px;
+    box-shadow: 0 5px 15px rgba(252, 173, 0, 0.3);
+    color: white;
+  }
+
+  .image-preview {
+    max-width: 50px;
+    max-height: 50px;
+    border-radius: 6px;
+  }
+
+  .featured-image-upload {
+    border: 2px dashed var(--primary);
+    border-radius: 8px;
+    padding: 15px;
+    text-align: center;
+    background: var(--light);
+    cursor: pointer;
+  }
+
+  .featured-image-upload i {
+    font-size: 1.5rem;
+    color: var(--primary);
+    margin-bottom: 5px;
+  }
+
+  .featured-image-upload p {
+    font-size: 0.75rem;
+    margin-bottom: 2px;
+  }
+
+  .featured-image-upload small {
+    font-size: 0.65rem;
+  }
+
+  .current-image {
+    margin-top: 10px;
+  }
+
+  .current-image img {
+    max-width: 80px;
+    max-height: 80px;
+    border-radius: 8px;
+  }
+
+  /* Enhanced Select2 Styles - Tag Style */
+  .select2-container--default .select2-selection--multiple {
+    min-height: 36px;
+    border: 1px solid #e9ecef !important;
+    border-radius: 6px !important;
+    padding: 2px;
+  }
+
+  .select2-selection--multiple {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center;
+  }
+
+  .select2-container {
+    width: 100% !important;
+  }
+
+  .select2-container--default .select2-selection--multiple .select2-selection__choice {
+    background: linear-gradient(135deg, var(--primary) 0%, #ff7e5f 100%);
+    border: none;
+    color: white;
+    padding: 4px 25px 4px 10px;
+    border-radius: 30px;
+    font-size: 0.75rem;
+    margin: 2px;
+    position: relative;
+  }
+
+  .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+    color: white;
+    right: 5px;
+    left: auto;
+    font-size: 1rem;
+    font-weight: bold;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border-radius: 50%;
+  }
+
+  .select2-container--default.select2-container--focus .select2-selection--multiple {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 0.2rem rgba(252, 173, 0, 0.25);
+  }
+
+  .select2-dropdown {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  .select2-search--dropdown .select2-search__field {
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 0.8rem;
+  }
+
+  .select2-search--dropdown .select2-search__field:focus {
+    border-color: var(--primary);
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(252, 173, 0, 0.25);
+  }
+
+  .select2-results__option {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+  }
+
+  .select2-results__option--highlighted {
+    background: var(--primary-light) !important;
+    color: var(--dark) !important;
+  }
+
+  .select2-results__option[aria-selected=true] {
+    background: var(--primary) !important;
+    color: white !important;
+  }
+
+  /* Video Items */
+  .video-item {
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    border-left: 3px solid var(--info);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    transition: all 0.2s;
+  }
+
+  .video-item:hover {
+    transform: translateX(3px);
+    box-shadow: 0 4px 8px rgba(9, 132, 227, 0.1);
+  }
+
+  .video-item .video-thumb {
+    width: 60px;
+    height: 40px;
+    border-radius: 4px;
+    object-fit: cover;
+    margin-right: 10px;
+  }
+
+  .video-badge {
+    background: var(--info);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.6rem;
+    margin-left: 8px;
+  }
+
+  /* Compact grid */
+  .row {
+    margin-right: -8px;
+    margin-left: -8px;
+  }
+
+  .col,
+  [class*="col-"] {
+    padding-right: 8px;
+    padding-left: 8px;
+  }
+
+  .mb-3 {
+    margin-bottom: 0.75rem !important;
+  }
+
+  .mt-3 {
+    margin-top: 0.75rem !important;
+  }
+
+  .mt-4 {
+    margin-top: 1rem !important;
+  }
+
+  .mt-5 {
+    margin-top: 1.5rem !important;
+  }
+
+  .progress {
+    height: 4px !important;
+  }
+
+  .progress-bar {
+    height: 4px;
+  }
+
+  /* Loading spinner */
+  .spinner-small {
+    width: 1rem;
+    height: 1rem;
+    border-width: 2px;
+  }
+</style>
+
+<%- contentFor('body') %>
+
+<div class="compact">
+  <div class="row">
+    <div class="col-12">
+      <div class="page-title-box d-flex justify-content-between align-items-center">
+        <h4 class="mb-0">
+          <i class="fas fa-map-marker-alt me-2"></i>
+          <%= title %>
+        </h4>
+        <a href="/admin/escape/locations" class="btn btn-light">
+          <i class="fas fa-arrow-left me-2"></i>Back
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Compact Progress Bar -->
+  <div class="card mb-3">
+    <div class="card-body p-2">
+      <div class="progress">
+        <div class="progress-bar bg-primary" style="width: 0%;" id="formProgress"></div>
+      </div>
+      <div class="d-flex justify-content-between mt-1 small text-muted" style="font-size: 0.6rem;">
+        <span>Banner</span>
+        <span>Text</span>
+        <span>Price</span>
+        <span>Location</span>
+        <span>Images</span>
+        <span>Videos</span>
+        <span>Footer</span>
+      </div>
+    </div>
+  </div>
+  <div>
+    <form action="/admin/escape/locations<%= location ? '/' + location.id : '' %>" method="POST" enctype="multipart/form-data" id="locationForm">
+      <% if (location) { %>
+      <input type="hidden" name="_method" value="PUT">
+      <% } %>
+
+
+
+      <!-- Banner Section -->
+      <div class="section-card">
+        <div class="section-header">
+          <i class="fas fa-image"></i>
+          <span>Banner</span>
+        </div>
+        <div class="section-body">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Title <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" name="title" id="title" value="<%= location ? location.title : '' %>" placeholder="Location title">
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Slug</label>
+              <input type="text" class="form-control" name="slug" id="slug" value="<%= location ? location.slug : '' %>" readonly>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Heading</label>
+              <input type="text" class="form-control" name="banner_heading" value="<%= location ? location.banner_heading : '' %>" placeholder="Banner heading">
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Banner Video</label>
+              <select class="form-control select2-single" name="banner_video_id" style="width: 100%">
+                <option value="">-- Select Banner Video --</option>
+                <% allVideos.forEach(video => { 
+                    const isSelected = location && location.banner_video_id == video.id;
+                  %>
+                <option value="<%= video.id %>" <%= isSelected ? 'selected' : '' %>>
+                  <%= video.title || 'Video ' + video.id %>
+                  <% if (video.duration) { %>(<%= Math.floor(video.duration/60) %>:<%= String(video.duration%60).padStart(2,'0') %>)<% } %>
+                </option>
+                <% }); %>
+              </select>
+              <small class="text-muted">Select a video for the banner</small>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Featured Image</label>
+              <div class="featured-image-upload" onclick="document.getElementById('bannerImage').click()">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p class="mb-0"><small>Click to upload</small></p>
+                <small class="text-muted">Max 5MB</small>
+                <input type="file" id="bannerImage" name="banner_featured_image" accept="image/*" style="display: none;">
+              </div>
+              <% if (location && location.banner_featured_image) { %>
+              <div class="current-image d-flex align-items-center mt-2">
+                <img src="<%= location.banner_featured_image %>" class="me-2" alt="Current">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="delete_banner_image" id="delete_banner_image" value="1">
+                  <label class="form-check-label small" for="delete_banner_image">Delete</label>
+                </div>
+              </div>
+              <% } %>
+            </div>
+            <div class="col-12 mb-3">
+              <label class="form-label">Description</label>
+              <textarea class="form-control" name="banner_description" rows="2" placeholder="Brief description"><%= location ? location.banner_description : '' %></textarea>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">CTA Label</label>
+              <input type="text" class="form-control" name="banner_cta_label" value="<%= location ? location.banner_cta_label : '' %>" placeholder="Book Now">
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">CTA Link</label>
+              <input type="text" class="form-control" name="banner_cta_link" value="<%= location ? location.banner_cta_link : '' %>" placeholder="/book">
+            </div>
+            <div class="col-md-12 mb-3">
+              <label class="form-label">Trailor Video URL</label>
+              <input type="text" class="form-control" name="trailor_video" value="<%= location ? location.trailor_video : '' %>" placeholder="Trailor Video URL">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Text Section -->
+      <div class="section-card">
+        <div class="section-header">
+          <i class="fas fa-align-left"></i>
+          <span>Text</span>
+        </div>
+        <div class="section-body">
+          <div class="row">
+            <div class="col-12 mb-3">
+              <label class="form-label">Description</label>
+              <textarea class="form-control" name="text_section_description" rows="3" placeholder="Detailed description"><%= location ? location.text_section_description : '' %></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pricing Section -->
+      <div class="section-card">
+        <div class="section-header">
+          <i class="fas fa-tag"></i>
+          <span>Pricing</span>
+        </div>
+        <div class="section-body">
+          <div class="row">
+            <div class="col-12 mb-3">
+              <label class="form-label">Section Heading</label>
+              <input type="text" class="form-control" name="pricing_section_heading" value="<%= location ? location.pricing_section_heading : '' %>" placeholder="Pricing">
+            </div>
+          </div>
+
+          <div id="pricingRepeater">
+            <% if (location && pricings && pricings.length > 0) { 
+          pricings.forEach((pricing, index) => { %>
+            <div class="repeater-item">
+              <div class="row g-2">
+                <div class="col-md-4">
+                  <input type="text" class="form-control" name="pricing_day_range[]" value="<%= pricing.day_range || '' %>" placeholder="Mon-Thu">
+                </div>
+                <div class="col-md-3">
+                  <input type="text" class="form-control" name="pricing_price_23[]" value="<%= pricing.price_23 || '' %>" placeholder="$50">
+                </div>
+                <div class="col-md-3">
+                  <input type="text" class="form-control" name="pricing_price_46[]" value="<%= pricing.price_46 || '' %>" placeholder="$70">
+                </div>
+              </div>
+              <button type="button" class="delete-btn" onclick="removeRepeaterItem(this)">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+            <% }); } else { %>
+            <div class="repeater-item">
+              <div class="row g-2">
+                <div class="col-md-4">
+                  <input type="text" class="form-control" name="pricing_day_range[]" placeholder="Mon-Thu">
+                </div>
+                <div class="col-md-3">
+                  <input type="text" class="form-control" name="pricing_price_23[]" placeholder="$50">
+                </div>
+                <div class="col-md-3">
+                  <input type="text" class="form-control" name="pricing_price_46[]" placeholder="$70">
+                </div>
+              </div>
+              <button type="button" class="delete-btn" onclick="removeRepeaterItem(this)">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+            <% } %>
+          </div>
+          <button type="button" class="btn btn-add mt-2" onclick="addPricingItem()">
+            <i class="fas fa-plus me-1"></i>Add Pricing
+          </button>
+
+          <div class="row mt-3">
+            <div class="col-12 mb-3">
+              <label class="form-label">Note</label>
+              <textarea class="form-control" name="pricing_section_note" rows="2" placeholder="Student discount etc"><%= location ? location.pricing_section_note : '' %></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Location Details Section -->
+      <!-- Location Details Section (flat arrays) -->
+      <div class="section-card">
+        <div class="section-header">
+          <i class="fas fa-map-pin"></i>
+          <span>Location</span>
+        </div>
+        <div class="section-body">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">City</label>
+              <input type="text" class="form-control" name="location_city" value="<%= location ? location.location_city : '' %>" placeholder="New York">
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Timings</label>
+              <input type="text" class="form-control" name="location_timings" value="<%= location ? location.location_timings : '' %>" placeholder="11:30am-10:30pm">
+            </div>
+          </div>
+
+          <div id="eventSpaceRepeater">
+            <% if (location && eventSpaces && eventSpaces.length > 0) { 
+              eventSpaces.forEach((space, index) => { %>
+            <div class="repeater-item">
+              <div class="row g-2">
+                <div class="col-md-4">
+                  <input type="text" class="form-control" name="event_space_name[]" value="<%= space.space_name || '' %>" placeholder="Space name">
+                </div>
+                <div class="col-md-3">
+                  <input type="number" class="form-control" name="event_space_capacity[]" value="<%= space.capacity || '' %>" placeholder="Capacity">
+                </div>
+                <div class="col-md-3">
+                  <input type="text" class="form-control" name="event_space_style[]" value="<%= space.style || '' %>" placeholder="Style">
+                </div>
+              </div>
+              <button type="button" class="delete-btn" onclick="removeRepeaterItem(this)">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+            <% }); } else { %>
+            <div class="repeater-item">
+              <div class="row g-2">
+                <div class="col-md-4">
+                  <input type="text" class="form-control" name="event_space_name[]" placeholder="Space name">
+                </div>
+                <div class="col-md-3">
+                  <input type="number" class="form-control" name="event_space_capacity[]" placeholder="50">
+                </div>
+                <div class="col-md-3">
+                  <input type="text" class="form-control" name="event_space_style[]" placeholder="Style">
+                </div>
+              </div>
+              <button type="button" class="delete-btn" onclick="removeRepeaterItem(this)">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+            <% } %>
+          </div>
+          <button type="button" class="btn btn-add mt-2" onclick="addEventSpaceItem()">
+            <i class="fas fa-plus me-1"></i>Add Space
+          </button>
+
+          <div class="row mt-3">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Total Capacity</label>
+              <input type="number" class="form-control" name="location_total_capacity" value="<%= location ? location.location_total_capacity : '' %>" placeholder="200">
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Parking Video</label>
+              <input type="text" class="form-control" name="location_parking_video_link" value="<%= location ? location.location_parking_video_link : '' %>" placeholder="YouTube URL">
+            </div>
+            <div class="col-12 mb-3">
+              <label class="form-label">Parking Info</label>
+              <textarea class="form-control" name="location_parking_info" rows="2" placeholder="Parking details"><%= location ? location.location_parking_info : '' %></textarea>
+            </div>
+            <div class="col-12 mb-3">
+              <label class="form-label">Address</label>
+              <textarea class="form-control" name="location_address" rows="2" placeholder="Full address"><%= location ? location.location_address : '' %></textarea>
+            </div>
+            <div class="col-12 mb-3">
+              <label class="form-label">Map URL</label>
+              <input type="text" class="form-control" name="location_map_url" value="<%= location ? location.location_map_url : '' %>" placeholder="Google Maps URL">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Image Cards Section -->
+      <div class="section-card">
+        <div class="section-header">
+          <i class="fas fa-images"></i>
+          <span>Image Cards</span>
+        </div>
+        <div class="section-body">
+          <div class="row">
+            <div class="col-12 mb-3">
+              <label class="form-label">Section Heading</label>
+              <input type="text" class="form-control" name="image_cards_heading" value="<%= location ? location.image_cards_heading : '' %>" placeholder="Gallery">
+            </div>
+          </div>
+
+          <div id="imageCardRepeater">
+            <% if (location && imageCards && imageCards.length > 0) { 
+          imageCards.forEach((card, index) => { %>
+            <div class="repeater-item" data-id="<%= card.id %>">
+              <div class="row g-2">
+                <div class="col-md-4">
+                  <input type="text" class="form-control" name="image_card_heading[]" value="<%= card.heading || '' %>" placeholder="Title">
+                </div>
+                <div class="col-md-8">
+                  <textarea class="form-control" name="image_card_description[]" rows="1" placeholder="Description"><%= card.description || '' %></textarea>
+                </div>
+                <div class="col-md-4">
+                  <input type="file" class="form-control" name="image_card_images" accept="image/*">
+                  <% if (card.image) { %>
+                  <div class="mt-1 d-flex align-items-center">
+                    <img src="<%= card.image %>" class="image-preview me-2">
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" name="delete_image_cards[]" value="<%= card.id %>">
+                      <label class="form-check-label small">Delete</label>
+                    </div>
+                  </div>
+                  <!-- hidden field to preserve existing image path if not replaced -->
+                  <input type="hidden" name="image_card_existing_image[]" value="<%= card.image %>">
+                  <% } else { %>
+                  <input type="hidden" name="image_card_existing_image[]" value="">
+                  <% } %>
+                </div>
+                <div class="col-md-4">
+                  <input type="text" class="form-control" name="image_card_cta_label[]" value="<%= card.cta_label || '' %>" placeholder="Learn More">
+                </div>
+                <div class="col-md-4">
+                  <input type="text" class="form-control" name="image_card_cta_link[]" value="<%= card.cta_link || '' %>" placeholder="/details">
+                </div>
+              </div>
+              <button type="button" class="delete-btn" onclick="removeRepeaterItem(this)">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+            <% }); } else { %>
+            <div class="repeater-item">
+              <div class="row g-2">
+                <div class="col-md-4">
+                  <input type="text" class="form-control" name="image_card_heading[]" placeholder="Title">
+                </div>
+                <div class="col-md-8">
+                  <textarea class="form-control" name="image_card_description[]" rows="1" placeholder="Description"></textarea>
+                </div>
+                <div class="col-md-4">
+                  <input type="file" class="form-control" name="image_card_images" accept="image/*">
+                  <input type="hidden" name="image_card_existing_image[]" value="">
+                </div>
+                <div class="col-md-4">
+                  <input type="text" class="form-control" name="image_card_cta_label[]" placeholder="Learn More">
+                </div>
+                <div class="col-md-4">
+                  <input type="text" class="form-control" name="image_card_cta_link[]" placeholder="/details">
+                </div>
+              </div>
+              <button type="button" class="delete-btn" onclick="removeRepeaterItem(this)">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+            <% } %>
+          </div>
+          <button type="button" class="btn btn-add mt-2" onclick="addImageCardItem()">
+            <i class="fas fa-plus me-1"></i>Add Card
+          </button>
+        </div>
+      </div>
+
+      <!-- Video Testimonials Section (Updated) -->
+      <div class="section-card">
+        <div class="section-header">
+          <i class="fas fa-video"></i>
+          <span>Video Testimonials</span>
+        </div>
+        <div class="section-body">
+          <div class="row">
+            <div class="col-12 mb-3">
+              <label class="form-label">Select Videos</label>
+              <select class="form-control select2-multiple" name="video_ids[]" multiple style="width: 100%">
+                <% allVideos.forEach(video => { 
+                const isSelected = selectedVideos.some(sv => sv.video_id == video.id);
+              %>
+                <option value="<%= video.id %>" <%= isSelected ? 'selected' : '' %>>
+                  <%= video.title || 'Video ' + video.id %>
+                  <% if (video.duration) { %>(<%= Math.floor(video.duration/60) %>:<%= String(video.duration%60).padStart(2,'0') %>)<% } %>
+                </option>
+                <% }); %>
+              </select>
+              <small class="text-muted">Type to search videos</small>
+            </div>
+
+            <!-- Container for dynamically rendered video items -->
+            <div id="videoTitlesContainer" class="col-12 mt-2"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer Section -->
+      <div class="section-card">
+        <div class="section-header">
+          <i class="fas fa-footer"></i>
+          <span>Footer</span>
+        </div>
+        <div class="section-body">
+          <div class="row">
+            <div class="col-12 mb-3">
+              <label class="form-label">Heading</label>
+              <input type="text" class="form-control" name="footer_heading" value="<%= location ? location.footer_heading : '' %>" placeholder="Footer heading">
+            </div>
+            <div class="col-12 mb-3">
+              <label class="form-label">Description 1</label>
+              <textarea class="form-control" name="footer_description1" rows="1" placeholder="First line"><%= location ? location.footer_description1 : '' %></textarea>
+            </div>
+            <div class="col-12 mb-3">
+              <label class="form-label">Description 2</label>
+              <textarea class="form-control" name="footer_description2" rows="1" placeholder="Second line"><%= location ? location.footer_description2 : '' %></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="row mt-4 mb-4">
+        <div class="col-12 text-center">
+          <button type="submit" class="btn btn-submit" id="submitBtn">
+            <i class="fas fa-save me-2"></i>
+            <%= location ? 'Update' : 'Create' %>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<%- contentFor('js') %>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+  let pricingIndex = <%= location && pricings ? pricings.length : 1 %>;
+  let eventSpaceIndex = <%= location && eventSpaces ? eventSpaces.length : 1 %>;
+  let imageCardIndex = <%= location && imageCards ? imageCards.length : 1 %>;
+
+  // All videos data (unescaped JSON)
+  const allVideosData = <%- JSON.stringify(allVideos) %>;
+
+  // Pre‑selected videos with custom titles from the server
+  const selectedVideosData = <%- JSON.stringify(selectedVideos) %>;
+
+  // Object to hold custom video titles, keyed by video ID
+  let videoTitles = {};
+
+  $(document).ready(function() {
+    // Auto-generate slug from title
+    $('#title').on('input', function() {
+      const title = $(this).val();
+      const slug = title.toLowerCase()
+        .replace(/[^\w\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/--+/g, '-')
+        .trim();
+      $('#slug').val(slug);
+    });
+
+    // Initialize Select2
+    $('.select2-multiple').select2({
+      placeholder: '🔍 Search and select videos...',
+      allowClear: true,
+      width: '100%',
+      language: {
+        noResults: function() {
+          return "No videos found";
+        }
+      },
+      matcher: function(params, data) {
+        if ($.trim(params.term) === '') return data;
+        if (typeof data.text === 'undefined') return null;
+        return data.text.toLowerCase().indexOf(params.term.toLowerCase()) > -1 ? data : null;
+      }
+    });
+    $('.select2-single').select2({
+      placeholder: '-- Select Banner Video --',
+      allowClear: true,
+      width: '100%',
+      language: {
+        noResults: function() {
+          return "No videos found";
+        }
+      }
+    });
+
+    // Populate videoTitles from server data
+    selectedVideosData.forEach(v => {
+      videoTitles[v.video_id] = v.title || '';
+    });
+
+    // Function to render selected videos
+    function renderSelectedVideos() {
+      const selectedIds = $('.select2-multiple').val() || [];
+      const container = $('#videoTitlesContainer');
+      container.empty();
+
+      if (selectedIds.length === 0) {
+        container.html(`
+          <div class="text-center text-muted py-3">
+            <i class="fas fa-video fa-2x mb-2 opacity-50"></i>
+            <p class="small mb-0">No videos selected. Use the search above to add videos.</p>
+          </div>
+        `);
+        return;
+      }
+
+      let html = '';
+      selectedIds.forEach((id, index) => {
+        const video = allVideosData.find(v => v.id == id) || {};
+        const thumbnail = video.thumbnail || '';
+        const title = video.title || 'Untitled Video';
+        const duration = video.duration || 0;
+        const durationFormatted = duration ?
+          `${Math.floor(duration/60)}:${String(duration%60).padStart(2,'0')}` : '';
+        const customTitle = videoTitles[id] || '';
+
+        html += `
+          <div class="video-item" data-video-id="${id}" style="animation: slideIn 0.3s ease ${index * 0.1}s forwards;">
+            <div class="row align-items-center">
+              <div class="col-md-1">
+                ${thumbnail ? 
+                  `<img src="${thumbnail}" class="video-thumb" alt="thumb" onerror="this.src='/assets/images/video-placeholder.jpg'">` : 
+                  `<div class="video-thumb bg-light d-flex align-items-center justify-content-center">
+                    <i class="fas fa-video text-muted" style="font-size: 1rem;"></i>
+                  </div>`
+                }
+              </div>
+              <div class="col-md-3">
+                <strong>${title}</strong>
+                ${durationFormatted ? `<span class="video-badge ms-2">${durationFormatted}</span>` : ''}
+              </div>
+              <div class="col-md-8">
+                <label class="form-label">Custom Title (optional)</label>
+                <input type="text" 
+                       class="form-control" 
+                       name="video_title_${id}" 
+                       value="${customTitle.replace(/"/g, '&quot;')}" 
+                       placeholder="Enter custom video title">
+              </div>
+            </div>
+          </div>
+        `;
+      });
+      container.html(html);
+    }
+
+    // Initial render
+    renderSelectedVideos();
+
+    // Update when selection changes
+    $('.select2-multiple').on('change', function() {
+      // Capture current titles before re‑rendering
+      $('#videoTitlesContainer').find('input[type="text"][name^="video_title_"]').each(function() {
+        const name = $(this).attr('name');
+        const videoId = name.replace('video_title_', '');
+        videoTitles[videoId] = $(this).val();
+      });
+      renderSelectedVideos();
+    });
+
+    // Listen for changes on custom title inputs (live)
+    $('#videoTitlesContainer').on('input', 'input[type="text"][name^="video_title_"]', function() {
+      const name = $(this).attr('name');
+      const videoId = name.replace('video_title_', '');
+      videoTitles[videoId] = $(this).val();
+    });
+
+    // Form submission with loading state
+    $('#locationForm').on('submit', function() {
+      $('#submitBtn').prop('disabled', true)
+        .html('<i class="fas fa-spinner fa-spin me-2"></i> Saving...');
+    });
+
+    // Scroll progress
+    $(window).on('scroll', function() {
+      const winScroll = $(this).scrollTop();
+      const height = $(document).height() - $(window).height();
+      const scrolled = (winScroll / height) * 100;
+      $('#formProgress').css('width', scrolled + '%');
+    });
+  });
+
+  function addPricingItem() {
+    const html = `
+      <div class="repeater-item">
+        <div class="row g-2">
+          <div class="col-md-4">
+            <input type="text" class="form-control" name="pricing_day_range[]" placeholder="Mon-Thu">
+          </div>
+          <div class="col-md-3">
+            <input type="text" class="form-control" name="pricing_price_23[]" placeholder="$50">
+          </div>
+          <div class="col-md-3">
+            <input type="text" class="form-control" name="pricing_price_46[]" placeholder="$70">
+          </div>
+        </div>
+        <button type="button" class="delete-btn" onclick="removeRepeaterItem(this)">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    `;
+    $('#pricingRepeater').append(html);
+  }
+
+  function addEventSpaceItem() {
+    const html = `
+      <div class="repeater-item">
+        <div class="row g-2">
+          <div class="col-md-4">
+            <input type="text" class="form-control" name="event_space_name[]" placeholder="Space name">
+          </div>
+          <div class="col-md-3">
+            <input type="number" class="form-control" name="event_space_capacity[]" placeholder="50">
+          </div>
+          <div class="col-md-3">
+            <input type="text" class="form-control" name="event_space_style[]" placeholder="Style">
+          </div>
+        </div>
+        <button type="button" class="delete-btn" onclick="removeRepeaterItem(this)">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    `;
+    $('#eventSpaceRepeater').append(html);
+  }
+
+  function addImageCardItem() {
+    const html = `
+      <div class="repeater-item">
+        <div class="row g-2">
+          <div class="col-md-4">
+            <input type="text" class="form-control" name="image_card_heading[]" placeholder="Title">
+          </div>
+          <div class="col-md-8">
+            <textarea class="form-control" name="image_card_description[]" rows="1" placeholder="Description"></textarea>
+          </div>
+          <div class="col-md-4">
+            <input type="file" class="form-control" name="image_card_images" accept="image/*">
+            <input type="hidden" name="image_card_existing_image[]" value="">
+          </div>
+          <div class="col-md-4">
+            <input type="text" class="form-control" name="image_card_cta_label[]" placeholder="Learn More">
+          </div>
+          <div class="col-md-4">
+            <input type="text" class="form-control" name="image_card_cta_link[]" placeholder="/details">
+          </div>
+        </div>
+        <button type="button" class="delete-btn" onclick="removeRepeaterItem(this)">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    `;
+    $('#imageCardRepeater').append(html);
+  }
+
+  function removeRepeaterItem(btn) {
+    if (confirm('Remove this item?')) {
+      $(btn).closest('.repeater-item').slideUp(200, function() {
+        $(this).remove();
+      });
+    }
+  }
+</script>

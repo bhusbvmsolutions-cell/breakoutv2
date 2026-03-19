@@ -5,7 +5,7 @@ const router = express.Router();
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
-const SiteSettingsController = require("../../controllers/admin/siteSettingsController");
+const SiteSettingsController = require("../../controllers/admin/siteSettings.controller");
 const { isAuthenticated } = require("../../middlewares/auth");
 
 // Ensure upload directories exist

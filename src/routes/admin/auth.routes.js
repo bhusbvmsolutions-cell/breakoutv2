@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const authController = require('../../controllers/admin/authController');
+const authController = require('../../controllers/admin/auth.controller');
 const { validateLogin, handleValidation } = require('../../middlewares/validation');
 const { redirectIfAuthenticated } = require('../../middlewares/auth');
 
