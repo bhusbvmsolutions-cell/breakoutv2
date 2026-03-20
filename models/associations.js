@@ -405,5 +405,157 @@ module.exports = (db) => {
     });
   }
 
+
+
+  // ==================== LANDING PAGE ASSOCIATIONS ====================
+
+  const {
+    Landing,
+    LandingLocationMapping,
+    LandingCounterCard,
+    LandingImageCard,
+    LandingIdealForItem,
+    LandingCardSection,
+    LandingVideo,
+  } = db;
+
+
+
+  if (Landing && EscapeRoomLocation && LandingLocationMapping) {
+    // Many-to-many relationship between Landing and EscapeRoomLocation
+    Landing.belongsToMany(EscapeRoomLocation, {
+      through: LandingLocationMapping,
+      foreignKey: "landing_id",
+      otherKey: "location_id",
+      as: "locations",
+    });
+
+    EscapeRoomLocation.belongsToMany(Landing, {
+      through: LandingLocationMapping,
+      foreignKey: "location_id",
+      otherKey: "landing_id",
+      as: "landings",
+    });
+
+    // Direct associations with junction table
+    Landing.hasMany(LandingLocationMapping, {
+      foreignKey: "landing_id",
+      as: "locationMappings",
+      onDelete: "CASCADE",
+    });
+
+    EscapeRoomLocation.hasMany(LandingLocationMapping, {
+      foreignKey: "location_id",
+      as: "landingMappings",
+      onDelete: "CASCADE",
+    });
+
+    LandingLocationMapping.belongsTo(Landing, {
+      foreignKey: "landing_id",
+      as: "landing",
+    });
+
+    LandingLocationMapping.belongsTo(EscapeRoomLocation, {
+      foreignKey: "location_id",
+      as: "location",
+    });
+  }
+
+  // Landing ↔ Counter Cards (One-to-Many)
+  if (Landing && LandingCounterCard) {
+    Landing.hasMany(LandingCounterCard, {
+      foreignKey: "landing_id",
+      as: "counterCards",
+      onDelete: "CASCADE",
+    });
+
+    LandingCounterCard.belongsTo(Landing, {
+      foreignKey: "landing_id",
+      as: "landing",
+    });
+  }
+
+  // Landing ↔ Image Cards (One-to-Many)
+  if (Landing && LandingImageCard) {
+    Landing.hasMany(LandingImageCard, {
+      foreignKey: "landing_id",
+      as: "imageCards",
+      onDelete: "CASCADE",
+    });
+
+    LandingImageCard.belongsTo(Landing, {
+      foreignKey: "landing_id",
+      as: "landing",
+    });
+  }
+
+  // Landing ↔ Ideal For Items (One-to-Many)
+  if (Landing && LandingIdealForItem) {
+    Landing.hasMany(LandingIdealForItem, {
+      foreignKey: "landing_id",
+      as: "idealForItems",
+      onDelete: "CASCADE",
+    });
+
+    LandingIdealForItem.belongsTo(Landing, {
+      foreignKey: "landing_id",
+      as: "landing",
+    });
+  }
+
+  // Landing ↔ Card Sections (One-to-Many)
+  if (Landing && LandingCardSection) {
+    Landing.hasMany(LandingCardSection, {
+      foreignKey: "landing_id",
+      as: "cardSections",
+      onDelete: "CASCADE",
+    });
+
+    LandingCardSection.belongsTo(Landing, {
+      foreignKey: "landing_id",
+      as: "landing",
+    });
+  }
+
+  // Landing ↔ Videos (Many-to-Many through LandingVideo)
+  if (Landing && Video && LandingVideo) {
+    Landing.belongsToMany(Video, {
+      through: LandingVideo,
+      foreignKey: "landing_id",
+      otherKey: "video_id",
+      as: "videos",
+    });
+
+    Video.belongsToMany(Landing, {
+      through: LandingVideo,
+      foreignKey: "video_id",
+      otherKey: "landing_id",
+      as: "landings",
+    });
+
+    // Direct associations with junction table
+    Landing.hasMany(LandingVideo, {
+      foreignKey: "landing_id",
+      as: "landingVideos",
+      onDelete: "CASCADE",
+    });
+
+    Video.hasMany(LandingVideo, {
+      foreignKey: "video_id",
+      as: "landingVideos",
+      onDelete: "CASCADE",
+    });
+
+    LandingVideo.belongsTo(Landing, {
+      foreignKey: "landing_id",
+      as: "landing",
+    });
+
+    LandingVideo.belongsTo(Video, {
+      foreignKey: "video_id",
+      as: "video",
+    });
+  }
+
   console.log("✓ All model associations have been established successfully");
 };

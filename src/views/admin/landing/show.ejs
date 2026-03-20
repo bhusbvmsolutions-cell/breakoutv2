@@ -1,0 +1,328 @@
+<%- contentFor('title') %> <%= title %>
+<%- contentFor('head') %>
+<style>
+  .show-section {
+    background: #fff;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+  .section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #fcad00;
+    display: inline-block;
+  }
+  .image-thumb {
+    max-width: 100px;
+    max-height: 80px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 2px;
+    margin-top: 0.5rem;
+  }
+  .badge-status {
+    font-size: 0.8rem;
+    padding: 0.3rem 0.6rem;
+  }
+  .card-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  .counter-card, .image-card, .ideal-card {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1rem;
+    flex: 1 1 200px;
+    text-align: center;
+  }
+  .video-list {
+    list-style: none;
+    padding-left: 0;
+  }
+  .video-list li {
+    margin-bottom: 0.5rem;
+  }
+  .location-badge {
+    background-color: #e9ecef;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    display: inline-block;
+    margin: 0.2rem;
+  }
+  .rating-stars {
+    color: #fcad00;
+  }
+</style>
+<%- contentFor('body') %>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4 class="card-title">Landing Page Details: <strong><%= landing.title %></strong></h4>
+            <div>
+              <a href="/admin/landing/edit/<%= landing.id %>" class="btn btn-warning btn-sm me-2">
+                <i class="bx bx-edit"></i> Edit
+              </a>
+              <a href="/admin/landing" class="btn btn-secondary btn-sm me-2">
+                <i class="bx bx-arrow-back"></i> Back to List
+              </a>
+              <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete(<%= landing.id %>)">
+                <i class="bx bx-trash"></i> Delete
+              </button>
+            </div>
+          </div>
+
+          <!-- Basic Info -->
+          <div class="show-section">
+            <h5 class="section-title">Basic Information</h5>
+            <div class="row">
+              <div class="col-md-6">
+                <strong>Title:</strong> <%= landing.title %><br>
+                <strong>Slug:</strong> <%= landing.slug %><br>
+                <strong>Status:</strong>
+                <span class="badge <%= landing.isActive ? 'bg-success' : 'bg-secondary' %> badge-status">
+                  <%= landing.isActive ? 'Active' : 'Inactive' %>
+                </span>
+              </div>
+              <div class="col-md-6">
+                <strong>Locations:</strong><br>
+                <% if (landing.locations && landing.locations.length) { %>
+                  <% landing.locations.forEach(loc => { %>
+                    <span class="location-badge"><%= loc.title %></span>
+                  <% }); %>
+                <% } else { %>
+                  <span class="text-muted">No locations assigned</span>
+                <% } %>
+              </div>
+            </div>
+          </div>
+
+          <!-- Banner Section -->
+          <div class="show-section">
+            <h5 class="section-title">Banner Section</h5>
+            <div class="row">
+              <div class="col-md-4">
+                <strong>Banner Image:</strong><br>
+                <% if (landing.banner_image) { %>
+                  <img src="<%= landing.banner_image %>" class="image-thumb">
+                <% } else { %>
+                  <span class="text-muted">No image</span>
+                <% } %>
+              </div>
+              <div class="col-md-4">
+                <strong>Banner Heading:</strong><br>
+                <%= landing.banner_heading || '—' %>
+              </div>
+              <div class="col-md-12 mt-2">
+                <strong>Banner Description:</strong><br>
+                <%= landing.banner_description || '—' %>
+              </div>
+            </div>
+          </div>
+
+          <!-- Counters Section -->
+          <div class="show-section">
+            <h5 class="section-title">Counters Section</h5>
+            <div class="row">
+              <div class="col-md-4">
+                <strong>Heading:</strong> <%= landing.counters_heading || '—' %>
+              </div>
+              <div class="col-md-4">
+                <strong>Content:</strong><br>
+                <%= landing.counters_content || '—' %>
+              </div>
+              <div class="col-md-4">
+                <strong>Note:</strong> <%= landing.counters_note || '—' %>
+              </div>
+              <div class="col-md-6 mt-2">
+                <strong>Counter Heading:</strong> <%= landing.counters_counter_heading || '—' %>
+              </div>
+              <div class="col-md-6 mt-2">
+                <strong>Rating:</strong>
+                <% if (landing.counters_counter_rating) { %>
+                  <%= landing.counters_counter_rating %> / 5
+                  <span class="rating-stars">
+                    <%= '★'.repeat(Math.round(landing.counters_counter_rating)) %><%= '☆'.repeat(5 - Math.round(landing.counters_counter_rating)) %>
+                  </span>
+                <% } else { %>
+                  —
+                <% } %>
+              </div>
+            </div>
+
+            <strong class="d-block mt-3">Counter Cards (3 items)</strong>
+            <div class="card-grid">
+              <% if (landing.counterCards && landing.counterCards.length) { %>
+                <% landing.counterCards.forEach((card, idx) => { %>
+                  <div class="counter-card">
+                    <% if (card.image) { %>
+                      <img src="<%= card.image %>" class="image-thumb">
+                    <% } else { %>
+                      <div class="text-muted">No image</div>
+                    <% } %>
+                    <div><strong><%= card.heading || '—' %></strong></div>
+                    <div><%= card.count || '—' %></div>
+                    <div class="small"><%= card.description || '—' %></div>
+                  </div>
+                <% }); %>
+              <% } else { %>
+                <span class="text-muted">No counter cards defined</span>
+              <% } %>
+            </div>
+          </div>
+
+          <!-- Main Content -->
+          <div class="show-section">
+            <h5 class="section-title">Main Content</h5>
+            <div>
+              <%- landing.content_section || '<span class="text-muted">No content</span>' %>
+            </div>
+          </div>
+
+          <!-- Image Cards Section -->
+          <div class="show-section">
+            <h5 class="section-title">Image Cards</h5>
+            <div><strong>Section Heading:</strong> <%= landing.image_card_heading || '—' %></div>
+            <div class="card-grid">
+              <% if (landing.imageCards && landing.imageCards.length) { %>
+                <% landing.imageCards.forEach(card => { %>
+                  <div class="image-card">
+                    <% if (card.image) { %>
+                      <img src="<%= card.image %>" class="image-thumb">
+                    <% } else { %>
+                      <div class="text-muted">No image</div>
+                    <% } %>
+                    <div><strong><%= card.heading || '—' %></strong></div>
+                  </div>
+                <% }); %>
+              <% } else { %>
+                <span class="text-muted">No image cards added</span>
+              <% } %>
+            </div>
+          </div>
+
+          <!-- Ideal For Items -->
+          <div class="show-section">
+            <h5 class="section-title">Ideal For Items</h5>
+            <div><strong>Section Heading:</strong> <%= landing.ideal_for_heading || '—' %></div>
+            <div class="card-grid">
+              <% if (landing.idealForItems && landing.idealForItems.length) { %>
+                <% landing.idealForItems.forEach(item => { %>
+                  <div class="ideal-card">
+                    <% if (item.image) { %>
+                      <img src="<%= item.image %>" class="image-thumb">
+                    <% } else { %>
+                      <div class="text-muted">No image</div>
+                    <% } %>
+                    <div><strong><%= item.heading || '—' %></strong></div>
+                  </div>
+                <% }); %>
+              <% } else { %>
+                <span class="text-muted">No ideal for items added</span>
+              <% } %>
+            </div>
+          </div>
+
+          <!-- Card Sections (2 items) -->
+          <div class="show-section">
+            <h5 class="section-title">Card Sections (2 items)</h5>
+            <div class="row">
+              <% if (landing.cardSections && landing.cardSections.length) { %>
+                <% landing.cardSections.forEach((section, idx) => { %>
+                  <div class="col-md-6 mb-3">
+                    <div class="card h-100">
+                      <div class="card-body">
+                        <h6>Card Section <%= idx+1 %></h6>
+                        <% if (section.image) { %>
+                          <img src="<%= section.image %>" class="image-thumb mb-2">
+                        <% } %>
+                        <p><strong>Heading:</strong> <%= section.heading || '—' %></p>
+                        <p><strong>Description:</strong> <%= section.description || '—' %></p>
+                        <div><strong>Content:</strong></div>
+                        <div><%- section.content || '<span class="text-muted">No content</span>' %></div>
+                      </div>
+                    </div>
+                  </div>
+                <% }); %>
+              <% } else { %>
+                <div class="col-12 text-muted">No card sections defined</div>
+              <% } %>
+            </div>
+          </div>
+
+          <!-- Videos Section -->
+          <div class="show-section">
+            <h5 class="section-title">Videos</h5>
+            <% if (landing.videos && landing.videos.length) { %>
+              <ul class="video-list">
+                <% landing.videos.forEach(video => { %>
+                  <li>
+                    <strong><%= video.title || video.filename %></strong>
+                    <% if (video.LandingVideo && video.LandingVideo.video_title) { %>
+                      <br><span class="text-muted">Custom title:</span> <%= video.LandingVideo.video_title %>
+                    <% } %>
+                  </li>
+                <% }); %>
+              </ul>
+            <% } else { %>
+              <span class="text-muted">No videos selected</span>
+            <% } %>
+          </div>
+
+          <!-- SEO Section -->
+          <div class="show-section">
+            <h5 class="section-title">SEO Settings</h5>
+            <div class="row">
+              <div class="col-md-6">
+                <strong>Meta Title:</strong> <%= landing.meta_title || '—' %><br>
+                <strong>Meta Description:</strong><br>
+                <%= landing.meta_description || '—' %><br>
+                <strong>Meta Keywords:</strong> <%= landing.meta_keywords || '—' %>
+              </div>
+              <div class="col-md-6">
+                <strong>OG Title:</strong> <%= landing.og_title || '—' %><br>
+                <strong>OG Description:</strong><br>
+                <%= landing.og_description || '—' %>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- contentFor('js') %>
+<script>
+  function confirmDelete(id) {
+    if (confirm('Are you sure you want to delete this landing page? This action cannot be undone.')) {
+      fetch(`/admin/landing/delete/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          window.location.href = '/admin/landing';
+        } else {
+          alert('Failed to delete: ' + (data.message || 'Unknown error'));
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while deleting');
+      });
+    }
+  }
+</script>

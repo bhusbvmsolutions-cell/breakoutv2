@@ -1,5 +1,6 @@
 const { sequelize, EscapeRoom, EscapeRoomImage, EscapeRoomPricingCard, 
     EscapeRoomLocationMapping, EscapeRoomLocation } = require('../../../models');
+const { Op } = require('sequelize');
 const fs = require('fs').promises;
 const path = require('path');
 const slugify = require('slugify');
@@ -34,7 +35,8 @@ index: async (req, res) => {
             ],
             order: [['createdAt', 'DESC']],
             limit,
-            offset
+            offset,
+            distinct: true
         });
         
         // Apply location filter after include (if needed)
@@ -51,7 +53,7 @@ index: async (req, res) => {
         });
         
         res.render('admin/escape/rooms/index', {
-            title: "List Escape Rooms",
+            title: 'Escape Rooms',
             rooms: filteredRooms,
             locations,
             currentPage: page,
@@ -73,8 +75,7 @@ add: async (req, res) => {
         });
         
         res.render('admin/escape/rooms/create', {
-            title: "Create Escape Room",
-            basePath: process.env.BASE_PATH || '',
+            title: 'Create Escape Room',
             locations
         });
     } catch (error) {
@@ -127,7 +128,7 @@ edit: async (req, res) => {
         };
 
         res.render('admin/escape/rooms/edit', {
-            basePath: process.env.BASE_PATH || '',
+            title: 'Edit Escape Room',
             room: formattedRoom,
             locations
         });
@@ -170,7 +171,7 @@ show: async (req, res) => {
         }
 
         res.render('admin/escape/rooms/show', {
-            basePath: process.env.BASE_PATH || '',
+            title: room.title,
             room
         });
     } catch (error) {
@@ -192,13 +193,21 @@ create: async (req, res) => {
             body.slug = slugify(body.title, { lower: true, strict: true });
         }
         
+        // Handle banner image
+        let bannerImage = null;
+        if (files?.banner_image) {
+            bannerImage = `/uploads/escaperooms/${files.banner_image[0].filename}`;
+        } else if (body.existing_banner_image) {
+            bannerImage = body.existing_banner_image;
+        }
+        
         // Create room
         const room = await EscapeRoom.create({
             title: body.title,
             slug: body.slug,
             tag: body.tags ? (Array.isArray(body.tags) ? body.tags : [body.tags]) : null,
             banner_heading: body.banner_heading,
-            banner_image: body.existing_banner_image || (files?.banner_image ? `/uploads/escaperooms/${files.banner_image[0].filename}` : null),
+            banner_image: bannerImage,
             banner_description: body.banner_description,
             banner_success_rate: body.banner_success_rate,
             banner_age_group: body.banner_age_group,
@@ -211,6 +220,7 @@ create: async (req, res) => {
             banner_important_note: body.banner_important_note,
             banner_video_trailer: body.banner_video_trailer,
             pricing_note: body.pricing_note,
+            pricing_heading: body.pricing_heading,
             isActive: body.isActive === 'on'
         }, { transaction });
 
@@ -241,16 +251,20 @@ create: async (req, res) => {
         // Create pricing cards
         if (body.pricing) {
             const pricingCards = Array.isArray(body.pricing) ? body.pricing : [body.pricing];
-            await Promise.all(pricingCards.map((card, index) =>
-                EscapeRoomPricingCard.create({
+            await Promise.all(pricingCards.map((card, index) => {
+                // Skip empty cards
+                if (!card.day_range && !card.price_2_3 && !card.price_4_6) {
+                    return null;
+                }
+                return EscapeRoomPricingCard.create({
                     escape_room_id: room.id,
                     day_range: card.day_range,
                     price_2_3_players: card.price_2_3,
                     price_4_6_players: card.price_4_6,
                     sort_order: index,
                     isActive: true
-                }, { transaction })
-            ));
+                }, { transaction });
+            }).filter(Boolean));
         }
 
         await transaction.commit();
@@ -289,13 +303,23 @@ update: async (req, res) => {
             body.slug = slugify(body.title, { lower: true, strict: true });
         }
 
+        // Handle banner image
+        let bannerImage = room.banner_image;
+        if (files?.banner_image) {
+            bannerImage = `/uploads/escaperooms/${files.banner_image[0].filename}`;
+        } else if (body.existing_banner_image === '') {
+            bannerImage = null;
+        } else if (body.existing_banner_image) {
+            bannerImage = body.existing_banner_image;
+        }
+
         // Update room
         await room.update({
             title: body.title,
             slug: body.slug,
             tag: body.tags ? (Array.isArray(body.tags) ? body.tags : [body.tags]) : null,
             banner_heading: body.banner_heading,
-            banner_image: body.existing_banner_image || (files?.banner_image ? `/uploads/escaperooms/${files.banner_image[0].filename}` : room.banner_image),
+            banner_image: bannerImage,
             banner_description: body.banner_description,
             banner_success_rate: body.banner_success_rate,
             banner_age_group: body.banner_age_group,
@@ -308,6 +332,7 @@ update: async (req, res) => {
             banner_important_note: body.banner_important_note,
             banner_video_trailer: body.banner_video_trailer,
             pricing_note: body.pricing_note,
+            pricing_heading: body.pricing_heading,
             isActive: body.isActive === 'on'
         }, { transaction });
 
@@ -353,16 +378,20 @@ update: async (req, res) => {
 
         if (body.pricing) {
             const pricingCards = Array.isArray(body.pricing) ? body.pricing : [body.pricing];
-            await Promise.all(pricingCards.map((card, index) =>
-                EscapeRoomPricingCard.create({
+            await Promise.all(pricingCards.map((card, index) => {
+                // Skip empty cards
+                if (!card.day_range && !card.price_2_3 && !card.price_4_6) {
+                    return null;
+                }
+                return EscapeRoomPricingCard.create({
                     escape_room_id: room.id,
                     day_range: card.day_range,
                     price_2_3_players: card.price_2_3,
                     price_4_6_players: card.price_4_6,
                     sort_order: index,
                     isActive: true
-                }, { transaction })
-            ));
+                }, { transaction });
+            }).filter(Boolean));
         }
 
         await transaction.commit();
@@ -382,7 +411,7 @@ update: async (req, res) => {
     }
 },
 
-// Delete room
+// Delete room (soft delete)
 delete: async (req, res) => {
     const transaction = await sequelize.transaction();
     
@@ -456,29 +485,40 @@ uploadImage: async (req, res) => {
 getRecentImages: async (req, res) => {
     try {
         const uploadDir = path.join(__dirname, '../../public/uploads/escaperooms');
+        
+        // Check if directory exists
+        try {
+            await fs.access(uploadDir);
+        } catch {
+            return res.json([]);
+        }
+        
         const files = await fs.readdir(uploadDir);
         
-        const images = files
-            .filter(file => /\.(jpg|jpeg|png|gif|webp)$/i.test(file))
-            .sort((a, b) => {
-                return fs.stat(path.join(uploadDir, b)).then(statB => statB.birthtime) -
-                       fs.stat(path.join(uploadDir, a)).then(statA => statA.birthtime);
-            })
-            .slice(0, 12) // Get only recent 12 images
-            .map(file => ({
-                filename: file,
-                url: `/uploads/escaperooms/${file}`
-            }));
+        const images = await Promise.all(
+            files
+                .filter(file => /\.(jpg|jpeg|png|gif|webp)$/i.test(file))
+                .sort((a, b) => {
+                    // Sort by file creation time (newest first)
+                    const aTime = fs.stat(path.join(uploadDir, a)).then(stat => stat.birthtime);
+                    const bTime = fs.stat(path.join(uploadDir, b)).then(stat => stat.birthtime);
+                    return bTime - aTime;
+                })
+                .slice(0, 12)
+                .map(async (file) => {
+                    const stats = await fs.stat(path.join(uploadDir, file));
+                    return {
+                        filename: file,
+                        url: `/uploads/escaperooms/${file}`,
+                        uploadedAt: stats.birthtime
+                    };
+                })
+        );
 
-        const imagesWithStats = await Promise.all(images.map(async img => {
-            const stats = await fs.stat(path.join(uploadDir, img.filename));
-            return {
-                ...img,
-                uploadedAt: stats.birthtime
-            };
-        }));
+        // Sort by upload time (newest first)
+        images.sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt));
 
-        res.json(imagesWithStats);
+        res.json(images);
 
     } catch (error) {
         console.error('Error in getRecentImages:', error);

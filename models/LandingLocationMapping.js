@@ -1,13 +1,22 @@
 'use strict';
 
 module.exports = (sequelize, DataTypes) => {
-  const EscapeRoomLocationVideo = sequelize.define(
-    "EscapeRoomLocationVideo",
+  const LandingLocationMapping = sequelize.define(
+    "LandingLocationMapping",
     {
       id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true
+      },
+      landing_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        unique:false,
+        references: {
+          model: 'landing_pages',
+          key: 'id'
+        }
       },
       location_id: {
         type: DataTypes.INTEGER,
@@ -18,29 +27,16 @@ module.exports = (sequelize, DataTypes) => {
           key: 'id'
         }
       },
-      video_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        unique:false,
-        references: {
-          model: 'videos',
-          key: 'id'
-        }
-      },
-      title: {
-        type: DataTypes.STRING(255),
-        allowNull: true
-      },
-      sort_order: {
-        type: DataTypes.INTEGER,
-        defaultValue: 0
+      isActive: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true
       }
     },
     {
-      tableName: "escape_room_location_videos",
-      timestamps: true
+      tableName: "landing_location_mappings",
+      timestamps: true,
     }
   );
 
-  return EscapeRoomLocationVideo;
+  return LandingLocationMapping;
 };

@@ -15,6 +15,7 @@ const adminSiteSettingsRoutes = require('./admin/site_settings.routes');
 const adminEscapeRoomArchiveRoutes = require('./admin/escaperoomarchive.routes'); 
 const adminEscapeRoomLocationRoutes = require('./admin/escaperoomlocations.routes'); 
 const adminEscapeRoomRoutes = require('./admin/escaperoom.routes'); 
+const adminLandingRoutes = require('./admin/landing.routes'); 
 
 
 
@@ -35,6 +36,7 @@ router.use('/admin/site', adminSiteSettingsRoutes);
 router.use('/admin/escape', adminEscapeRoomArchiveRoutes); 
 router.use('/admin/escape/locations', adminEscapeRoomLocationRoutes); 
 router.use('/admin/escape/rooms', adminEscapeRoomRoutes); 
+router.use('/admin/landing', adminLandingRoutes); 
 
 // API routes
 router.use('/api', apiTestRoutes);

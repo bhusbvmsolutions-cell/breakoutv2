@@ -4,7 +4,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const escapeRoomController = require('../../controllers/admin/escapeRoom.controller');
-const {isAuthenticated} = require('../../middlewares/auth');
+const { isAuthenticated } = require('../../middlewares/auth');
 
 // Configure multer for image uploads
 const storage = multer.diskStorage({
@@ -44,7 +44,7 @@ const upload = multer({
 // Apply auth middleware to all routes
 router.use(isAuthenticated);
 
-// Image upload route
+// Image upload routes
 router.post('/upload', upload.single('image'), escapeRoomController.uploadImage);
 router.get('/recent-images', escapeRoomController.getRecentImages);
 
@@ -57,7 +57,7 @@ router.get('/:id', escapeRoomController.show);
 router.post('/', 
     upload.fields([
         { name: 'banner_image', maxCount: 1 },
-        { name: 'gallery_images', maxCount: 10 }
+        { name: 'gallery_images', maxCount: 20 }
     ]), 
     escapeRoomController.create
 );
@@ -65,7 +65,7 @@ router.post('/',
 router.put('/:id', 
     upload.fields([
         { name: 'banner_image', maxCount: 1 },
-        { name: 'gallery_images', maxCount: 10 }
+        { name: 'gallery_images', maxCount: 20 }
     ]), 
     escapeRoomController.update
 );

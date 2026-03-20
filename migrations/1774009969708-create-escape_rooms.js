@@ -74,6 +74,10 @@ module.exports = {
         type: Sequelize.STRING(500),
         allowNull: true
       },
+      pricing_heading: {
+        type: Sequelize.STRING(500),
+        allowNull: true
+      },
       pricing_note: {
         type: Sequelize.TEXT,
         allowNull: true

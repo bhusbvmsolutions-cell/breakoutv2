@@ -76,6 +76,11 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING(500),
         allowNull: true,
       },
+      pricing_heading: {
+        type: DataTypes.STRING(500),
+        allowNull: true,
+      },
+      
       // Pricing Section Note
       pricing_note: {
         type: DataTypes.TEXT,

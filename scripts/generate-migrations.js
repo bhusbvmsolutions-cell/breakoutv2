@@ -107,11 +107,9 @@ function generateMigration(modelName, model) {
 
     if (attr.primaryKey) definition += `        primaryKey: true,\n`;
 
-    if (
-      (attr.unique === true || typeof attr.unique === "string") &&
-      !attr.primaryKey
-    )
+    if (!attr.primaryKey && attr.unique === true) {
       definition += `        unique: true,\n`;
+    }
 
     if (attr.defaultValue !== undefined) {
       if (attr.defaultValue === "NOW" || attr.defaultValue?.key === "NOW") {

@@ -35,12 +35,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       tableName: "escape_room_location_mappings",
       timestamps: true,
-      indexes: [
-        {
-          unique: true,
-          fields: ['escape_room_id', 'location_id']
-        }
-      ]
+      
     }
   );
 
