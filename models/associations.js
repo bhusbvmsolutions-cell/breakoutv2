@@ -659,7 +659,7 @@ module.exports = (db) => {
   }
 
   // ==================== PARTY ARCHIVE ASSOCIATIONS ====================
-
+  
   const { PartyArchive, PartyArchiveCounterCard } = db;
 
   // PartyArchive ↔ PartyArchiveCounterCard (one-to-many)
@@ -673,5 +673,51 @@ module.exports = (db) => {
     as: "archive",
   });
 
+
+
+  // ==================== BIRTHDAY ARCHIVE ASSOCIATIONS ====================
+
+
+  const {
+    BirthdayArchive,
+    BirthdayArchiveCounterCard,
+    BirthdayArchiveInclusionItem,
+    BirthdayArchiveSliderItem,
+    BirthdayArchiveVideo,
+  } = db;
+
+  // BirthdayArchive ↔ CounterCards
+  BirthdayArchive.hasMany(BirthdayArchiveCounterCard, { foreignKey: 'archive_id', as: 'counterCards' });
+  BirthdayArchiveCounterCard.belongsTo(BirthdayArchive, { foreignKey: 'archive_id' });
+
+  // BirthdayArchive ↔ InclusionItems
+  BirthdayArchive.hasMany(BirthdayArchiveInclusionItem, { foreignKey: 'archive_id', as: 'inclusionItems' });
+  BirthdayArchiveInclusionItem.belongsTo(BirthdayArchive, { foreignKey: 'archive_id' });
+
+  // BirthdayArchive ↔ SliderItems
+  BirthdayArchive.hasMany(BirthdayArchiveSliderItem, { foreignKey: 'archive_id', as: 'sliderItems' });
+  BirthdayArchiveSliderItem.belongsTo(BirthdayArchive, { foreignKey: 'archive_id' });
+
+  // BirthdayArchive ↔ Video (many-to-many through BirthdayArchiveVideo)
+  BirthdayArchive.belongsToMany(Video, {
+    through: BirthdayArchiveVideo,
+    foreignKey: 'archive_id',
+    otherKey: 'video_id',
+    as: 'videos',
+  });
+  Video.belongsToMany(BirthdayArchive, {
+    through: BirthdayArchiveVideo,
+    foreignKey: 'video_id',
+    otherKey: 'archive_id',
+    as: 'birthdayArchives',
+  });
+
+  BirthdayArchiveVideo.belongsTo(BirthdayArchive, { foreignKey: 'archive_id' });
+  BirthdayArchiveVideo.belongsTo(Video, { foreignKey: 'video_id' });
+  // Banner video relationship
+  BirthdayArchive.belongsTo(Video, { foreignKey: 'banner_video_id', as: 'bannerVideo' });
+
+  
+  
   console.log("✓ All model associations have been established successfully");
 };
