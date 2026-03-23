@@ -733,7 +733,7 @@ module.exports = (db) => {
   });
 
   // ==================== BACHELOR AND FAREWELL ARCHIVE ASSOCIATIONS ====================
-  
+
   const {
     BachelorFarewellArchive,
     BachelorFarewellCounterCard,
@@ -745,7 +745,7 @@ module.exports = (db) => {
     BachelorFarewellPackageRow,
     BachelorFarewellPackageCell,
   } = db;
-  
+
   // Check if models exist to avoid errors (optional)
   if (BachelorFarewellArchive && BachelorFarewellCounterCard) {
     BachelorFarewellArchive.hasMany(BachelorFarewellCounterCard, {
@@ -756,7 +756,7 @@ module.exports = (db) => {
       foreignKey: "archive_id",
     });
   }
-  
+
   if (BachelorFarewellArchive && BachelorFarewellImageCard) {
     BachelorFarewellArchive.hasMany(BachelorFarewellImageCard, {
       foreignKey: "archive_id",
@@ -766,7 +766,7 @@ module.exports = (db) => {
       foreignKey: "archive_id",
     });
   }
-  
+
   if (BachelorFarewellArchive && BachelorFarewellInclusionItem) {
     BachelorFarewellArchive.hasMany(BachelorFarewellInclusionItem, {
       foreignKey: "archive_id",
@@ -796,7 +796,7 @@ module.exports = (db) => {
       foreignKey: "archive_id",
     });
   }
-  
+
   if (BachelorFarewellArchive && BachelorFarewellPackageRow) {
     BachelorFarewellArchive.hasMany(BachelorFarewellPackageRow, {
       foreignKey: "archive_id",
@@ -806,7 +806,7 @@ module.exports = (db) => {
       foreignKey: "archive_id",
     });
   }
-  
+
   // Package relationships
   if (BachelorFarewellPackageRow && BachelorFarewellPackageCell) {
     BachelorFarewellPackageRow.hasMany(BachelorFarewellPackageCell, {
@@ -827,7 +827,7 @@ module.exports = (db) => {
       foreignKey: "column_id",
     });
   }
-  
+
   // Many-to-many with Video
   if (BachelorFarewellArchive && Video && BachelorFarewellVideo) {
     BachelorFarewellArchive.belongsToMany(Video, {
@@ -849,14 +849,13 @@ module.exports = (db) => {
   }
 
   if (BachelorFarewellArchive && Video) {
-    BachelorFarewellArchive.belongsTo(Video, { foreignKey: 'banner_video_id', as: 'bannerVideo' });
+    BachelorFarewellArchive.belongsTo(Video, {
+      foreignKey: "banner_video_id",
+      as: "bannerVideo",
+    });
   }
-  
-
 
   // ==================== BIRTHDAY INNER ASSOCIATIONS ====================
-
-
 
   const {
     BirthdayInnerPage,
@@ -869,63 +868,222 @@ module.exports = (db) => {
     BirthdayInnerPackageCell,
     BirthdayInnerVideo,
   } = db;
-  
+
   if (BirthdayInnerPage && BirthdayInnerCounterCard) {
-    BirthdayInnerPage.hasMany(BirthdayInnerCounterCard, { foreignKey: 'page_id', as: 'counterCards' });
-    BirthdayInnerCounterCard.belongsTo(BirthdayInnerPage, { foreignKey: 'page_id' });
+    BirthdayInnerPage.hasMany(BirthdayInnerCounterCard, {
+      foreignKey: "page_id",
+      as: "counterCards",
+    });
+    BirthdayInnerCounterCard.belongsTo(BirthdayInnerPage, {
+      foreignKey: "page_id",
+    });
   }
   if (BirthdayInnerPage && BirthdayInnerImageCard) {
-    BirthdayInnerPage.hasMany(BirthdayInnerImageCard, { foreignKey: 'page_id', as: 'imageCards' });
-    BirthdayInnerImageCard.belongsTo(BirthdayInnerPage, { foreignKey: 'page_id' });
+    BirthdayInnerPage.hasMany(BirthdayInnerImageCard, {
+      foreignKey: "page_id",
+      as: "imageCards",
+    });
+    BirthdayInnerImageCard.belongsTo(BirthdayInnerPage, {
+      foreignKey: "page_id",
+    });
   }
   if (BirthdayInnerPage && BirthdayInnerInclusionItem) {
-    BirthdayInnerPage.hasMany(BirthdayInnerInclusionItem, { foreignKey: 'page_id', as: 'inclusionItems' });
-    BirthdayInnerInclusionItem.belongsTo(BirthdayInnerPage, { foreignKey: 'page_id' });
+    BirthdayInnerPage.hasMany(BirthdayInnerInclusionItem, {
+      foreignKey: "page_id",
+      as: "inclusionItems",
+    });
+    BirthdayInnerInclusionItem.belongsTo(BirthdayInnerPage, {
+      foreignKey: "page_id",
+    });
   }
   if (BirthdayInnerPage && BirthdayInnerSliderItem) {
-    BirthdayInnerPage.hasMany(BirthdayInnerSliderItem, { foreignKey: 'page_id', as: 'sliderItems' });
-    BirthdayInnerSliderItem.belongsTo(BirthdayInnerPage, { foreignKey: 'page_id' });
+    BirthdayInnerPage.hasMany(BirthdayInnerSliderItem, {
+      foreignKey: "page_id",
+      as: "sliderItems",
+    });
+    BirthdayInnerSliderItem.belongsTo(BirthdayInnerPage, {
+      foreignKey: "page_id",
+    });
   }
   if (BirthdayInnerPage && BirthdayInnerPackageColumn) {
-    BirthdayInnerPage.hasMany(BirthdayInnerPackageColumn, { foreignKey: 'page_id', as: 'packageColumns' });
-    BirthdayInnerPackageColumn.belongsTo(BirthdayInnerPage, { foreignKey: 'page_id' });
+    BirthdayInnerPage.hasMany(BirthdayInnerPackageColumn, {
+      foreignKey: "page_id",
+      as: "packageColumns",
+    });
+    BirthdayInnerPackageColumn.belongsTo(BirthdayInnerPage, {
+      foreignKey: "page_id",
+    });
   }
   if (BirthdayInnerPage && BirthdayInnerPackageRow) {
-    BirthdayInnerPage.hasMany(BirthdayInnerPackageRow, { foreignKey: 'page_id', as: 'packageRows' });
-    BirthdayInnerPackageRow.belongsTo(BirthdayInnerPage, { foreignKey: 'page_id' });
+    BirthdayInnerPage.hasMany(BirthdayInnerPackageRow, {
+      foreignKey: "page_id",
+      as: "packageRows",
+    });
+    BirthdayInnerPackageRow.belongsTo(BirthdayInnerPage, {
+      foreignKey: "page_id",
+    });
   }
-  
+
   // Package relationships
   if (BirthdayInnerPackageRow && BirthdayInnerPackageCell) {
-    BirthdayInnerPackageRow.hasMany(BirthdayInnerPackageCell, { foreignKey: 'row_id', as: 'cells' });
-    BirthdayInnerPackageCell.belongsTo(BirthdayInnerPackageRow, { foreignKey: 'row_id' });
+    BirthdayInnerPackageRow.hasMany(BirthdayInnerPackageCell, {
+      foreignKey: "row_id",
+      as: "cells",
+    });
+    BirthdayInnerPackageCell.belongsTo(BirthdayInnerPackageRow, {
+      foreignKey: "row_id",
+    });
   }
   if (BirthdayInnerPackageColumn && BirthdayInnerPackageCell) {
-    BirthdayInnerPackageColumn.hasMany(BirthdayInnerPackageCell, { foreignKey: 'column_id', as: 'cells' });
-    BirthdayInnerPackageCell.belongsTo(BirthdayInnerPackageColumn, { foreignKey: 'column_id' });
+    BirthdayInnerPackageColumn.hasMany(BirthdayInnerPackageCell, {
+      foreignKey: "column_id",
+      as: "cells",
+    });
+    BirthdayInnerPackageCell.belongsTo(BirthdayInnerPackageColumn, {
+      foreignKey: "column_id",
+    });
   }
-  
+
   // Many-to-many with Video
   if (BirthdayInnerPage && Video && BirthdayInnerVideo) {
     BirthdayInnerPage.belongsToMany(Video, {
       through: BirthdayInnerVideo,
-      foreignKey: 'page_id',
-      otherKey: 'video_id',
-      as: 'videos',
+      foreignKey: "page_id",
+      otherKey: "video_id",
+      as: "videos",
     });
     Video.belongsToMany(BirthdayInnerPage, {
       through: BirthdayInnerVideo,
-      foreignKey: 'video_id',
-      otherKey: 'page_id',
-      as: 'birthdayInnerPages',
+      foreignKey: "video_id",
+      otherKey: "page_id",
+      as: "birthdayInnerPages",
     });
-    BirthdayInnerVideo.belongsTo(BirthdayInnerPage, { foreignKey: 'page_id' });
-    BirthdayInnerVideo.belongsTo(Video, { foreignKey: 'video_id' });
+    BirthdayInnerVideo.belongsTo(BirthdayInnerPage, { foreignKey: "page_id" });
+    BirthdayInnerVideo.belongsTo(Video, { foreignKey: "video_id" });
   }
 
   if (BirthdayInnerPage && Video) {
-    BirthdayInnerPage.belongsTo(Video, { foreignKey: 'banner_video_id', as: 'bannerVideo' });
+    BirthdayInnerPage.belongsTo(Video, {
+      foreignKey: "banner_video_id",
+      as: "bannerVideo",
+    });
   }
+
+  // ==================== CORPORATE ARCHIVE ASSOCIATIONS ====================
+
+  const { CorporateArchive, CorporateArchiveCounterCard } = db;
+
+  CorporateArchive.hasMany(CorporateArchiveCounterCard, {
+    foreignKey: "archive_id",
+    as: "counterCards",
+  });
+  CorporateArchiveCounterCard.belongsTo(CorporateArchive, {
+    foreignKey: "archive_id",
+  });
+
+  // ==================== CORPORATE UNWIND ASSOCIATIONS ====================
+
+  const {
+    CorporateUnwindArchive,
+    CorporateUnwindCounterCard,
+    CorporateUnwindImageCard,
+    CorporateUnwindAddonItem,
+    CorporateUnwindWhyUsItem,
+    CorporateUnwindCompareItem,
+    CorporateUnwindPackageColumn,
+    CorporateUnwindPackageRow,
+    CorporateUnwindPackageCell,
+    CorporateUnwindVideo,
+  } = db;
+
+  // Main archive → child collections
+  CorporateUnwindArchive.hasMany(CorporateUnwindCounterCard, {
+    foreignKey: "archive_id",
+    as: "counterCards",
+  });
+  CorporateUnwindArchive.hasMany(CorporateUnwindImageCard, {
+    foreignKey: "archive_id",
+    as: "imageCards",
+  });
+  CorporateUnwindArchive.hasMany(CorporateUnwindAddonItem, {
+    foreignKey: "archive_id",
+    as: "addonItems",
+  });
+  CorporateUnwindArchive.hasMany(CorporateUnwindWhyUsItem, {
+    foreignKey: "archive_id",
+    as: "whyUsItems",
+  });
+  CorporateUnwindArchive.hasMany(CorporateUnwindCompareItem, {
+    foreignKey: "archive_id",
+    as: "compareItems",
+  });
+  CorporateUnwindArchive.hasMany(CorporateUnwindPackageColumn, {
+    foreignKey: "archive_id",
+    as: "packageColumns",
+  });
+  CorporateUnwindArchive.hasMany(CorporateUnwindPackageRow, {
+    foreignKey: "archive_id",
+    as: "packageRows",
+  });
+
+  // Belongs to relationships
+  CorporateUnwindCounterCard.belongsTo(CorporateUnwindArchive, {
+    foreignKey: "archive_id",
+  });
+  CorporateUnwindImageCard.belongsTo(CorporateUnwindArchive, {
+    foreignKey: "archive_id",
+  });
+  CorporateUnwindAddonItem.belongsTo(CorporateUnwindArchive, {
+    foreignKey: "archive_id",
+  });
+  CorporateUnwindWhyUsItem.belongsTo(CorporateUnwindArchive, {
+    foreignKey: "archive_id",
+  });
+  CorporateUnwindCompareItem.belongsTo(CorporateUnwindArchive, {
+    foreignKey: "archive_id",
+  });
+  CorporateUnwindPackageColumn.belongsTo(CorporateUnwindArchive, {
+    foreignKey: "archive_id",
+  });
+  CorporateUnwindPackageRow.belongsTo(CorporateUnwindArchive, {
+    foreignKey: "archive_id",
+  });
+
+  // Package relationships (columns, rows, cells)
+  CorporateUnwindPackageRow.hasMany(CorporateUnwindPackageCell, {
+    foreignKey: "row_id",
+    as: "cells",
+  });
+  CorporateUnwindPackageCell.belongsTo(CorporateUnwindPackageRow, {
+    foreignKey: "row_id",
+  });
+  CorporateUnwindPackageColumn.hasMany(CorporateUnwindPackageCell, {
+    foreignKey: "column_id",
+    as: "cells",
+  });
+  CorporateUnwindPackageCell.belongsTo(CorporateUnwindPackageColumn, {
+    foreignKey: "column_id",
+  });
+
+  // Many-to-many with Video
+  CorporateUnwindArchive.belongsToMany(Video, {
+    through: CorporateUnwindVideo,
+    foreignKey: "archive_id",
+    otherKey: "video_id",
+    as: "videos",
+  });
+  Video.belongsToMany(CorporateUnwindArchive, {
+    through: CorporateUnwindVideo,
+    foreignKey: "video_id",
+    otherKey: "archive_id",
+    as: "corporateUnwindArchives",
+  });
+
+  // Junction model associations
+  CorporateUnwindVideo.belongsTo(CorporateUnwindArchive, {
+    foreignKey: "archive_id",
+  });
+  CorporateUnwindVideo.belongsTo(Video, { foreignKey: "video_id" });
 
   console.log("✓ All model associations have been established successfully");
 };

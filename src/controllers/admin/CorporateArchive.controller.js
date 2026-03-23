@@ -1,0 +1,127 @@
+// controllers/admin/CorporateArchiveController.js
+const db = require("../../../models");
+const fs = require("fs");
+const path = require("path");
+
+function getImageAbsolutePath(storedPath) {
+  if (!storedPath) return null;
+  const projectRoot = path.join(__dirname, '../../../');
+  if (storedPath.startsWith('/')) {
+    return path.join(projectRoot, 'public', storedPath);
+  }
+  return path.join(projectRoot, storedPath);
+}
+
+function groupFilesByFieldname(files) {
+  const grouped = {};
+  if (files && files.length) {
+    files.forEach(file => {
+      if (!grouped[file.fieldname]) grouped[file.fieldname] = [];
+      grouped[file.fieldname].push(file);
+    });
+  }
+  return grouped;
+}
+
+const CorporateArchiveController = {
+  async ensureArchive() {
+    let archive = await db.CorporateArchive.findByPk(1);
+    if (!archive) {
+      archive = await db.CorporateArchive.create({
+        banner_heading: '',
+        banner_description: '',
+        banner_content: '',
+        banner_note: '',
+        counters_heading: '',
+        counters_rating: null,
+        footer_heading: '',
+        footer_description1: '',
+        footer_description2: '',
+      });
+    }
+    return archive;
+  },
+
+  index: async (req, res) => {
+    try {
+      const archive = await CorporateArchiveController.ensureArchive();
+      const fullArchive = await db.CorporateArchive.findByPk(archive.id, {
+        include: [{ model: db.CorporateArchiveCounterCard, as: 'counterCards', order: [['sort_order', 'ASC']] }],
+      });
+      res.render('admin/corporate/archive/index', {
+        title: 'Corporate Archive',
+        archive: fullArchive,
+        errors: {},
+      });
+    } catch (error) {
+      console.error(error);
+      req.flash('error', 'Failed to load form');
+      res.redirect('/admin/dashboard');
+    }
+  },
+
+  update: async (req, res) => {
+    const transaction = await db.sequelize.transaction();
+    try {
+      const archive = await CorporateArchiveController.ensureArchive();
+      const files = groupFilesByFieldname(req.files);
+      const body = req.body;
+
+      const updateData = {
+        banner_heading: body.banner_heading,
+        banner_description: body.banner_description,
+        banner_content: body.banner_content,
+        banner_note: body.banner_note,
+        counters_heading: body.counters_heading,
+        counters_rating: body.counters_rating,
+        footer_heading: body.footer_heading,
+        footer_description1: body.footer_description1,
+        footer_description2: body.footer_description2,
+        isActive: body.isActive === 'on',
+      };
+
+      // Banner images (3 fields)
+      const imageFields = ['banner_unwind_image', 'banner_retreats_image', 'banner_connect_image'];
+      for (const field of imageFields) {
+        if (files[field] && files[field][0]) {
+          if (archive[field]) {
+            const oldPath = getImageAbsolutePath(archive[field]);
+            if (oldPath && fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+          }
+          updateData[field] = `/uploads/corporate/${files[field][0].filename}`;
+        } else if (body[field]) {
+          updateData[field] = body[field];
+        }
+      }
+
+      await archive.update(updateData, { transaction });
+
+      // Replace counter cards (3 items)
+      await db.CorporateArchiveCounterCard.destroy({ where: { archive_id: archive.id }, transaction });
+      if (body.counter_cards && Array.isArray(body.counter_cards)) {
+        for (let i = 0; i < body.counter_cards.length; i++) {
+          const card = body.counter_cards[i];
+          const imageFile = files[`counter_cards[${i}][image]`]?.[0];
+          await db.CorporateArchiveCounterCard.create({
+            archive_id: archive.id,
+            sort_order: i,
+            count: card.count,
+            description: card.description,
+            image: imageFile ? `/uploads/corporate/${imageFile.filename}` : (card.image || null),
+          }, { transaction });
+        }
+      }
+
+      await transaction.commit();
+      req.flash('success', 'Corporate archive updated successfully');
+      res.redirect('/admin/corporate-archive');
+    } catch (error) {
+      await transaction.rollback();
+      console.error(error);
+      req.flash('error', error.message || 'Failed to update archive');
+      res.redirect('/admin/corporate-archive');
+    }
+  },
+};
+
+module.exports = CorporateArchiveController;

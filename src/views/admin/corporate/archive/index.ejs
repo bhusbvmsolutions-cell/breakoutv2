@@ -1,0 +1,184 @@
+<%- contentFor('title') %> Corporate Archive
+<%- contentFor('head') %>
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
+<style>
+  body { background: #f5f7fb; }
+  .form-container { max-width: 100%; margin: 0 auto; }
+  .card-custom { border-radius: 1rem; overflow: hidden; border: none; box-shadow: 0 0.5rem 1.5rem rgba(0,0,0,0.08); }
+  .card-header-custom { background: linear-gradient(135deg, #fcad00 0%, #ffd966 100%); padding: 0.75rem 1.25rem; border-bottom: none; }
+  .card-header-custom h4 { margin: 0; color: #2c3e50; font-weight: 600; font-size: 1.1rem; }
+  .card-header-custom p { margin: 0; font-size: 0.8rem; color: #2c3e50; opacity: 0.9; }
+  .form-section { background: #fff; border-radius: 0.75rem; padding: 1.25rem; margin-bottom: 1.5rem; box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.05); border: 1px solid #eef2f6; }
+  .section-title { font-size: 1rem; font-weight: 600; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid #fcad00; display: inline-block; }
+  .form-label { font-weight: 500; margin-bottom: 0.25rem; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: #6c757d; }
+  .form-control, .form-select { border-radius: 0.5rem; border: 1px solid #e2e8f0; padding: 0.5rem 0.75rem; font-size: 0.9rem; transition: all 0.2s; }
+  .form-control:focus, .form-select:focus { border-color: #fcad00; box-shadow: 0 0 0 0.2rem rgba(252,173,0,0.25); }
+  .image-preview { max-width: 80px; max-height: 60px; margin-top: 0.5rem; border-radius: 0.5rem; border: 1px solid #e2e8f0; padding: 2px; background: #fff; display: none; }
+  .btn-submit { background: linear-gradient(135deg, #fcad00 0%, #ffd966 100%); border: none; border-radius: 2rem; padding: 0.5rem 1.5rem; font-weight: 600; transition: transform 0.2s, box-shadow 0.2s; }
+  .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 0.5rem 1rem rgba(252,173,0,0.3); }
+  @media (max-width: 768px) { .form-container { max-width: 100%; } .form-section { padding: 1rem; } }
+</style>
+
+<%- contentFor('body') %>
+<div class="container py-4">
+  <div class="form-container">
+    <div class="card card-custom">
+      <div class="card-header-custom">
+        <h4><i class="bx bx-building me-2"></i> Corporate Archive</h4>
+        <p>Manage corporate event page – banners, counters, footer</p>
+      </div>
+      <div class="card-body p-4">
+        <form id="corporateArchiveForm" action="/admin/corporate/archive" method="POST" enctype="multipart/form-data">
+          <!-- Banner Section -->
+          <div class="form-section">
+            <h5 class="section-title"><i class="bx bx-image-alt me-2"></i> Banner Section</h5>
+            <div class="row g-3">
+              <div class="col-12">
+                <label class="form-label">Heading</label>
+                <input type="text" name="banner_heading" class="form-control" value="<%= archive?.banner_heading || '' %>">
+              </div>
+              <div class="col-12">
+                <label class="form-label">Description</label>
+                <input type="text" name="banner_description" class="form-control" value="<%= archive?.banner_description || '' %>">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Unwind Image</label>
+                <input type="file" name="banner_unwind_image" class="form-control" accept="image/*">
+                <% if (archive?.banner_unwind_image) { %>
+                  <img src="<%= archive.banner_unwind_image %>" class="image-preview mt-2" style="display:block">
+                <% } else { %>
+                  <img class="image-preview mt-2">
+                <% } %>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Retreats Image</label>
+                <input type="file" name="banner_retreats_image" class="form-control" accept="image/*">
+                <% if (archive?.banner_retreats_image) { %>
+                  <img src="<%= archive.banner_retreats_image %>" class="image-preview mt-2" style="display:block">
+                <% } else { %>
+                  <img class="image-preview mt-2">
+                <% } %>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Connect Image</label>
+                <input type="file" name="banner_connect_image" class="form-control" accept="image/*">
+                <% if (archive?.banner_connect_image) { %>
+                  <img src="<%= archive.banner_connect_image %>" class="image-preview mt-2" style="display:block">
+                <% } else { %>
+                  <img class="image-preview mt-2">
+                <% } %>
+              </div>
+              <div class="col-12">
+                <label class="form-label">Content</label>
+                <textarea name="banner_content" class="form-control summernote" rows="5"><%= archive?.banner_content || '' %></textarea>
+              </div>
+              <div class="col-12">
+                <label class="form-label">Note</label>
+                <input type="text" name="banner_note" class="form-control" value="<%= archive?.banner_note || '' %>">
+              </div>
+            </div>
+          </div>
+
+          <!-- Counters Section -->
+          <div class="form-section">
+            <h5 class="section-title"><i class="bx bx-stats me-2"></i> Counters Section</h5>
+            <div class="row g-3 mb-3">
+              <div class="col-md-10">
+                <label class="form-label">Counter Heading</label>
+                <input type="text" name="counters_heading" class="form-control" value="<%= archive?.counters_heading || '' %>">
+              </div>
+              <div class="col-md-2">
+                <label class="form-label">Rating (0-5)</label>
+                <input type="number" step="0.1" name="counters_rating" class="form-control" value="<%= archive?.counters_rating || '' %>" min="0" max="5">
+              </div>
+            </div>
+
+            <label class="form-label fw-bold mt-2">Counter Cards (3 items)</label>
+            <div class="row">
+              <% for (let i = 0; i < 3; i++) {
+                const card = archive?.counterCards?.[i];
+              %>
+              <div class="col-md-4 mb-3">
+                <div class="card border-0 shadow-sm h-100">
+                  <div class="card-body">
+                    <label class="form-label">Image</label>
+                    <input type="file" name="counter_cards[<%= i %>][image]" class="form-control" accept="image/*">
+                    <% if (card?.image) { %>
+                      <img src="<%= card.image %>" class="image-preview mt-2" style="display:block">
+                    <% } else { %>
+                      <img class="image-preview mt-2">
+                    <% } %>
+                    <input type="hidden" name="counter_cards[<%= i %>][image]" value="<%= card?.image || '' %>">
+                    <hr class="my-2">
+                    <label class="form-label">Count</label>
+                    <input type="text" name="counter_cards[<%= i %>][count]" class="form-control" value="<%= card?.count || '' %>">
+                    <label class="form-label mt-2">Description</label>
+                    <input type="text" name="counter_cards[<%= i %>][description]" class="form-control" value="<%= card?.description || '' %>">
+                  </div>
+                </div>
+              </div>
+              <% } %>
+            </div>
+          </div>
+
+          <!-- Footer Section -->
+          <div class="form-section">
+            <h5 class="section-title"><i class="bx bx-footer me-2"></i> Footer Section</h5>
+            <div class="row g-3">
+              <div class="col-12">
+                <label class="form-label">Heading</label>
+                <input type="text" name="footer_heading" class="form-control" value="<%= archive?.footer_heading || '' %>">
+              </div>
+              <div class="col-12">
+                <label class="form-label">Description 1</label>
+                <input type="text" name="footer_description1" class="form-control" value="<%= archive?.footer_description1 || '' %>">
+              </div>
+              <div class="col-12">
+                <label class="form-label">Description 2</label>
+                <input type="text" name="footer_description2" class="form-control" value="<%= archive?.footer_description2 || '' %>">
+              </div>
+              <div class="col-12">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="isActive" value="on" <%= archive?.isActive !== false ? 'checked' : '' %>>
+                  <label class="form-check-label">Active</label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-end mt-3">
+            <button type="submit" class="btn btn-submit">
+              <i class="bx bx-save me-1"></i> Save Changes
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- contentFor('js') %>
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+<script>
+  $(document).ready(function() {
+    $('.summernote').summernote({ height: 250 });
+
+    // Image preview for file inputs
+    function setupImagePreview(inputElem, previewElem) {
+      inputElem.on('change', function() {
+        const file = this.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(e) { previewElem.attr('src', e.target.result).show(); };
+          reader.readAsDataURL(file);
+        } else {
+          previewElem.hide().attr('src', '');
+        }
+      });
+    }
+    $('input[type="file"]').each(function() {
+      const preview = $(this).siblings('.image-preview');
+      if (preview.length) setupImagePreview($(this), preview);
+    });
+  });
+</script>
