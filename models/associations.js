@@ -1085,5 +1085,53 @@ module.exports = (db) => {
   });
   CorporateUnwindVideo.belongsTo(Video, { foreignKey: "video_id" });
 
+  // ==================== CORPORATE L & D ASSOCIATIONS ====================
+
+  const {
+    CorporateLdArchive,
+    CorporateLdCounterCard,
+    CorporateLdSliderItem,
+    CorporateLdKeyResourceItem,
+    CorporateLdVideo,
+  } = db;
+
+  CorporateLdArchive.hasMany(CorporateLdCounterCard, {
+    foreignKey: "archive_id",
+    as: "counterCards",
+  });
+  CorporateLdArchive.hasMany(CorporateLdSliderItem, {
+    foreignKey: "archive_id",
+    as: "sliderItems",
+  });
+  CorporateLdArchive.hasMany(CorporateLdKeyResourceItem, {
+    foreignKey: "archive_id",
+    as: "keyResourceItems",
+  });
+
+  CorporateLdCounterCard.belongsTo(CorporateLdArchive, {
+    foreignKey: "archive_id",
+  });
+  CorporateLdSliderItem.belongsTo(CorporateLdArchive, {
+    foreignKey: "archive_id",
+  });
+  CorporateLdKeyResourceItem.belongsTo(CorporateLdArchive, {
+    foreignKey: "archive_id",
+  });
+
+  CorporateLdArchive.belongsToMany(Video, {
+    through: CorporateLdVideo,
+    foreignKey: "archive_id",
+    otherKey: "video_id",
+    as: "videos",
+  });
+  Video.belongsToMany(CorporateLdArchive, {
+    through: CorporateLdVideo,
+    foreignKey: "video_id",
+    otherKey: "archive_id",
+    as: "corporateLdArchives",
+  });
+  CorporateLdVideo.belongsTo(CorporateLdArchive, { foreignKey: "archive_id" });
+  CorporateLdVideo.belongsTo(Video, { foreignKey: "video_id" });
+
   console.log("✓ All model associations have been established successfully");
 };
