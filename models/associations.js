@@ -405,7 +405,107 @@ module.exports = (db) => {
     });
   }
 
+  // ==================== Virtual EscapeRoom archive ASSOCIATIONS ======================
 
+  const {
+    VirtualArchive,
+    VirtualArchiveAddonItem,
+    VirtualArchiveCounterCard,
+    VirtualArchiveGalleryImage,
+    VirtualArchiveIconItem,
+    VirtualArchivePackageColumn,
+    VirtualArchivePackageRow,
+    VirtualArchivePackageCell,
+    VirtualArchiveVideo,
+  } = db;
+
+  // Archive → CounterCards
+  VirtualArchive.hasMany(VirtualArchiveCounterCard, {
+    foreignKey: "archive_id",
+    as: "counterCards",
+  });
+  VirtualArchiveCounterCard.belongsTo(VirtualArchive, {
+    foreignKey: "archive_id",
+  });
+
+  // Archive → IconItems
+  VirtualArchive.hasMany(VirtualArchiveIconItem, {
+    foreignKey: "archive_id",
+    as: "iconItems",
+  });
+  VirtualArchiveIconItem.belongsTo(VirtualArchive, {
+    foreignKey: "archive_id",
+  });
+
+  // Archive → AddonItems
+  VirtualArchive.hasMany(VirtualArchiveAddonItem, {
+    foreignKey: "archive_id",
+    as: "addonItems",
+  });
+  VirtualArchiveAddonItem.belongsTo(VirtualArchive, {
+    foreignKey: "archive_id",
+  });
+
+  // Archive → GalleryImages
+  VirtualArchive.hasMany(VirtualArchiveGalleryImage, {
+    foreignKey: "archive_id",
+    as: "galleryImages",
+  });
+  VirtualArchiveGalleryImage.belongsTo(VirtualArchive, {
+    foreignKey: "archive_id",
+  });
+
+  // Archive → PackageColumns
+  VirtualArchive.hasMany(VirtualArchivePackageColumn, {
+    foreignKey: "archive_id",
+    as: "packageColumns",
+  });
+  VirtualArchivePackageColumn.belongsTo(VirtualArchive, {
+    foreignKey: "archive_id",
+  });
+
+  // Archive → PackageRows
+  VirtualArchive.hasMany(VirtualArchivePackageRow, {
+    foreignKey: "archive_id",
+    as: "packageRows",
+  });
+  VirtualArchivePackageRow.belongsTo(VirtualArchive, {
+    foreignKey: "archive_id",
+  });
+
+  // PackageRow → PackageCells
+  VirtualArchivePackageRow.hasMany(VirtualArchivePackageCell, {
+    foreignKey: "row_id",
+    as: "cells",
+  });
+  VirtualArchivePackageCell.belongsTo(VirtualArchivePackageRow, {
+    foreignKey: "row_id",
+  });
+  VirtualArchivePackageColumn.hasMany(VirtualArchivePackageCell, {
+    foreignKey: "column_id",
+    as: "cells",
+  });
+  VirtualArchivePackageCell.belongsTo(VirtualArchivePackageColumn, {
+    foreignKey: "column_id",
+  });
+
+  // Archive ↔ Video (many-to-many)
+  VirtualArchive.belongsToMany(Video, {
+    through: VirtualArchiveVideo,
+    foreignKey: "archive_id",
+    otherKey: "video_id",
+    as: "videos",
+  });
+  Video.belongsToMany(VirtualArchive, {
+    through: VirtualArchiveVideo,
+    foreignKey: "video_id",
+    otherKey: "archive_id",
+    as: "archives",
+  });
+
+  VirtualArchiveVideo.belongsTo(VirtualArchive, { foreignKey: "archive_id" });
+  VirtualArchiveVideo.belongsTo(Video, { foreignKey: "video_id" });
+  VirtualArchive.belongsTo(db.Video, { foreignKey: 'banner_video_id', as: 'bannerVideo' });
 
   // ==================== LANDING PAGE ASSOCIATIONS ====================
 
@@ -418,8 +518,6 @@ module.exports = (db) => {
     LandingCardSection,
     LandingVideo,
   } = db;
-
-
 
   if (Landing && EscapeRoomLocation && LandingLocationMapping) {
     // Many-to-many relationship between Landing and EscapeRoomLocation

@@ -49,12 +49,8 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true
       },
       counters_counter_rating: {
-        type: DataTypes.DECIMAL(3, 1),
+        type: DataTypes.STRING(255),
         allowNull: true,
-        validate: {
-          min: 0,
-          max: 5
-        }
       },
       // Content Section
       content_section: {

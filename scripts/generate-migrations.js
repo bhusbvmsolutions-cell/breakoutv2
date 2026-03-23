@@ -4,6 +4,44 @@ const path = require("path");
 let migrationCounter = 0;
 
 // Convert Sequelize types to migration types
+
+function sortModelsByDependencies(models) {
+  const modelMap = models;
+  const visited = new Set();
+  const sorted = [];
+
+  function visit(modelName) {
+    if (visited.has(modelName)) return;
+    visited.add(modelName);
+
+    const model = modelMap[modelName];
+    const attributes = model.rawAttributes;
+
+    Object.keys(attributes).forEach((attr) => {
+      const ref = attributes[attr].references;
+
+      if (ref && ref.model) {
+        // Find model name from table name
+        const referencedModel = Object.keys(modelMap).find(
+          (m) =>
+            modelMap[m].options.tableName === ref.model ||
+            m.toLowerCase() + "s" === ref.model
+        );
+
+        if (referencedModel) {
+          visit(referencedModel); // 🔁 recursive dependency resolution
+        }
+      }
+    });
+
+    sorted.push(modelName);
+  }
+
+  Object.keys(modelMap).forEach(visit);
+
+  return [...new Set(sorted)];
+}
+
 function getMigrationType(attribute) {
   if (!attribute.type) return "Sequelize.STRING";
 
@@ -216,27 +254,15 @@ async function generateAllMigrations() {
       console.log("🧹 Cleared existing migration files\n");
     }
 
-    const migrationOrder = [
-      "User",
-      "Role",
-      "Module",
-      "Permission",
-      "UserRole",
-      "RolePermission",
-    ];
+    const sortedModels = sortModelsByDependencies(models);
 
-    migrationOrder.forEach((modelName) => {
-      if (models[modelName]) {
-        console.log(`📦 Processing model: ${modelName}`);
-        generateMigration(modelName, models[modelName]);
-      }
-    });
+    console.log("\n🧠 Migration order (auto-resolved):");
+    sortedModels.forEach((m) => console.log(`   - ${m}`));
+    console.log("");
 
-    modelNames.forEach((modelName) => {
-      if (!migrationOrder.includes(modelName)) {
-        console.log(`📦 Processing model: ${modelName}`);
-        generateMigration(modelName, models[modelName]);
-      }
+    sortedModels.forEach((modelName) => {
+      console.log(`📦 Processing model: ${modelName}`);
+      generateMigration(modelName, models[modelName]);
     });
 
     console.log("\n✨ All migrations generated successfully!");

@@ -46,7 +46,7 @@ module.exports = {
         allowNull: true
       },
       counters_counter_rating: {
-        type: Sequelize.DECIMAL,
+        type: Sequelize.STRING(255),
         allowNull: true
       },
       content_section: {
