@@ -507,8 +507,12 @@ module.exports = (db) => {
   VirtualArchiveVideo.belongsTo(Video, { foreignKey: "video_id" });
   VirtualArchive.belongsTo(db.Video, { foreignKey: 'banner_video_id', as: 'bannerVideo' });
 
+  
+  
+  
+  
   // ==================== LANDING PAGE ASSOCIATIONS ====================
-
+  
   const {
     Landing,
     LandingLocationMapping,

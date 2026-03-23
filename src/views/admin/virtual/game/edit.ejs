@@ -1,0 +1,446 @@
+<%- contentFor('title') %> Edit Virtual Game - Admin
+<%- contentFor('head') %>
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  :root {
+    --primary-gold: #fcad00;
+    --primary-dark: #e09d00;
+    --card-radius: 1rem;
+  }
+
+  body {
+    background: #f8f9fc;
+  }
+
+  .form-section, .preview-card {
+    background: #fff;
+    border-radius: var(--card-radius);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    transition: all 0.2s ease;
+    border: 1px solid rgba(0,0,0,0.05);
+  }
+
+  .section-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 3px solid var(--primary-gold);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .section-title i {
+    font-size: 1.3rem;
+    color: var(--primary-gold);
+  }
+
+  .preview-card {
+    position: sticky;
+    top: 1rem;
+    background: #ffffff;
+    border-left: 4px solid var(--primary-gold);
+  }
+
+  .preview-image {
+    width: 100%;
+    max-height: 180px;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 1px solid #e9ecef;
+    background: #f1f2f6;
+  }
+
+  .badge-status {
+    padding: 0.35rem 0.75rem;
+    border-radius: 50px;
+    font-weight: 500;
+    font-size: 0.75rem;
+  }
+
+  .badge-active {
+    background: #d1fae5;
+    color: #065f46;
+  }
+  .badge-inactive {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+
+  .detail-row {
+    display: flex;
+    margin-bottom: 0.85rem;
+    flex-wrap: wrap;
+  }
+  .detail-label {
+    width: 110px;
+    font-weight: 600;
+    color: #4b5563;
+    flex-shrink: 0;
+  }
+  .detail-value {
+    flex: 1;
+    color: #1f2937;
+    word-break: break-word;
+  }
+
+  .preview-content-box {
+    background: #f9fafb;
+    border-radius: 12px;
+    padding: 0.75rem;
+    font-size: 0.85rem;
+    max-height: 150px;
+    overflow-y: auto;
+    border: 1px solid #e5e7eb;
+  }
+
+  /* responsive fine-tuning */
+  @media (max-width: 991.98px) {
+    .preview-card {
+      position: relative;
+      top: 0;
+      margin-top: 1rem;
+    }
+    .form-section, .preview-card {
+      padding: 1.2rem;
+    }
+    .detail-label {
+      width: 100%;
+      margin-bottom: 0.25rem;
+    }
+    .detail-row {
+      flex-direction: column;
+    }
+    .btn-submit {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
+  /* image preview thumbnail */
+  .current-image-preview {
+    max-width: 100px;
+    max-height: 70px;
+    border-radius: 8px;
+    margin-top: 8px;
+    border: 1px solid #dee2e6;
+    object-fit: cover;
+  }
+  .file-upload-wrapper {
+    position: relative;
+  }
+  .form-control:focus, .form-select:focus {
+    border-color: var(--primary-gold);
+    box-shadow: 0 0 0 0.2rem rgba(252, 173, 0, 0.25);
+  }
+  .btn-primary {
+    background: var(--primary-gold);
+    border-color: var(--primary-gold);
+    color: #1e2a3a;
+    font-weight: 600;
+  }
+  .btn-primary:hover {
+    background: var(--primary-dark);
+    border-color: var(--primary-dark);
+    color: #000;
+  }
+  .note-editor.note-frame {
+    border-radius: 12px;
+  }
+</style>
+
+<%- contentFor('body') %>
+<div class="container-fluid py-3 py-md-4">
+  <div class="row g-4">
+    <!-- LEFT COLUMN: EDIT FORM -->
+    <div class="col-lg-8">
+      <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+        <h4 class="mb-0 fw-bold"><i class='bx bx-game'></i> Edit Virtual Game</h4>
+        <a href="/admin/virtual/game" class="btn btn-outline-secondary btn-sm"><i class='bx bx-arrow-back'></i> Back to List</a>
+      </div>
+      
+      <form id="virtualGameForm" action="/admin/virtual/game/update/<%= game.id %>" method="POST" enctype="multipart/form-data">
+        <!-- Banner Information Section -->
+        <div class="form-section">
+          <div class="section-title">
+            <i class='bx bx-image-alt'></i> Banner Section
+          </div>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Title <span class="text-danger">*</span></label>
+              <input type="text" name="title" id="gameTitle" class="form-control" value="<%= game.title %>" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Slug</label>
+              <input type="text" name="slug" id="gameSlug" class="form-control" value="<%= game.slug %>">
+              <div class="form-text">Leave blank to auto-generate from title</div>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Heading</label>
+              <input type="text" name="banner_heading" id="bannerHeading" class="form-control" value="<%= game.banner_heading || '' %>" placeholder="Main headline for the banner">
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Banner Image</label>
+              <input type="file" name="banner_image" id="bannerImageFile" class="form-control" accept="image/*">
+              <div class="mt-2">
+                <% if (game.banner_image) { %>
+                  <img src="<%= game.banner_image %>" id="currentImagePreview" class="current-image-preview" style="display:inline-block">
+                <% } else { %>
+                  <img src="" id="currentImagePreview" class="current-image-preview" style="display:none">
+                <% } %>
+                <span class="text-muted small ms-2">Current image (will be replaced on upload)</span>
+              </div>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Short Description</label>
+              <textarea name="banner_description" id="bannerDescription" class="form-control" rows="3"><%= game.banner_description || '' %></textarea>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Full Content (WYSIWYG)</label>
+              <textarea name="banner_content" id="bannerContent" class="summernote"><%= game.banner_content || '' %></textarea>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Success Rate (%)</label>
+              <input type="text" name="success_rate" id="successRate" class="form-control" value="<%= game.success_rate || '' %>" placeholder="e.g., 60">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold">Capacity</label>
+              <input type="text" name="capacity" id="capacity" class="form-control" value="<%= game.capacity || '' %>" placeholder="e.g., 4 - 10 players">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">CTA Button Label</label>
+              <input type="text" name="cta_label" id="ctaLabel" class="form-control" value="<%= game.cta_label || '' %>" placeholder="e.g., Book Now">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">CTA Button Link</label>
+              <input type="text" name="cta_link" id="ctaLink" class="form-control" value="<%= game.cta_link || '' %>" placeholder="https://...">
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Video Trailer URL</label>
+              <input type="text" name="video_trailer" id="videoTrailer" class="form-control" value="<%= game.video_trailer || '' %>" placeholder="YouTube or Vimeo link">
+            </div>
+            <div class="col-12">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" name="isActive" id="isActiveCheckbox" value="on" <%= game.isActive ? 'checked' : '' %>>
+                <label class="form-check-label fw-semibold" for="isActiveCheckbox">Active (visible on website)</label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="d-flex gap-3 flex-wrap mt-2 mb-4">
+          <button type="submit" class="btn btn-primary btn-icon-text px-4 py-2 btn-submit">
+            <i class='bx bx-save'></i> Save Changes
+          </button>
+          <a href="/admin/virtual/game" class="btn btn-light border px-4 py-2">Cancel</a>
+        </div>
+      </form>
+    </div>
+
+    <!-- RIGHT COLUMN: LIVE PREVIEW -->
+    <div class="col-lg-4">
+      <div class="preview-card">
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <i class='bx bx-show-alt fs-4' style="color: #fcad00;"></i>
+          <h5 class="mb-0 fw-semibold">Live Preview</h5>
+          <span class="badge bg-light text-dark ms-auto">实时更新</span>
+        </div>
+        <div id="livePreviewContainer">
+          <!-- dynamic preview will be injected here -->
+        </div>
+        <div class="mt-3 text-center text-muted small">
+          <i class='bx bx-mobile-alt'></i> Changes appear instantly
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- contentFor('js') %>
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+<script>
+  $(document).ready(function() {
+    // initialize summernote
+    $('#bannerContent').summernote({
+        placeholder: 'Write your content here...',
+        tabsize: 2,
+        height: 300,
+        fontNames: [
+          'Arial', 'Arial Black', 'Comic Sans MS', 'Courier New',
+          'Georgia', 'Tahoma', 'Times New Roman', 'Verdana',
+
+          'Poppins', 'Roboto', 'Open Sans', 'Lato',
+          'Montserrat', 'Raleway', 'Nunito',
+          'Playfair Display', 'Merriweather'
+        ],
+        fontNamesIgnoreCheck: [
+          'Poppins', 'Roboto', 'Open Sans', 'Lato',
+          'Montserrat', 'Raleway', 'Nunito',
+          'Playfair Display', 'Merriweather'
+        ],
+        fontSizes: ['8', '10', '12', '14', '16', '18', '20', '24', '28', '32', '36', '48', '64'],
+        toolbar: [
+          ['style', ['style']],
+          ['font', ['bold', 'italic', 'underline', 'strikethrough', 'clear']],
+          ['fontname', ['fontname']],
+          ['fontsize', ['fontsize']],
+          ['color', ['forecolor', 'backcolor']],
+          ['para', ['ul', 'ol', 'paragraph', 'height']],
+          ['insert', ['link', 'picture', 'video', 'table']],
+          ['view', ['fullscreen', 'codeview']]
+        ],
+        lineHeights: ['0.8', '1.0', '1.2', '1.5', '2.0', '3.0'],
+        callbacks: {
+          onChange: function(contents) {
+            // Update the hidden textarea when content changes
+            const textarea = $(this).closest('.text-editor').find('.text-content');
+            textarea.val(contents);
+          }
+        }
+      });
+
+    // Function to update live preview card
+    function updatePreview() {
+      const title = $('#gameTitle').val() || 'Untitled';
+      const slug = $('#gameSlug').val() || 'auto-slug';
+      const heading = $('#bannerHeading').val() || '—';
+      const description = $('#bannerDescription').val() || 'No description provided.';
+      let contentHtml = $('#bannerContent').val() || '';
+      // limit content preview to avoid overflow (show first 200 chars approx + indicator)
+      let shortContent = contentHtml ? $(`<div>${contentHtml}</div>`).text().substring(0, 180) : '—';
+      if (contentHtml && contentHtml.length > 180) shortContent += '...';
+      const successRate = $('#successRate').val() || '—';
+      const capacity = $('#capacity').val() || '—';
+      const ctaLabel = $('#ctaLabel').val() || 'Click';
+      const ctaLink = $('#ctaLink').val() || '#';
+      const videoTrailer = $('#videoTrailer').val() || '';
+      const isActive = $('#isActiveCheckbox').is(':checked');
+      
+      // Image preview (current or selected new)
+      let imageSrc = '';
+      const fileInput = $('#bannerImageFile')[0];
+      if (fileInput.files && fileInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          $('#previewDynamicImage').attr('src', e.target.result);
+        };
+        reader.readAsDataURL(fileInput.files[0]);
+        imageSrc = URL.createObjectURL(fileInput.files[0]);
+      } else {
+        // fallback to existing image
+        const existingImg = $('#currentImagePreview').attr('src');
+        imageSrc = existingImg && existingImg !== '' ? existingImg : 'https://via.placeholder.com/400x200?text=No+Image';
+      }
+      
+      const previewHtml = `
+        <div class="mb-3">
+          <img src="${imageSrc}" id="previewDynamicImage" class="preview-image" style="width:100%; object-fit:cover;" onerror="this.src='https://via.placeholder.com/400x200?text=Image+Preview'">
+        </div>
+        <h4 class="fw-bold mb-1">${escapeHtml(title)}</h4>
+        <div class="text-muted small mb-2">Slug: ${escapeHtml(slug)}</div>
+        <div class="mb-2"><span class="badge-status ${isActive ? 'badge-active' : 'badge-inactive'}">${isActive ? '● Active' : '○ Inactive'}</span></div>
+        <div class="detail-row">
+          <div class="detail-label">Heading:</div>
+          <div class="detail-value">${escapeHtml(heading)}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Short Desc:</div>
+          <div class="detail-value">${escapeHtml(description)}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Content:</div>
+          <div class="detail-value preview-content-box">${escapeHtml(shortContent)}${contentHtml.length > 180 ? ' <span class="badge bg-secondary">truncated</span>' : ''}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Success Rate:</div>
+          <div class="detail-value">${escapeHtml(successRate)}%</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Capacity:</div>
+          <div class="detail-value">${escapeHtml(capacity)}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">CTA:</div>
+          <div class="detail-value"><span class="badge bg-dark">${escapeHtml(ctaLabel)}</span> → ${escapeHtml(ctaLink)}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">Video Trailer:</div>
+          <div class="detail-value">${videoTrailer ? `<a href="${escapeHtml(videoTrailer)}" target="_blank" class="text-truncate d-inline-block" style="max-width:180px">${escapeHtml(videoTrailer)}</a>` : '—'}</div>
+        </div>
+      `;
+      $('#livePreviewContainer').html(previewHtml);
+    }
+
+    // Helper to escape HTML
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+      }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
+        return c;
+      });
+    }
+
+    // Live update events
+    $('#gameTitle, #gameSlug, #bannerHeading, #bannerDescription, #successRate, #capacity, #ctaLabel, #ctaLink, #videoTrailer').on('input change', function() {
+      updatePreview();
+    });
+    $('#isActiveCheckbox').on('change', updatePreview);
+    $('#bannerImageFile').on('change', function() {
+      // update preview image immediately
+      const file = this.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          $('#previewDynamicImage').attr('src', e.target.result);
+          updatePreview(); // refresh full preview
+        };
+        reader.readAsDataURL(file);
+      } else {
+        updatePreview();
+      }
+      updatePreview();
+    });
+    
+    // Auto slug generation from title (if slug field empty or untouched)
+    let slugManuallyEdited = false;
+    $('#gameSlug').on('input', function() {
+      slugManuallyEdited = true;
+    });
+    $('#gameTitle').on('input', function() {
+      if (!slugManuallyEdited) {
+        let titleVal = $(this).val();
+        let slug = titleVal.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+        $('#gameSlug').val(slug);
+        updatePreview();
+      } else {
+        updatePreview();
+      }
+    });
+    
+    // initial preview
+    if ($('#currentImagePreview').attr('src')) {
+      const existingSrc = $('#currentImagePreview').attr('src');
+      $('#previewDynamicImage').attr('src', existingSrc);
+    }
+    updatePreview();
+    
+    // for summernote updates already handled via onChange
+    // additional hook for when file upload changes existing img display on right
+    $(document).on('summernote.change', function() { updatePreview(); });
+    
+    // form submit spinner + avoid double submit
+    $('#virtualGameForm').on('submit', function() {
+      const btn = $(this).find('button[type="submit"]');
+      btn.prop('disabled', true).html('<i class="bx bx-loader-alt bx-spin"></i> Saving...');
+      return true;
+    });
+  });
+</script>

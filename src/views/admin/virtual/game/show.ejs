@@ -1,0 +1,179 @@
+<%- contentFor('title') %> Virtual Game Detail - Admin
+<%- contentFor('head') %>
+<link href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+<style>
+  body {
+    background: #f8f9fc;
+  }
+  .card-detail {
+    background: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    overflow: hidden;
+    border: none;
+  }
+  .card-header-custom {
+    background: linear-gradient(135deg, #fcad00 0%, #ffd966 100%);
+    padding: 1.2rem 1.5rem;
+    border-bottom: none;
+  }
+  .detail-image {
+    max-width: 100%;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  .info-item {
+    background: #f9fafb;
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-left: 3px solid #fcad00;
+  }
+  .info-label {
+    font-weight: 700;
+    color: #4b5563;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .info-value {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #1f2937;
+    word-break: break-word;
+  }
+  .content-html {
+    background: #fef9e6;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    margin-top: 0.5rem;
+  }
+  .badge-status-large {
+    padding: 0.4rem 1rem;
+    border-radius: 2rem;
+    font-weight: 600;
+  }
+  .btn-back {
+    background: #fcad00;
+    border: none;
+    color: #1e2a3a;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+  .btn-back:hover {
+    background: #e09d00;
+    color: #000;
+  }
+  @media (max-width: 768px) {
+    .info-grid {
+      grid-template-columns: 1fr;
+    }
+    .card-header-custom h4 {
+      font-size: 1.3rem;
+    }
+  }
+</style>
+
+<%- contentFor('body') %>
+<div class="container py-4 py-md-5">
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-10">
+      <div class="card-detail">
+        <div class="card-header-custom d-flex justify-content-between align-items-center flex-wrap gap-2">
+          <h4 class="mb-0 fw-bold text-dark"><i class='bx bx-detail'></i> Game Details</h4>
+          <a href="/admin/virtual/game" class="btn btn-back btn-sm"><i class='bx bx-arrow-back'></i> Back to List</a>
+        </div>
+        <div class="card-body p-4 p-md-5">
+          <div class="row g-4">
+            <!-- Image column -->
+            <% if (game.banner_image) { %>
+            <div class="col-md-5 text-center text-md-start">
+              <img src="<%= game.banner_image %>" class="detail-image img-fluid" alt="<%= game.title %>">
+            </div>
+            <% } %>
+            <div class="col-md-7">
+              <h2 class="fw-bold mb-2"><%= game.title %></h2>
+              <div class="mb-3">
+                <span class="badge-status-large text-white <%= game.isActive ? 'bg-success bg-opacity-10' : 'bg-danger bg-opacity-10' %>">
+                  <i class='bx <%= game.isActive ? 'bx-check-circle' : 'bx-x-circle' %>'></i>
+                  <%= game.isActive ? 'Active' : 'Inactive' %>
+                </span>
+                <span class="ms-2 text-muted"><i class='bx bx-link-alt'></i> Slug: <%= game.slug %></span>
+              </div>
+              <% if (game.banner_heading) { %>
+              <div class="info-item mb-3">
+                <div class="info-label">Heading</div>
+                <div class="info-value"><%= game.banner_heading %></div>
+              </div>
+              <% } %>
+              <div class="info-grid">
+                <% if (game.success_rate) { %>
+                <div class="info-item">
+                  <div class="info-label">Success Rate</div>
+                  <div class="info-value"><%= game.success_rate %>%</div>
+                </div>
+                <% } %>
+                <% if (game.capacity) { %>
+                <div class="info-item">
+                  <div class="info-label">Capacity</div>
+                  <div class="info-value"><%= game.capacity %></div>
+                </div>
+                <% } %>
+                <% if (game.cta_label && game.cta_link) { %>
+                <div class="info-item">
+                  <div class="info-label">Call to Action</div>
+                  <div class="info-value">
+                    <a href="<%= game.cta_link %>" target="_blank" class="text-decoration-none fw-semibold" style="color:#fcad00;">
+                      <%= game.cta_label %> <i class='bx bx-link-external'></i>
+                    </a>
+                  </div>
+                </div>
+                <% } %>
+                <% if (game.video_trailer) { %>
+                <div class="info-item">
+                  <div class="info-label">Video Trailer</div>
+                  <div class="info-value">
+                    <a href="<%= game.video_trailer %>" target="_blank" class="text-truncate d-inline-block" style="max-width: 250px;"><%= game.video_trailer %></a>
+                  </div>
+                </div>
+                <% } %>
+              </div>
+            </div>
+          </div>
+
+          <!-- Description and Content -->
+          <% if (game.banner_description) { %>
+          <div class="mt-5">
+            <h5 class="fw-semibold border-bottom pb-2 mb-3"><i class='bx bx-note'></i> Short Description</h5>
+            <p class="text-secondary"><%= game.banner_description %></p>
+          </div>
+          <% } %>
+
+          <% if (game.banner_content) { %>
+          <div class="mt-4">
+            <h5 class="fw-semibold border-bottom pb-2 mb-3"><i class='bx bx-file-blank'></i> Full Content</h5>
+            <div class="content-html">
+              <%- game.banner_content %>
+            </div>
+          </div>
+          <% } %>
+
+          <!-- Additional meta info -->
+          <div class="mt-4 text-muted small border-top pt-3 d-flex justify-content-between flex-wrap">
+            <span><i class='bx bx-calendar'></i> Created: <%= game.createdAt ? new Date(game.createdAt).toLocaleString() : '—' %></span>
+            <span><i class='bx bx-edit-alt'></i> Last updated: <%= game.updatedAt ? new Date(game.updatedAt).toLocaleString() : '—' %></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- contentFor('js') %>
+<!-- optional: if you need any interactivity, add here -->
