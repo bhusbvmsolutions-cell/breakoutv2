@@ -10,12 +10,16 @@ module.exports = (sequelize, DataTypes) => {
       image: DataTypes.STRING(500),
       banner_heading: DataTypes.STRING,
       banner_description: DataTypes.STRING,
-      banner_image: DataTypes.STRING(500),
+      banner_video_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: { model: 'videos', key: 'id' }
+      },
       counters_heading: DataTypes.STRING,
       counters_content: DataTypes.TEXT,
       counters_note: DataTypes.STRING,
       counters_counter_heading: DataTypes.STRING,
-      counters_rating: DataTypes.DECIMAL(3,1),
+      counters_rating: DataTypes.STRING(500),
       image_card_heading: DataTypes.STRING,
       party_inclusions_heading: DataTypes.STRING,
       party_inclusions_note: DataTypes.STRING,

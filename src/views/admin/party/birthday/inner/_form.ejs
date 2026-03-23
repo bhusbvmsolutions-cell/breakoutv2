@@ -45,12 +45,17 @@
           <input type="text" name="banner_description" class="form-control form-control-sm" value="<%= page?.banner_description || '' %>">
         </div>
         <div class="col-12">
-          <label class="form-label small text-muted">Image</label>
-          <input type="file" name="banner_image" class="form-control form-control-sm" accept="image/*">
-          <% if (page?.banner_image) { %>
-            <img src="<%= page.banner_image %>" class="img-thumbnail mt-1" style="max-width:80px;">
-          <% } %>
-        </div>
+            <label class="form-label small text-muted">Banner Video</label>
+            <select name="banner_video_id" class="form-control form-control-sm select2-single">
+              <option value="">-- Select a video --</option>
+              <% videos.forEach(video => { %>
+                <option value="<%= video.id %>" <%= page?.banner_video_id == video.id ? 'selected' : '' %>>
+                  <%= video.title || video.filename %>
+                </option>
+              <% }); %>
+            </select>
+            <div class="form-text small">Select a video for the banner section</div>
+          </div>
       </div>
     </div>
   </div>
@@ -383,6 +388,14 @@
   
   <script>
     $(document).ready(function() {
+
+
+        $('.select2-single').select2({
+            theme: 'bootstrap-5',
+            width: '100%',
+            placeholder: 'Select a video',
+            allowClear: true
+          });
       // ---------- Image Preview for dynamic file inputs ----------
       function setupImagePreview(inputElem, previewElem) {
         inputElem.on('change', function() {

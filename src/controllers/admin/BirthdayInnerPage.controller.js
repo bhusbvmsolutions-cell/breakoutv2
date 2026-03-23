@@ -74,6 +74,7 @@ const BirthdayInnerPageController = {
         slug,
         banner_heading: body.banner_heading,
         banner_description: body.banner_description,
+        banner_video_id: body.banner_video_id || null,
         counters_heading: body.counters_heading,
         counters_content: body.counters_content,
         counters_note: body.counters_note,
@@ -94,12 +95,6 @@ const BirthdayInnerPageController = {
         pageData.image = `/uploads/birthday-inner/${files.image[0].filename}`;
       } else if (body.image) {
         pageData.image = body.image;
-      }
-      // Banner image
-      if (files.banner_image && files.banner_image[0]) {
-        pageData.banner_image = `/uploads/birthday-inner/${files.banner_image[0].filename}`;
-      } else if (body.banner_image) {
-        pageData.banner_image = body.banner_image;
       }
       // Images 1,2,3
       const imageFields = ['image1', 'image2', 'image3'];
@@ -280,6 +275,7 @@ const BirthdayInnerPageController = {
         slug: body.slug || slugify(body.title, { lower: true, strict: true }),
         banner_heading: body.banner_heading,
         banner_description: body.banner_description,
+        banner_video_id: body.banner_video_id || null,
         counters_heading: body.counters_heading,
         counters_content: body.counters_content,
         counters_note: body.counters_note,
@@ -304,17 +300,6 @@ const BirthdayInnerPageController = {
         updateData.image = `/uploads/birthday-inner/${files.image[0].filename}`;
       } else if (body.image) {
         updateData.image = body.image;
-      }
-
-      // Banner image
-      if (files.banner_image && files.banner_image[0]) {
-        if (page.banner_image) {
-          const oldPath = getImageAbsolutePath(page.banner_image);
-          if (oldPath && fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
-        }
-        updateData.banner_image = `/uploads/birthday-inner/${files.banner_image[0].filename}`;
-      } else if (body.banner_image) {
-        updateData.banner_image = body.banner_image;
       }
 
       // Images 1,2,3
@@ -465,6 +450,7 @@ const BirthdayInnerPageController = {
           { model: db.BirthdayInnerPackageColumn, as: 'packageColumns', order: [['sort_order', 'ASC']] },
           { model: db.BirthdayInnerPackageRow, as: 'packageRows', order: [['sort_order', 'ASC']] },
           { model: db.Video, as: 'videos', through: { attributes: ['custom_title'] }, order: [['sort_order', 'ASC']] },
+          { model: db.Video, as: 'bannerVideo' },
         ],
       });
       if (!page) {

@@ -181,13 +181,18 @@
             <div class="info-value"><%= page.banner_description || '—' %></div>
           </div>
           <div class="info-row">
-            <div class="info-label">Image:</div>
+            <div class="info-label">Video:</div>
             <div class="info-value">
-              <% if (page.banner_image) { %>
-                <img src="<%= page.banner_image %>" style="max-width:120px;">
-              <% } else { %>
-                <span class="text-muted">No image</span>
-              <% } %>
+                <% if (page.bannerVideo) { %>
+                    <strong><%= page.bannerVideo.title || page.bannerVideo.filename %></strong>
+                    <% if (page.bannerVideo.url) { %>
+                      <br>
+                      <video src="<%= page.bannerVideo.url %>" controls height="300"></video>
+                    <% } %>
+                  <% } else { %>
+                    <span class="text-muted">No video selected</span>
+                  <% } %>
+
             </div>
           </div>
         </div>

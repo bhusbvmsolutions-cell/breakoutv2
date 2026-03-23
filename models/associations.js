@@ -923,5 +923,9 @@ module.exports = (db) => {
     BirthdayInnerVideo.belongsTo(Video, { foreignKey: 'video_id' });
   }
 
+  if (BirthdayInnerPage && Video) {
+    BirthdayInnerPage.belongsTo(Video, { foreignKey: 'banner_video_id', as: 'bannerVideo' });
+  }
+
   console.log("✓ All model associations have been established successfully");
 };
