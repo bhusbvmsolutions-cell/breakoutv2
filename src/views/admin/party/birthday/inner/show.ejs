@@ -1,0 +1,463 @@
+<%- contentFor('title') %> <%= page.title %> | Birthday Inner Page
+<%- contentFor('head') %>
+<style>
+  body { background: #f5f7fb; }
+  .section-card {
+    background: #fff;
+    border-radius: 0.75rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.05);
+    border: 1px solid #eef2f6;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+  }
+  .section-header {
+    background: #fff;
+    padding: 1rem 1.25rem;
+    border-bottom: 2px solid #fcad00;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .section-header i {
+    font-size: 1.25rem;
+    color: #fcad00;
+  }
+  .section-header h5 {
+    margin: 0;
+    font-weight: 600;
+    color: #2c3e50;
+  }
+  .section-body {
+    padding: 1.25rem;
+  }
+  .info-row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 0.75rem;
+  }
+  .info-label {
+    width: 140px;
+    font-weight: 500;
+    color: #6c757d;
+  }
+  .info-value {
+    flex: 1;
+    color: #2c3e50;
+  }
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-top: 0.5rem;
+  }
+  .card-grid .card {
+    background: #f8f9fa;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    transition: transform 0.2s;
+  }
+  .card-grid .card:hover {
+    transform: translateY(-2px);
+  }
+  .card-grid .card-body {
+    padding: 0.75rem;
+    text-align: center;
+  }
+  .card-grid img {
+    max-width: 80px;
+    max-height: 60px;
+    object-fit: cover;
+    border-radius: 0.25rem;
+    margin-bottom: 0.5rem;
+  }
+  .package-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+  }
+  .package-table th,
+  .package-table td {
+    border: 1px solid #dee2e6;
+    padding: 0.5rem;
+    vertical-align: middle;
+    text-align: center;
+  }
+  .package-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+  }
+  .package-table td:first-child {
+    text-align: left;
+    font-weight: 500;
+  }
+  .video-list {
+    list-style: none;
+    padding-left: 0;
+  }
+  .video-list li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #eef2f6;
+  }
+  .video-list li:last-child {
+    border-bottom: none;
+  }
+  @media (max-width: 768px) {
+    .info-label {
+      width: 100%;
+      margin-bottom: 0.25rem;
+    }
+    .info-value {
+      margin-bottom: 0.5rem;
+    }
+  }
+</style>
+
+<%- contentFor('body') %>
+<div class="container py-3">
+  <div class="row">
+    <div class="col-12">
+      <!-- Page Title & Actions -->
+      <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
+        <h2 class="h4 mb-2 mb-sm-0"><i class="bx bx-cake me-2"></i><%= page.title %></h2>
+        <div>
+          <a href="/admin/party/birthday/edit/<%= page.id %>" class="btn btn-sm btn-warning me-1">
+            <i class="bx bx-edit"></i> Edit
+          </a>
+          <a href="/admin/party/birthday" class="btn btn-sm btn-secondary">
+            <i class="bx bx-arrow-back"></i> Back
+          </a>
+        </div>
+      </div>
+
+      <!-- Basic Information -->
+      <div class="section-card">
+        <div class="section-header">
+          <i class="bx bx-info-circle"></i>
+          <h5>Basic Information</h5>
+        </div>
+        <div class="section-body">
+          <div class="info-row">
+            <div class="info-label">Title:</div>
+            <div class="info-value"><%= page.title %></div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Slug:</div>
+            <div class="info-value"><%= page.slug %></div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Main Image:</div>
+            <div class="info-value">
+              <% if (page.image) { %>
+                <img src="<%= page.image %>" style="max-width:120px; max-height:90px; border-radius:0.25rem;">
+              <% } else { %>
+                <span class="text-muted">No image</span>
+              <% } %>
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Status:</div>
+            <div class="info-value">
+              <span class="badge <%= page.isActive ? 'bg-success' : 'bg-secondary' %>">
+                <%= page.isActive ? 'Active' : 'Inactive' %>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Banner Section -->
+      <div class="section-card">
+        <div class="section-header">
+          <i class="bx bx-image-alt"></i>
+          <h5>Banner Section</h5>
+        </div>
+        <div class="section-body">
+          <div class="info-row">
+            <div class="info-label">Heading:</div>
+            <div class="info-value"><%= page.banner_heading || '—' %></div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Description:</div>
+            <div class="info-value"><%= page.banner_description || '—' %></div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Image:</div>
+            <div class="info-value">
+              <% if (page.banner_image) { %>
+                <img src="<%= page.banner_image %>" style="max-width:120px;">
+              <% } else { %>
+                <span class="text-muted">No image</span>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Counters Section -->
+      <div class="section-card">
+        <div class="section-header">
+          <i class="bx bx-stats"></i>
+          <h5>Counters Section</h5>
+        </div>
+        <div class="section-body">
+          <div class="info-row">
+            <div class="info-label">Heading:</div>
+            <div class="info-value"><%= page.counters_heading || '—' %></div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Content:</div>
+            <div class="info-value"><%= page.counters_content || '—' %></div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Note:</div>
+            <div class="info-value"><%= page.counters_note || '—' %></div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Counter Heading:</div>
+            <div class="info-value"><%= page.counters_counter_heading || '—' %></div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Rating:</div>
+            <div class="info-value">
+              <% if (page.counters_rating) { %>
+                <%= page.counters_rating %> / 5
+                <span class="text-warning">★</span>
+              <% } else { %>—<% } %>
+            </div>
+          </div>
+
+          <div class="mt-3">
+            <strong>Counter Cards</strong>
+            <div class="card-grid">
+              <% if (page.counterCards && page.counterCards.length) { %>
+                <% page.counterCards.forEach(card => { %>
+                  <div class="card">
+                    <div class="card-body">
+                      <% if (card.image) { %>
+                        <img src="<%= card.image %>" class="mx-auto d-block">
+                      <% } %>
+                      <div class="fw-bold mt-1"><%= card.count || '—' %></div>
+                      <div class="small text-muted"><%= card.description || '—' %></div>
+                    </div>
+                  </div>
+                <% }); %>
+              <% } else { %>
+                <span class="text-muted">No counter cards</span>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Image Cards Section -->
+      <div class="section-card">
+        <div class="section-header">
+          <i class="bx bx-images"></i>
+          <h5>Image Card Section</h5>
+        </div>
+        <div class="section-body">
+          <div class="info-row">
+            <div class="info-label">Section Heading:</div>
+            <div class="info-value"><%= page.image_card_heading || '—' %></div>
+          </div>
+          <div class="card-grid">
+            <% if (page.imageCards && page.imageCards.length) { %>
+              <% page.imageCards.forEach(card => { %>
+                <div class="card">
+                  <div class="card-body">
+                    <% if (card.image) { %>
+                      <img src="<%= card.image %>" class="mx-auto d-block">
+                    <% } %>
+                    <div class="fw-bold mt-1"><%= card.heading || '—' %></div>
+                  </div>
+                </div>
+              <% }); %>
+            <% } else { %>
+              <span class="text-muted">No image cards</span>
+            <% } %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Party Inclusions Section -->
+      <div class="section-card">
+        <div class="section-header">
+          <i class="bx bx-gift"></i>
+          <h5>Party Inclusions</h5>
+        </div>
+        <div class="section-body">
+          <div class="info-row">
+            <div class="info-label">Heading:</div>
+            <div class="info-value"><%= page.party_inclusions_heading || '—' %></div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Note:</div>
+            <div class="info-value"><%= page.party_inclusions_note || '—' %></div>
+          </div>
+          <div class="card-grid">
+            <% if (page.inclusionItems && page.inclusionItems.length) { %>
+              <% page.inclusionItems.forEach(item => { %>
+                <div class="card">
+                  <div class="card-body">
+                    <% if (item.image) { %>
+                      <img src="<%= item.image %>" class="mx-auto d-block">
+                    <% } %>
+                    <div class="fw-bold mt-1"><%= item.heading || '—' %></div>
+                    <% if (item.link) { %>
+                      <a href="<%= item.link %>" target="_blank" class="small text-muted"><%= item.link %></a>
+                    <% } %>
+                  </div>
+                </div>
+              <% }); %>
+            <% } else { %>
+              <span class="text-muted">No inclusion items</span>
+            <% } %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slider Section -->
+      <div class="section-card">
+        <div class="section-header">
+          <i class="bx bx-slider"></i>
+          <h5>Slider Section</h5>
+        </div>
+        <div class="section-body">
+          <div class="info-row">
+            <div class="info-label">Heading:</div>
+            <div class="info-value"><%= page.slider_heading || '—' %></div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Description:</div>
+            <div class="info-value"><%= page.slider_description || '—' %></div>
+          </div>
+          <div class="card-grid">
+            <% if (page.sliderItems && page.sliderItems.length) { %>
+              <% page.sliderItems.forEach(item => { %>
+                <div class="card">
+                  <div class="card-body">
+                    <% if (item.image) { %>
+                      <img src="<%= item.image %>" class="mx-auto d-block">
+                    <% } %>
+                    <div class="fw-bold mt-1"><%= item.heading || '—' %></div>
+                    <div class="small text-muted"><%= item.description || '—' %></div>
+                  </div>
+                </div>
+              <% }); %>
+            <% } else { %>
+              <span class="text-muted">No slider items</span>
+            <% } %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Images Section (3 fixed) -->
+      <div class="section-card">
+        <div class="section-header">
+          <i class="bx bx-images"></i>
+          <h5>Images Section</h5>
+        </div>
+        <div class="section-body">
+          <div class="row g-2">
+            <% for (let i = 1; i <= 3; i++) { %>
+              <div class="col-md-4">
+                <div class="info-label">Image <%= i %>:</div>
+                <% if (page['image' + i]) { %>
+                  <img src="<%= page['image' + i] %>" style="max-width:120px; margin-top:0.25rem;">
+                <% } else { %>
+                  <span class="text-muted">No image</span>
+                <% } %>
+              </div>
+            <% } %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pricing Section -->
+      <div class="section-card">
+        <div class="section-header">
+          <i class="bx bx-dollar-circle"></i>
+          <h5>Pricing Section</h5>
+        </div>
+        <div class="section-body">
+          <% if (page.packageColumns && page.packageColumns.length && page.packageRows && page.packageRows.length) { %>
+            <div class="table-responsive">
+              <table class="package-table">
+                <thead>
+                  <tr>
+                    <th>Feature</th>
+                    <% page.packageColumns.forEach(col => { %>
+                      <th>
+                        <% if (col.image) { %>
+                          <img src="<%= col.image %>" style="max-width:60px; margin-bottom:0.5rem;"><br>
+                        <% } %>
+                        <%= col.title || '' %><br>
+                        <small class="text-muted"><%= col.duration || '' %></small>
+                      </th>
+                    <% }); %>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% page.packageRows.forEach(row => { %>
+                    <tr>
+                      <td class="text-start"><%= row.feature || '' %></td>
+                      <% page.packageColumns.forEach(col => { %>
+                        <% const cell = row.cells ? row.cells.find(c => c.column_id === col.id) : null; %>
+                        <td><%= cell ? cell.value : (row['col' + (page.packageColumns.indexOf(col))] || 'No') %></td>
+                      <% }); %>
+                    </tr>
+                  <% }); %>
+                </tbody>
+              </table>
+            </div>
+          <% } else { %>
+            <span class="text-muted">No pricing data</span>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- Video Testimonials -->
+      <div class="section-card">
+        <div class="section-header">
+          <i class="bx bx-video"></i>
+          <h5>Video Testimonials</h5>
+        </div>
+        <div class="section-body">
+          <% if (page.videos && page.videos.length) { %>
+            <ul class="video-list">
+              <% page.videos.forEach(video => { %>
+                <li>
+                  <strong><%= video.title || video.filename %></strong>
+                  <% if (video.BirthdayInnerVideo && video.BirthdayInnerVideo.custom_title) { %>
+                    <br><span class="text-muted">Custom title:</span> <%= video.BirthdayInnerVideo.custom_title %>
+                  <% } %>
+                </li>
+              <% }); %>
+            </ul>
+          <% } else { %>
+            <span class="text-muted">No videos selected</span>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- Footer Section -->
+      <div class="section-card">
+        <div class="section-header">
+          <i class="bx bx-footer"></i>
+          <h5>Footer Section</h5>
+        </div>
+        <div class="section-body">
+          <div class="info-row">
+            <div class="info-label">Heading:</div>
+            <div class="info-value"><%= page.footer_heading || '—' %></div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Content:</div>
+            <div class="info-value"><%= page.footer_content || '—' %></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
