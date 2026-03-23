@@ -505,14 +505,13 @@ module.exports = (db) => {
 
   VirtualArchiveVideo.belongsTo(VirtualArchive, { foreignKey: "archive_id" });
   VirtualArchiveVideo.belongsTo(Video, { foreignKey: "video_id" });
-  VirtualArchive.belongsTo(db.Video, { foreignKey: 'banner_video_id', as: 'bannerVideo' });
+  VirtualArchive.belongsTo(db.Video, {
+    foreignKey: "banner_video_id",
+    as: "bannerVideo",
+  });
 
-  
-  
-  
-  
   // ==================== LANDING PAGE ASSOCIATIONS ====================
-  
+
   const {
     Landing,
     LandingLocationMapping,
@@ -658,6 +657,21 @@ module.exports = (db) => {
       as: "video",
     });
   }
+
+  // ==================== PARTY ARCHIVE ASSOCIATIONS ====================
+
+  const { PartyArchive, PartyArchiveCounterCard } = db;
+
+  // PartyArchive ↔ PartyArchiveCounterCard (one-to-many)
+  PartyArchive.hasMany(PartyArchiveCounterCard, {
+    foreignKey: "archive_id",
+    as: "counterCards",
+    onDelete: "CASCADE",
+  });
+  PartyArchiveCounterCard.belongsTo(PartyArchive, {
+    foreignKey: "archive_id",
+    as: "archive",
+  });
 
   console.log("✓ All model associations have been established successfully");
 };
