@@ -20,6 +20,7 @@ const adminVirtualArchiveRoutes = require('./admin/virtualarchive.routes');
 const adminVirtualGameRoutes = require('./admin/virtualgame.routes'); 
 const adminPartyArchiveRoutes = require('./admin/partyarchive.routes'); 
 const adminBirthdayArchiveRoutes = require('./admin/birthdayarchive.routes'); 
+const adminBachelorFarewellRoutes = require('./admin/bachelorfarewell.routes'); 
 
 
 
@@ -45,6 +46,7 @@ router.use('/admin/virtual', adminVirtualArchiveRoutes);
 router.use('/admin/virtual/game', adminVirtualGameRoutes); 
 router.use('/admin/party/archive', adminPartyArchiveRoutes); 
 router.use('/admin/party/birthday/archive', adminBirthdayArchiveRoutes); 
+router.use('/admin/party', adminBachelorFarewellRoutes); 
 
 // API routes
 router.use('/api', apiTestRoutes);

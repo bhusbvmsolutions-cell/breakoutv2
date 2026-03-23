@@ -659,7 +659,7 @@ module.exports = (db) => {
   }
 
   // ==================== PARTY ARCHIVE ASSOCIATIONS ====================
-  
+
   const { PartyArchive, PartyArchiveCounterCard } = db;
 
   // PartyArchive ↔ PartyArchiveCounterCard (one-to-many)
@@ -673,10 +673,7 @@ module.exports = (db) => {
     as: "archive",
   });
 
-
-
   // ==================== BIRTHDAY ARCHIVE ASSOCIATIONS ====================
-
 
   const {
     BirthdayArchive,
@@ -687,37 +684,173 @@ module.exports = (db) => {
   } = db;
 
   // BirthdayArchive ↔ CounterCards
-  BirthdayArchive.hasMany(BirthdayArchiveCounterCard, { foreignKey: 'archive_id', as: 'counterCards' });
-  BirthdayArchiveCounterCard.belongsTo(BirthdayArchive, { foreignKey: 'archive_id' });
+  BirthdayArchive.hasMany(BirthdayArchiveCounterCard, {
+    foreignKey: "archive_id",
+    as: "counterCards",
+  });
+  BirthdayArchiveCounterCard.belongsTo(BirthdayArchive, {
+    foreignKey: "archive_id",
+  });
 
   // BirthdayArchive ↔ InclusionItems
-  BirthdayArchive.hasMany(BirthdayArchiveInclusionItem, { foreignKey: 'archive_id', as: 'inclusionItems' });
-  BirthdayArchiveInclusionItem.belongsTo(BirthdayArchive, { foreignKey: 'archive_id' });
+  BirthdayArchive.hasMany(BirthdayArchiveInclusionItem, {
+    foreignKey: "archive_id",
+    as: "inclusionItems",
+  });
+  BirthdayArchiveInclusionItem.belongsTo(BirthdayArchive, {
+    foreignKey: "archive_id",
+  });
 
   // BirthdayArchive ↔ SliderItems
-  BirthdayArchive.hasMany(BirthdayArchiveSliderItem, { foreignKey: 'archive_id', as: 'sliderItems' });
-  BirthdayArchiveSliderItem.belongsTo(BirthdayArchive, { foreignKey: 'archive_id' });
+  BirthdayArchive.hasMany(BirthdayArchiveSliderItem, {
+    foreignKey: "archive_id",
+    as: "sliderItems",
+  });
+  BirthdayArchiveSliderItem.belongsTo(BirthdayArchive, {
+    foreignKey: "archive_id",
+  });
 
   // BirthdayArchive ↔ Video (many-to-many through BirthdayArchiveVideo)
   BirthdayArchive.belongsToMany(Video, {
     through: BirthdayArchiveVideo,
-    foreignKey: 'archive_id',
-    otherKey: 'video_id',
-    as: 'videos',
+    foreignKey: "archive_id",
+    otherKey: "video_id",
+    as: "videos",
   });
   Video.belongsToMany(BirthdayArchive, {
     through: BirthdayArchiveVideo,
-    foreignKey: 'video_id',
-    otherKey: 'archive_id',
-    as: 'birthdayArchives',
+    foreignKey: "video_id",
+    otherKey: "archive_id",
+    as: "birthdayArchives",
   });
 
-  BirthdayArchiveVideo.belongsTo(BirthdayArchive, { foreignKey: 'archive_id' });
-  BirthdayArchiveVideo.belongsTo(Video, { foreignKey: 'video_id' });
+  BirthdayArchiveVideo.belongsTo(BirthdayArchive, { foreignKey: "archive_id" });
+  BirthdayArchiveVideo.belongsTo(Video, { foreignKey: "video_id" });
   // Banner video relationship
-  BirthdayArchive.belongsTo(Video, { foreignKey: 'banner_video_id', as: 'bannerVideo' });
+  BirthdayArchive.belongsTo(Video, {
+    foreignKey: "banner_video_id",
+    as: "bannerVideo",
+  });
 
-  
-  
+  // ==================== BACHELOR AND FAREWELL ARCHIVE ASSOCIATIONS ====================
+
+  const {
+    BachelorFarewellArchive,
+    BachelorFarewellCounterCard,
+    BachelorFarewellImageCard,
+    BachelorFarewellInclusionItem,
+    BachelorFarewellSliderItem,
+    BachelorFarewellVideo,
+    BachelorFarewellPackageColumn,
+    BachelorFarewellPackageRow,
+    BachelorFarewellPackageCell,
+  } = db;
+
+  // Check if models exist to avoid errors (optional)
+  if (BachelorFarewellArchive && BachelorFarewellCounterCard) {
+    BachelorFarewellArchive.hasMany(BachelorFarewellCounterCard, {
+      foreignKey: "archive_id",
+      as: "counterCards",
+    });
+    BachelorFarewellCounterCard.belongsTo(BachelorFarewellArchive, {
+      foreignKey: "archive_id",
+    });
+  }
+
+  if (BachelorFarewellArchive && BachelorFarewellImageCard) {
+    BachelorFarewellArchive.hasMany(BachelorFarewellImageCard, {
+      foreignKey: "archive_id",
+      as: "imageCards",
+    });
+    BachelorFarewellImageCard.belongsTo(BachelorFarewellArchive, {
+      foreignKey: "archive_id",
+    });
+  }
+
+  if (BachelorFarewellArchive && BachelorFarewellInclusionItem) {
+    BachelorFarewellArchive.hasMany(BachelorFarewellInclusionItem, {
+      foreignKey: "archive_id",
+      as: "inclusionItems",
+    });
+    BachelorFarewellInclusionItem.belongsTo(BachelorFarewellArchive, {
+      foreignKey: "archive_id",
+    });
+  }
+
+  if (BachelorFarewellArchive && BachelorFarewellSliderItem) {
+    BachelorFarewellArchive.hasMany(BachelorFarewellSliderItem, {
+      foreignKey: "archive_id",
+      as: "sliderItems",
+    });
+    BachelorFarewellSliderItem.belongsTo(BachelorFarewellArchive, {
+      foreignKey: "archive_id",
+    });
+  }
+
+  if (BachelorFarewellArchive && BachelorFarewellPackageColumn) {
+    BachelorFarewellArchive.hasMany(BachelorFarewellPackageColumn, {
+      foreignKey: "archive_id",
+      as: "packageColumns",
+    });
+    BachelorFarewellPackageColumn.belongsTo(BachelorFarewellArchive, {
+      foreignKey: "archive_id",
+    });
+  }
+
+  if (BachelorFarewellArchive && BachelorFarewellPackageRow) {
+    BachelorFarewellArchive.hasMany(BachelorFarewellPackageRow, {
+      foreignKey: "archive_id",
+      as: "packageRows",
+    });
+    BachelorFarewellPackageRow.belongsTo(BachelorFarewellArchive, {
+      foreignKey: "archive_id",
+    });
+  }
+
+  // Package relationships
+  if (BachelorFarewellPackageRow && BachelorFarewellPackageCell) {
+    BachelorFarewellPackageRow.hasMany(BachelorFarewellPackageCell, {
+      foreignKey: "row_id",
+      as: "cells",
+    });
+    BachelorFarewellPackageCell.belongsTo(BachelorFarewellPackageRow, {
+      foreignKey: "row_id",
+    });
+  }
+
+  if (BachelorFarewellPackageColumn && BachelorFarewellPackageCell) {
+    BachelorFarewellPackageColumn.hasMany(BachelorFarewellPackageCell, {
+      foreignKey: "column_id",
+      as: "cells",
+    });
+    BachelorFarewellPackageCell.belongsTo(BachelorFarewellPackageColumn, {
+      foreignKey: "column_id",
+    });
+  }
+
+  // Many-to-many with Video
+  if (BachelorFarewellArchive && Video && BachelorFarewellVideo) {
+    BachelorFarewellArchive.belongsToMany(Video, {
+      through: BachelorFarewellVideo,
+      foreignKey: "archive_id",
+      otherKey: "video_id",
+      as: "videos",
+    });
+    Video.belongsToMany(BachelorFarewellArchive, {
+      through: BachelorFarewellVideo,
+      foreignKey: "video_id",
+      otherKey: "archive_id",
+      as: "bachelorFarewellArchives",
+    });
+    BachelorFarewellVideo.belongsTo(BachelorFarewellArchive, {
+      foreignKey: "archive_id",
+    });
+    BachelorFarewellVideo.belongsTo(Video, { foreignKey: "video_id" });
+  }
+
+  if (BachelorFarewellArchive && Video) {
+    BachelorFarewellArchive.belongsTo(Video, { foreignKey: 'banner_video_id', as: 'bannerVideo' });
+  }
+
   console.log("✓ All model associations have been established successfully");
 };

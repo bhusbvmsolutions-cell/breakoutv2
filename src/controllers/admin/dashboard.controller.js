@@ -14,6 +14,9 @@ const dashboardController = {
       // Dashboard stats
       const stats = {
         totalUsers: await db.User.count(),
+        totalVideos: await db.Video.count(),
+        totalImages: await db.Image.count(),
+        totalEscapeRooms: await db.EscapeRoom.count(),
         totalRoles: await db.Role.count(),
         totalPermissions: await db.Permission.count(),
 

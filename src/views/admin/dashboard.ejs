@@ -34,14 +34,14 @@
         <div class="card-body">
           <div class="d-flex align-items-center">
             <div>
-              <p class="mb-0 text-secondary">Total Users</p>
-              <h4 class="my-1"><%= stats?.totalUsers || 0 %></h4>
-              <p class="mb-0 font-13 text-success">
-                <i class="bi bi-arrow-up"></i> Active users
+              <p class="mb-0 text-secondary">Total Videos</p>
+              <h4 class="my-1"><%= stats?.totalVideos || 0 %></h4>
+              <p class="mb-0 font-13 text-warning">
+                Videos
               </p>
             </div>
             <div class="widgets-icons bg-light-primary text-primary ms-auto">
-              <i class="bi bi-people"></i>
+              <i class="bi bi-camera-reels"></i>
             </div>
           </div>
         </div>
@@ -53,14 +53,14 @@
         <div class="card-body">
           <div class="d-flex align-items-center">
             <div>
-              <p class="mb-0 text-secondary">Total Roles</p>
-              <h4 class="my-1"><%= stats?.totalRoles || 0 %></h4>
-              <p class="mb-0 font-13 text-success">
-                <i class="bi bi-arrow-up"></i> System roles
+              <p class="mb-0 text-secondary">Total Images</p>
+              <h4 class="my-1"><%= stats?.totalImages || 0 %></h4>
+              <p class="mb-0 font-13 text-warning">
+                Images
               </p>
             </div>
             <div class="widgets-icons bg-light-success text-success ms-auto">
-              <i class="bi bi-shield"></i>
+              <i class="bi bi-images"></i>
             </div>
           </div>
         </div>
@@ -72,14 +72,14 @@
         <div class="card-body">
           <div class="d-flex align-items-center">
             <div>
-              <p class="mb-0 text-secondary">Permissions</p>
-              <h4 class="my-1"><%= stats?.totalPermissions || 0 %></h4>
+              <p class="mb-0 text-secondary">Total Escape Rooms</p>
+              <h4 class="my-1"><%= stats?.totalEscapeRooms || 0 %></h4>
               <p class="mb-0 font-13 text-warning">
-                <i class="bi bi-arrow-up"></i> Total permissions
+                Escape Rooms
               </p>
             </div>
             <div class="widgets-icons bg-light-warning text-warning ms-auto">
-              <i class="bi bi-key"></i>
+              <i class="bi bi-controller"></i>
             </div>
           </div>
         </div>
@@ -106,11 +106,11 @@
         </div>
       </div>
     </div>
-  </div><!--end row-->
+  </div>
+  <!--end row-->
   
   <div class="row mt-3">
-    <!-- Recent Users -->
-    <div class="col-12 col-lg-8">
+    <!-- <div class="col-12 col-lg-8">
       <div class="card">
         <div class="card-header">
           <div class="d-flex align-items-center">
@@ -170,11 +170,10 @@
           </div>
         </div>
       </div>
-    </div>
-  
-    <!-- Quick Actions -->
+    </div> -->
+
     <div class="col-12 col-lg-4">
-      <div class="card">
+      <!-- <div class="card">
         <div class="card-header">
           <h5 class="mb-0"><i class="bi bi-lightning"></i> Quick Actions</h5>
         </div>
@@ -194,9 +193,8 @@
             </a>
           </div>
         </div>
-      </div>
-  
-      <!-- System Info -->
+      </div> -->
+
       <div class="card mt-3">
         <div class="card-header">
           <h5 class="mb-0"><i class="bi bi-info-circle"></i> System Info</h5>
@@ -219,4 +217,5 @@
         </div>
       </div>
     </div>
-  </div><!--end row-->
+  </div>
+  <!--end row-->
