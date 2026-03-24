@@ -1,0 +1,213 @@
+<%- contentFor('title') %> <%= title %> <%- contentFor('head') %>
+<link
+  href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css"
+  rel="stylesheet"
+/>
+<style>
+  body {
+    background: #f5f7fb;
+  }
+  .form-container {
+    max-width: 100%;
+    margin: 0 auto;
+  }
+  .card-custom {
+    border-radius: 1rem;
+    overflow: hidden;
+    border: none;
+    box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.08);
+  }
+  .card-header-custom {
+    background: linear-gradient(135deg, #fcad00 0%, #ffd966 100%);
+    padding: 0.75rem 1.25rem;
+  }
+  .card-header-custom h4 {
+    margin: 0;
+    color: #2c3e50;
+    font-weight: 600;
+    font-size: 1.1rem;
+  }
+  .card-header-custom p {
+    margin: 0;
+    font-size: 0.8rem;
+    color: #2c3e50;
+    opacity: 0.9;
+  }
+  .form-section {
+    background: #fff;
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid #eef2f6;
+  }
+  .form-label {
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #6c757d;
+  }
+  .form-control {
+    border-radius: 0.5rem;
+    border: 1px solid #e2e8f0;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
+  }
+  .form-control:focus {
+    border-color: #fcad00;
+    box-shadow: 0 0 0 0.2rem rgba(252, 173, 0, 0.25);
+  }
+  .btn-submit {
+    background: linear-gradient(135deg, #fcad00 0%, #ffd966 100%);
+    border: none;
+    border-radius: 2rem;
+    padding: 0.5rem 1.5rem;
+    font-weight: 600;
+    transition: transform 0.2s;
+  }
+  .btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(252, 173, 0, 0.3);
+  }
+</style>
+
+<%- contentFor('body') %>
+<div class="container py-4">
+  <div class="form-container">
+    <div class="card card-custom">
+      <div class="card-header-custom">
+        <h4><i class="bx bx-file me-2"></i> <%= title %></h4>
+        <p class="mb-0">Edit the content of this page</p>
+      </div>
+      <div class="card-body p-4">
+        <form
+          action="/admin/static/page/<%= slug %>"
+          method="POST"
+          enctype="multipart/form-data"
+        >
+          <input type="hidden" name="_method" value="PUT" />
+
+          <div class="form-section">
+            <div class="row g-3">
+              <div class="col-12">
+                <label class="form-label">Heading</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  name="heading"
+                  value="<%= page?.heading || '' %>"
+                />
+              </div>
+              <div class="col-12">
+                <label class="form-label">Content</label>
+                <textarea
+                  class="form-control summernote"
+                  name="content"
+                  rows="10"
+                >
+<%= page?.content || '' %></textarea
+                >
+              </div>
+              <div class="col-12">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox"
+                  name="isActive" value="on" <%= page?.isActive !== false ?
+                  'checked' : '' %>>
+                  <label class="form-check-label">Active</label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-end mt-3">
+            <a href="/admin/static/page" class="btn btn-secondary btn-sm me-2"
+              >Back to List</a
+            >
+            <button type="submit" class="btn btn-submit">
+              <i class="bx bx-save me-1"></i> Save Changes
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- contentFor('js') %>
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+<script>
+  $(document).ready(function () {
+    $(".summernote").summernote({
+      placeholder: "Write your content here...",
+      tabsize: 2,
+      height: 300,
+      fontNames: [
+        "Arial",
+        "Arial Black",
+        "Comic Sans MS",
+        "Courier New",
+        "Georgia",
+        "Tahoma",
+        "Times New Roman",
+        "Verdana",
+
+        "Poppins",
+        "Roboto",
+        "Open Sans",
+        "Lato",
+        "Montserrat",
+        "Raleway",
+        "Nunito",
+        "Playfair Display",
+        "Merriweather",
+      ],
+      fontNamesIgnoreCheck: [
+        "Poppins",
+        "Roboto",
+        "Open Sans",
+        "Lato",
+        "Montserrat",
+        "Raleway",
+        "Nunito",
+        "Playfair Display",
+        "Merriweather",
+      ],
+      fontSizes: [
+        "8",
+        "10",
+        "12",
+        "14",
+        "16",
+        "18",
+        "20",
+        "24",
+        "28",
+        "32",
+        "36",
+        "48",
+        "64",
+      ],
+      toolbar: [
+        ["style", ["style"]],
+        ["font", ["bold", "italic", "underline", "strikethrough", "clear"]],
+        ["fontname", ["fontname"]],
+        ["fontsize", ["fontsize"]],
+        ["color", ["forecolor", "backcolor"]],
+        ["para", ["ul", "ol", "paragraph", "height"]],
+        ["insert", ["link", "picture", "video", "table"]],
+        ["view", ["fullscreen", "codeview"]],
+      ],
+      lineHeights: ["0.8", "1.0", "1.2", "1.5", "2.0", "3.0"],
+      callbacks: {
+        onChange: function (contents) {
+          // Update the hidden textarea when content changes
+          const textarea = $(this)
+            .closest(".text-editor")
+            .find(".text-content");
+          textarea.val(contents);
+        },
+      },
+    });
+  });
+</script>

@@ -30,11 +30,14 @@ const adminCorporateLdInnerRoutes = require('./admin/corporateldinner.routes');
 const adminLocationRoutes = require('./admin/location.routes'); 
 const adminActivityRoutes = require('./admin/activity.routes'); 
 const adminHomePageRoutes = require('./admin/homepage.routes'); 
+const adminAboutUsPageRoutes = require('./admin/aboutus.routes'); 
+const adminStaticPageRoutes = require('./admin/staticpage.routes');
+const adminTNCRoutes = require('./admin/tnc.routes');
 
 
 
 // import API routes modules
-const apiTestRoutes = require('./api/test.apiroute');
+const apiTestRoutes = require('./api/test.apiroutes');
 
 // Admin routes
 router.use('/admin', adminAuthRoutes);
@@ -65,6 +68,11 @@ router.use('/admin/corporate/ld/inner', adminCorporateLdInnerRoutes);
 router.use('/admin/location', adminLocationRoutes); 
 router.use('/admin/activity', adminActivityRoutes); 
 router.use('/admin/home', adminHomePageRoutes); 
+router.use('/admin/about', adminAboutUsPageRoutes); 
+router.use('/admin/static/page', adminStaticPageRoutes);
+router.use('/admin/tnc', adminTNCRoutes);
+
+
 
 // API routes
 router.use('/api', apiTestRoutes);

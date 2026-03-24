@@ -1272,5 +1272,28 @@ module.exports = (db) => {
     as: "homePage",
   });
 
+  // ==================== ABOUTUS PAGE ASSOCIATIONS ====================
+  const {
+    AboutUs,
+    AboutUsCard,
+    AboutUsLeader,
+    AboutUsAdvisor,
+    AboutUsCounterCard,
+  } = db;
+
+  AboutUs.hasMany(AboutUsCard, { foreignKey: "about_id", as: "cards" });
+  AboutUs.hasMany(AboutUsLeader, { foreignKey: "about_id", as: "leaders" });
+  AboutUs.hasMany(AboutUsAdvisor, { foreignKey: "about_id", as: "advisors" });
+
+  AboutUsCard.belongsTo(AboutUs, { foreignKey: "about_id" });
+  AboutUsLeader.belongsTo(AboutUs, { foreignKey: "about_id" });
+  AboutUsAdvisor.belongsTo(AboutUs, { foreignKey: "about_id" });
+
+  AboutUs.hasMany(AboutUsCounterCard, {
+    foreignKey: "about_id",
+    as: "counterCards",
+  });
+  AboutUsCounterCard.belongsTo(AboutUs, { foreignKey: "about_id" });
+
   console.log("✓ All model associations have been established successfully");
 };

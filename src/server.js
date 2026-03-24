@@ -9,6 +9,8 @@ const session = require('express-session');
 const expressLayouts = require('express-ejs-layouts');
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
 require('dotenv').config();
+const swaggerUi = require("swagger-ui-express");
+const swaggerSpec = require("./swagger");
 const methodOverride = require('method-override');
 const flash = require('express-flash');
 
@@ -21,6 +23,8 @@ const routes = require('./routes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Session store using Sequelize
 const sessionStore = new SequelizeStore({
@@ -149,23 +153,15 @@ app.use((err, req, res, next) => {
   }
 });
 
+
+
+
 // Database connection and server start
-const { autoCreatePermissions, assignAllPermissionsToSuperAdmin, assignDefaultPermissionsToAdmin } = require('./utils/permissionGenerator');
+// const { autoCreatePermissions, assignAllPermissionsToSuperAdmin, assignDefaultPermissionsToAdmin } = require('./utils/permissionGenerator');
 
 db.sequelize.authenticate()
   .then(async () => {
     console.log('Database connected successfully');
-
-    try {
-      const perms = await autoCreatePermissions();
-      console.log(`Auto permission generation - created ${perms.created}, skipped ${perms.skipped}`);
-      const superResult = await assignAllPermissionsToSuperAdmin();
-      console.log(`Super admin permission assignment - assigned ${superResult.assigned}, skipped ${superResult.skipped}`);
-      const adminResult = await assignDefaultPermissionsToAdmin();
-      console.log(`Admin permission assignment - assigned ${adminResult.assigned}, skipped ${adminResult.skipped}`);
-    } catch (generateError) {
-      console.error('Auto permission sync failed at startup:', generateError);
-    }
     
     app.listen(PORT, () => {
       console.log(`Server running on http://localhost:${PORT}`);

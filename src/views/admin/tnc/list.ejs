@@ -1,0 +1,106 @@
+<%- contentFor('title') %> Terms & Conditions
+<%- contentFor('head') %>
+<style>
+  body { background: #f5f7fb; }
+  .pages-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+  .page-card {
+    background: #fff;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: block;
+    cursor: pointer;
+  }
+  .page-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.1);
+  }
+  .page-card-header {
+    background: linear-gradient(135deg, #fcad00 0%, #ffd966 100%);
+    padding: 1rem;
+    text-align: center;
+  }
+  .page-card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0;
+    color: #2c3e50;
+    text-transform: capitalize;
+  }
+  .page-card-body {
+    padding: 1rem;
+  }
+  .page-card-ref {
+    font-size: 0.75rem;
+    color: #6c757d;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+  .page-card-status {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-weight: 500;
+    display: inline-block;
+  }
+  .page-card-footer {
+    padding: 0.75rem 1rem;
+    border-top: 1px solid #eef2f6;
+    text-align: right;
+    font-size: 0.7rem;
+    color: #6c757d;
+  }
+  @media (max-width: 768px) {
+    .pages-grid { grid-template-columns: 1fr; gap: 1rem; }
+  }
+</style>
+
+<%- contentFor('body') %>
+<div class="container-fluid py-3">
+  <div class="row mb-4 align-items-center">
+    <div class="col-md-6">
+      <h4 class="mb-0 fw-bold">Terms & Conditions</h4>
+      <p class="text-muted small mb-0">Manage T&C content for different sections</p>
+    </div>
+    <div class="col-md-6 text-end">
+      <p class="text-muted text-danger small mb-0">Note: If terms and condition is not active than it will not be shown.</p>
+    </div>
+  </div>
+
+  <div id="pagesContainer" class="pages-grid">
+    <% pages.forEach(page => { %>
+      <a href="/admin/tnc/<%= page.reference %>" class="page-card">
+        <div class="page-card-header">
+          <h5 class="page-card-title"><%= page.title %></h5>
+        </div>
+        <div class="page-card-body">
+          <div class="page-card-ref">
+            <i class="bx bx-link-alt"></i>
+            <span><%= page.reference %></span>
+          </div>
+          <div>
+            <span class="page-card-status badge <%= page.isActive ? 'bg-success' : 'bg-secondary' %>">
+              <%= page.isActive ? 'Active' : 'Inactive' %>
+            </span>
+          </div>
+        </div>
+        <div class="page-card-footer">
+          <i class="bx bx-edit-alt"></i> Click to edit
+        </div>
+      </a>
+    <% }); %>
+  </div>
+</div>
+
+<%- contentFor('js') %>
+<script>
+  // Optional: any additional JS if needed
+</script>
