@@ -1,0 +1,189 @@
+<%- contentFor('title') %> Venues
+<%- contentFor('head') %>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<style>
+  body { background: #f5f7fb; }
+  .stats-card {
+    background: linear-gradient(135deg, #fcad00 0%, #ffd966 100%);
+    border-radius: 10px;
+    padding: 0.75rem;
+    color: #2c3e50;
+    text-align: center;
+    transition: transform 0.2s;
+  }
+  .stats-card:hover { transform: translateY(-3px); }
+  .stats-card h3 { font-size: 1.5rem; margin-bottom: 0; }
+  .stats-card p { margin-bottom: 0; font-size: 0.7rem; opacity: 0.9; }
+  .search-box { position: relative; max-width: 300px; }
+  .search-box input { padding-left: 2rem; border-radius: 20px; border: 1px solid #dee2e6; font-size: 0.8rem; height: 32px; }
+  .search-box input:focus { border-color: #fcad00; box-shadow: 0 0 0 0.2rem rgba(252,173,0,0.25); }
+  .search-box i { position: absolute; left: 0.6rem; top: 50%; transform: translateY(-50%); font-size: 0.9rem; color: #adb5bd; }
+  .venues-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
+  .venue-card {
+    background: #fff;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    transition: all 0.2s;
+  }
+  .venue-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  }
+  .venue-card-image {
+    height: 140px;
+    overflow: hidden;
+  }
+  .venue-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .venue-card-content {
+    padding: 0.75rem;
+  }
+  .venue-card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+  .venue-card-meta {
+    font-size: 0.7rem;
+    color: #6c757d;
+    margin-bottom: 0.5rem;
+  }
+  .venue-card-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+    margin-top: 0.5rem;
+  }
+  .btn-sm { padding: 0.2rem 0.5rem; font-size: 0.7rem; }
+  .pagination { margin-top: 1rem; justify-content: center; }
+  .page-link { padding: 0.25rem 0.5rem; font-size: 0.8rem; }
+</style>
+
+<%- contentFor('body') %>
+<div class="container-fluid py-3">
+  <div class="row mb-3 align-items-center">
+    <div class="col-md-8">
+      <h4 class="mb-0 fw-bold">Venues</h4>
+      <p class="text-muted small mb-0">Manage all venues</p>
+    </div>
+    <div class="col-md-4 text-md-end mt-2 mt-md-0">
+      <a href="/admin/venues/create" class="btn btn-primary btn-sm"><i class="bx bx-plus-circle me-1"></i> Add New Venue</a>
+    </div>
+  </div>
+
+  <!-- Stats (calculated on the fly) -->
+  <div class="row g-2 mb-3">
+    <div class="col-md-3"><div class="stats-card"><h3 id="totalVenues"><%= pagination.totalCount %></h3><p>Total Venues</p></div></div>
+    <div class="col-md-3"><div class="stats-card"><h3 id="activeVenues"><%= venues.filter(v => v.isActive).length %></h3><p>Active</p></div></div>
+    <div class="col-md-3"><div class="stats-card"><h3 id="featuredVenues"><%= venues.filter(v => v.is_featured).length %></h3><p>Featured</p></div></div>
+    <div class="col-md-3"><div class="stats-card"><h3 id="avgRating"><%=
+      venues.length ? (venues.reduce((sum, v) => sum + (v.rating || 0), 0) / venues.length).toFixed(1) : 0
+    %></h3><p>Avg Rating</p></div></div>
+  </div>
+
+  <!-- Search and Filters -->
+  <form method="GET" action="/admin/venues" class="row mb-3 g-2">
+    <div class="col-md-4">
+      <div class="search-box">
+        <i class="bx bx-search"></i>
+        <input type="text" name="search" value="<%= filters.search %>" class="form-control" placeholder="Search by name...">
+      </div>
+    </div>
+    <div class="col-md-3">
+      <select name="location" class="form-select form-select-sm">
+        <option value="">All Locations</option>
+        <% locations.forEach(loc => { %>
+          <option value="<%= loc.id %>" <%= filters.location == loc.id ? 'selected' : '' %>><%= loc.title %></option>
+        <% }); %>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <select name="status" class="form-select form-select-sm">
+        <option value="">All Status</option>
+        <option value="active" <%= filters.status === 'active' ? 'selected' : '' %>>Active</option>
+        <option value="inactive" <%= filters.status === 'inactive' ? 'selected' : '' %>>Inactive</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <select name="sort" class="form-select form-select-sm">
+        <option value="latest" <%= filters.sort === 'latest' ? 'selected' : '' %>>Latest</option>
+        <option value="oldest" <%= filters.sort === 'oldest' ? 'selected' : '' %>>Oldest</option>
+        <option value="name_asc" <%= filters.sort === 'name_asc' ? 'selected' : '' %>>Name (A-Z)</option>
+        <option value="name_desc" <%= filters.sort === 'name_desc' ? 'selected' : '' %>>Name (Z-A)</option>
+        <option value="rating_desc" <%= filters.sort === 'rating_desc' ? 'selected' : '' %>>Highest Rating</option>
+      </select>
+    </div>
+    <div class="col-md-1">
+      <button type="submit" class="btn btn-primary btn-sm w-100">Filter</button>
+    </div>
+  </form>
+
+  <!-- Venues Grid -->
+  <div id="venuesContainer" class="venues-grid">
+    <% venues.forEach(venue => { %>
+      <div class="venue-card">
+        <div class="venue-card-image">
+          <% if (venue.cover_image) { %>
+            <img src="<%= venue.cover_image %>" alt="<%= venue.name %>">
+          <% } else { %>
+            <div class="bg-light d-flex align-items-center justify-content-center h-100"><i class="bx bx-image-alt fs-1 text-muted"></i></div>
+          <% } %>
+        </div>
+        <div class="venue-card-content">
+          <h5 class="venue-card-title"><%= venue.name %></h5>
+          <div class="venue-card-meta">
+            <div><i class="bx bx-map"></i> <%= venue.location?.title || 'No location' %></div>
+            <div><i class="bx bx-star"></i> <%= venue.rating || '—' %> / 5</div>
+            <div><i class="bx bx-group"></i> <%= venue.capacity || '—' %></div>
+          </div>
+          <div class="mt-1">
+            <span class="badge <%= venue.isActive ? 'bg-success' : 'bg-secondary' %>"><%= venue.isActive ? 'Active' : 'Inactive' %></span>
+            <% if (venue.is_featured) { %>
+              <span class="badge bg-warning text-dark">Featured</span>
+            <% } %>
+          </div>
+          <div class="venue-card-actions">
+            <a href="/admin/venues/edit/<%= venue.id %>" class="btn btn-sm btn-warning"><i class="bx bx-edit"></i> Edit</a>
+            <button class="btn btn-sm btn-danger delete-venue" data-id="<%= venue.id %>"><i class="bx bx-trash"></i> Delete</button>
+          </div>
+        </div>
+      </div>
+    <% }); %>
+  </div>
+
+  <!-- Pagination -->
+  <% if (pagination.totalPages > 1) { %>
+    <nav aria-label="Page navigation">
+      <ul class="pagination">
+        <li class="page-item <%= pagination.page === 1 ? 'disabled' : '' %>">
+          <a class="page-link" href="?page=<%= pagination.page - 1 %>&search=<%= filters.search %>&location=<%= filters.location %>&status=<%= filters.status %>&sort=<%= filters.sort %>">Previous</a>
+        </li>
+        <% for (let i = 1; i <= pagination.totalPages; i++) { %>
+          <li class="page-item <%= pagination.page === i ? 'active' : '' %>">
+            <a class="page-link" href="?page=<%= i %>&search=<%= filters.search %>&location=<%= filters.location %>&status=<%= filters.status %>&sort=<%= filters.sort %>"><%= i %></a>
+          </li>
+        <% } %>
+        <li class="page-item <%= pagination.page === pagination.totalPages ? 'disabled' : '' %>">
+          <a class="page-link" href="?page=<%= pagination.page + 1 %>&search=<%= filters.search %>&location=<%= filters.location %>&status=<%= filters.status %>&sort=<%= filters.sort %>">Next</a>
+        </li>
+      </ul>
+    </nav>
+  <% } %>
+</div>
+
+<%- contentFor('js') %>
+<script>
+  document.querySelectorAll('.delete-venue').forEach(btn => {
+    btn.addEventListener('click', async e => {
+      if (!confirm('Delete this venue? This action cannot be undone.')) return;
+      const id = btn.dataset.id;
+      const res = await fetch(`/admin/venues/delete/${id}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (data.success) location.reload(); else alert(data.message);
+    });
+  });
+</script>

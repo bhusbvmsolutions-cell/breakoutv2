@@ -1,0 +1,243 @@
+<% if (venue) { %>
+    <input type="hidden" name="_method" value="PUT">
+  <% } %>
+  
+  <div class="row g-3">
+    <div class="col-md-6">
+      <label class="form-label">Name *</label>
+      <input type="text" name="name" id="name" class="form-control" value="<%= venue?.name || '' %>" required>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Slug</label>
+      <input type="text" name="slug" id="slug" class="form-control" value="<%= venue?.slug || '' %>">
+      <div class="form-text small">Leave blank to auto-generate</div>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Price</label>
+      <input type="text" name="price" class="form-control" value="<%= venue?.price || '' %>">
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Rating (0-5)</label>
+      <input type="number" step="0.1" name="rating" class="form-control" value="<%= venue?.rating || '' %>" min="0" max="5">
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Capacity</label>
+      <input type="text" name="capacity" class="form-control" value="<%= venue?.capacity || '' %>" placeholder="50-100">
+    </div>
+  
+    <!-- Cover Image -->
+    <div class="col-md-6">
+      <label class="form-label">Cover Image</label>
+      <input type="file" name="cover_image" class="form-control" accept="image/*">
+      <% if (venue?.cover_image) { %>
+        <img src="<%= venue.cover_image %>" class="img-thumbnail mt-2" style="max-width:120px;">
+      <% } %>
+    </div>
+    <div class="col-md-6">
+      <div class="form-check mt-4">
+        <input type="checkbox" name="is_featured" class="form-check-input" value="on" <%= venue?.is_featured ? 'checked' : '' %>>
+        <label class="form-check-label">Is Featured</label>
+      </div>
+    </div>
+  
+    <div class="col-md-4">
+      <label class="form-label">Time</label>
+      <input type="text" name="time" class="form-control" value="<%= venue?.time || '' %>">
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Phone</label>
+      <input type="text" name="phone" class="form-control" value="<%= venue?.phone || '' %>">
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Website</label>
+      <input type="url" name="website" class="form-control" value="<%= venue?.website || '' %>">
+    </div>
+    <div class="col-12">
+      <label class="form-label">Address</label>
+      <input type="text" name="address" class="form-control" value="<%= venue?.address || '' %>">
+    </div>
+    <div class="col-12">
+      <label class="form-label">Google Map URL</label>
+      <input type="text" name="google_map" class="form-control" value="<%= venue?.google_map || '' %>">
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Location</label>
+      <select name="location_id" class="form-control">
+        <option value="">Select Location</option>
+        <% locations.forEach(loc => { %>
+          <option value="<%= loc.id %>" <%= venue?.location_id == loc.id ? 'selected' : '' %>><%= loc.title %></option>
+        <% }); %>
+      </select>
+    </div>
+  
+    <!-- Multi-selects -->
+    <div class="col-md-6">
+      <label class="form-label">Categories</label>
+      <select name="categories[]" class="form-control select2-multiple" multiple>
+        <% categories.forEach(cat => { %>
+          <option value="<%= cat.id %>" <%= venue?.categories?.some(c => c.id == cat.id) ? 'selected' : '' %>><%= cat.name %></option>
+        <% }); %>
+      </select>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Experience Types</label>
+      <select name="experienceTypes[]" class="form-control select2-multiple" multiple>
+        <% experienceTypes.forEach(et => { %>
+          <option value="<%= et.id %>" <%= venue?.experienceTypes?.some(e => e.id == et.id) ? 'selected' : '' %>><%= et.name %></option>
+        <% }); %>
+      </select>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Experience Looking For</label>
+      <select name="lookingFor[]" class="form-control select2-multiple" multiple>
+        <% lookingFor.forEach(lf => { %>
+          <option value="<%= lf.id %>" <%= venue?.lookingFor?.some(l => l.id == lf.id) ? 'selected' : '' %>><%= lf.name %></option>
+        <% }); %>
+      </select>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Party Types</label>
+      <select name="partyTypes[]" class="form-control select2-multiple" multiple>
+        <% partyTypes.forEach(pt => { %>
+          <option value="<%= pt.id %>" <%= venue?.partyTypes?.some(p => p.id == pt.id) ? 'selected' : '' %>><%= pt.name %></option>
+        <% }); %>
+      </select>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Suitable Times</label>
+      <select name="suitableTimes[]" class="form-control select2-multiple" multiple>
+        <% suitableTimes.forEach(st => { %>
+          <option value="<%= st.id %>" <%= venue?.suitableTimes?.some(s => s.id == st.id) ? 'selected' : '' %>><%= st.name %></option>
+        <% }); %>
+      </select>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Budget Ranges</label>
+      <select name="budgetRanges[]" class="form-control select2-multiple" multiple>
+        <% budgetRanges.forEach(br => { %>
+          <option value="<%= br.id %>" <%= venue?.budgetRanges?.some(b => b.id == br.id) ? 'selected' : '' %>><%= br.name %></option>
+        <% }); %>
+      </select>
+    </div>
+  
+    <!-- Gallery Images (Repeater) -->
+    <div class="col-12">
+      <label class="form-label">Gallery Images</label>
+      <div id="galleryContainer">
+        <% if (venue?.galleryImages && venue.galleryImages.length) {
+          venue.galleryImages.forEach((img, idx) => { %>
+            <div class="repeater-item bg-light p-2 rounded mb-2 position-relative">
+              <div class="remove-item" onclick="removeItem(this)"><i class="bx bx-trash"></i></div>
+              <div class="row g-2">
+                <div class="col-12">
+                  <input type="file" name="gallery_images[<%= idx %>][image_file]" class="form-control" accept="image/*">
+                  <% if (img.image) { %>
+                    <img src="<%= img.image %>" class="img-thumbnail mt-2" style="max-width:80px;">
+                  <% } %>
+                  <input type="hidden" name="gallery_images[<%= idx %>][image]" value="<%= img.image || '' %>">
+                </div>
+              </div>
+            </div>
+          <% });
+        } else { %>
+          <div class="repeater-item bg-light p-2 rounded mb-2 position-relative">
+            <div class="remove-item" onclick="removeItem(this)"><i class="bx bx-trash"></i></div>
+            <div class="row g-2">
+              <div class="col-12">
+                <input type="file" name="gallery_images[0][image_file]" class="form-control" accept="image/*">
+                <img class="img-thumbnail mt-2" style="display:none;">
+                <input type="hidden" name="gallery_images[0][image]" value="">
+              </div>
+            </div>
+          </div>
+        <% } %>
+      </div>
+      <button type="button" class="btn btn-sm btn-outline-primary mt-2 add-gallery-image"><i class="bx bx-plus"></i> Add Image</button>
+    </div>
+  
+    <!-- Rich Text Editors -->
+    <div class="col-12">
+      <label class="form-label">Content Left</label>
+      <textarea name="content_left" class="form-control summernote" rows="5"><%= venue?.content_left || '' %></textarea>
+    </div>
+    <div class="col-12">
+      <label class="form-label">Content Right</label>
+      <textarea name="content_right" class="form-control summernote" rows="5"><%= venue?.content_right || '' %></textarea>
+    </div>
+  
+    <div class="col-12">
+      <div class="form-check">
+        <input type="checkbox" name="isActive" class="form-check-input" value="on" <%= venue?.isActive !== false ? 'checked' : '' %>>
+        <label class="form-check-label">Active</label>
+      </div>
+    </div>
+  </div>
+  
+  <button type="submit" class="btn btn-primary mt-3"><i class="bx bx-save me-1"></i> <%= venue ? 'Update Venue' : 'Create Venue' %></button>
+  
+  <script>
+    $(document).ready(function() {
+      // Initialize Select2 on multi-selects
+      $('.select2-multiple').select2({
+        theme: 'bootstrap-5',
+        width: '100%',
+        placeholder: 'Select options...',
+        allowClear: true
+      });
+  
+      // Summernote
+      $('.summernote').summernote({ height: 250 });
+  
+      // Slug generation
+      $('#name').on('blur', function() {
+        if ($('#slug').val() === '') {
+          let slug = $(this).val().toLowerCase().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-').replace(/^-+|-+$/g, '');
+          $('#slug').val(slug);
+        }
+      });
+  
+      // Image preview for file inputs
+      function setupImagePreview(inputElem, previewElem) {
+        inputElem.on('change', function() {
+          const file = this.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) { previewElem.attr('src', e.target.result).show(); };
+            reader.readAsDataURL(file);
+          } else {
+            previewElem.hide().attr('src', '');
+          }
+        });
+      }
+      $('input[type="file"]').each(function() {
+        const preview = $(this).next('.img-thumbnail');
+        if (preview.length) setupImagePreview($(this), preview);
+      });
+  
+      // Gallery repeater
+      let galleryIndex = $('#galleryContainer .repeater-item').length;
+      $('.add-gallery-image').click(function() {
+        const newIndex = galleryIndex++;
+        const newItem = `
+          <div class="repeater-item bg-light p-2 rounded mb-2 position-relative">
+            <div class="remove-item" onclick="removeItem(this)"><i class="bx bx-trash"></i></div>
+            <div class="row g-2">
+              <div class="col-12">
+                <input type="file" name="gallery_images[${newIndex}][image_file]" class="form-control" accept="image/*">
+                <img class="img-thumbnail mt-2" style="display:none;">
+                <input type="hidden" name="gallery_images[${newIndex}][image]" value="">
+              </div>
+            </div>
+          </div>
+        `;
+        $('#galleryContainer').append(newItem);
+        const fileInput = $(`#galleryContainer .repeater-item:last input[type="file"]`);
+        const preview = fileInput.next('.img-thumbnail');
+        setupImagePreview(fileInput, preview);
+      });
+    });
+  
+    function removeItem(btn) {
+      $(btn).closest('.repeater-item').remove();
+    }
+  </script>

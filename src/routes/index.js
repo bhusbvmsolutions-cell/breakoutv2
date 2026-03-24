@@ -36,6 +36,13 @@ const adminTNCRoutes = require('./admin/tnc.routes');
 const adminFounderMessageRoutes = require('./admin/foundermessage.routes');
 const adminPricingPackageCategoryRoutes = require('./admin/pricingpackagecategories.routes');
 const adminPricingPackageRoutes = require('./admin/pricingpackages.routes');
+const adminVenueRoutes = require('./admin/venue.routes');
+const venueCategoriesRoutes = require('./admin/venuecategories.routes');
+const venueExperienceTypesRoutes = require('./admin/venueexperiencetypes.routes');
+const venueLookingForRoutes = require('./admin/venuelookingfor.routes');
+const venuePartyTypesRoutes = require('./admin/venuepartytypes.routes');
+const venueSuitableTimesRoutes = require('./admin/venuesuitabletimes.routes');
+const venueBudgetRangesRoutes = require('./admin/venuebudgetranges.routes');
 
 
 
@@ -78,6 +85,13 @@ router.use('/admin/tnc', adminTNCRoutes);
 router.use('/admin/founder/message', adminFounderMessageRoutes);
 router.use('/admin/pricing/packages', adminPricingPackageRoutes);
 router.use('/admin/pricing/category', adminPricingPackageCategoryRoutes);
+router.use('/admin/venues', adminVenueRoutes);
+router.use('/admin/venue-categories', venueCategoriesRoutes);
+router.use('/admin/venue-experience-types', venueExperienceTypesRoutes);
+router.use('/admin/venue-looking-for', venueLookingForRoutes);
+router.use('/admin/venue-party-types', venuePartyTypesRoutes);
+router.use('/admin/venue-suitable-times', venueSuitableTimesRoutes);
+router.use('/admin/venue-budget-ranges', venueBudgetRangesRoutes);
 
 
 

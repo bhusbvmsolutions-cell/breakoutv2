@@ -1343,5 +1343,111 @@ module.exports = (db) => {
     foreignKey: "package_id",
   });
 
+  // ==================== VENUES ASSOCIATIONS ====================
+
+  const {
+    Venue,
+    VenueCategory,
+    VenueExperienceType,
+    VenueExperienceLookingFor,
+    VenuePartType,
+    VenueSuitableTime,
+    VenueBudgetRange,
+    VenueCategoryMapping,
+    VenueExperienceTypeMapping,
+    VenueExperienceLookingForMapping,
+    VenuePartyTypeMapping,
+    VenueSuitableTimeMapping,
+    VenueBudgetRangeMapping,
+    VenueImage,
+    Location,
+  } = db;
+
+  // Many-to-many relationships
+  Venue.belongsToMany(VenueCategory, {
+    through: VenueCategoryMapping,
+    foreignKey: "venue_id",
+    otherKey: "category_id",
+    as: "categories",
+  });
+  VenueCategory.belongsToMany(Venue, {
+    through: VenueCategoryMapping,
+    foreignKey: "category_id",
+    otherKey: "venue_id",
+    as: "venues",
+  });
+
+  Venue.belongsToMany(VenueExperienceType, {
+    through: VenueExperienceTypeMapping,
+    foreignKey: "venue_id",
+    otherKey: "experience_type_id",
+    as: "experienceTypes",
+  });
+  VenueExperienceType.belongsToMany(Venue, {
+    through: VenueExperienceTypeMapping,
+    foreignKey: "experience_type_id",
+    otherKey: "venue_id",
+    as: "venues",
+  });
+
+  Venue.belongsToMany(VenueExperienceLookingFor, {
+    through: VenueExperienceLookingForMapping,
+    foreignKey: "venue_id",
+    otherKey: "looking_for_id",
+    as: "lookingFor",
+  });
+  VenueExperienceLookingFor.belongsToMany(Venue, {
+    through: VenueExperienceLookingForMapping,
+    foreignKey: "looking_for_id",
+    otherKey: "venue_id",
+    as: "venues",
+  });
+
+  Venue.belongsToMany(VenuePartType, {
+    through: VenuePartyTypeMapping,
+    foreignKey: "venue_id",
+    otherKey: "party_type_id",
+    as: "partyTypes",
+  });
+  VenuePartType.belongsToMany(Venue, {
+    through: VenuePartyTypeMapping,
+    foreignKey: "party_type_id",
+    otherKey: "venue_id",
+    as: "venues",
+  });
+
+  Venue.belongsToMany(VenueSuitableTime, {
+    through: VenueSuitableTimeMapping,
+    foreignKey: "venue_id",
+    otherKey: "suitable_time_id",
+    as: "suitableTimes",
+  });
+  VenueSuitableTime.belongsToMany(Venue, {
+    through: VenueSuitableTimeMapping,
+    foreignKey: "suitable_time_id",
+    otherKey: "venue_id",
+    as: "venues",
+  });
+
+  Venue.belongsToMany(VenueBudgetRange, {
+    through: VenueBudgetRangeMapping,
+    foreignKey: "venue_id",
+    otherKey: "budget_range_id",
+    as: "budgetRanges",
+  });
+  VenueBudgetRange.belongsToMany(Venue, {
+    through: VenueBudgetRangeMapping,
+    foreignKey: "budget_range_id",
+    otherKey: "venue_id",
+    as: "venues",
+  });
+
+  // One-to-many
+  Venue.hasMany(VenueImage, { foreignKey: "venue_id", as: "galleryImages" });
+  VenueImage.belongsTo(Venue, { foreignKey: "venue_id" });
+
+  Venue.belongsTo(Location, { foreignKey: "location_id", as: "location" });
+  Location.hasMany(Venue, { foreignKey: "location_id", as: "venues" });
+
   console.log("✓ All model associations have been established successfully");
 };
