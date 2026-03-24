@@ -69,38 +69,38 @@ const ActivityController = {
       const existingSlug = await db.Activity.findOne({ where: { slug }, transaction });
       if (existingSlug) throw new Error('Slug already exists');
 
-      // Map form fields to database fields
+      // Map form fields to database fields – simple names now
       const activityData = {
         title: body.title,
         slug,
-        banner_heading: body.bannersection_heading,
-        banner_description: body.bannersection_description,
-        banner_content: body.bannersection_content,
-        challenge_level: body.bannersection_challenge_level,
-        competitive_activity: body.bannersection_competitive_activity,
-        immersive_rating: body.bannersection_immersive_rating,
-        capacity: body.bannersection_capacity,
-        duration: body.bannersection_duration,
-        virtual_compatibility: body.bannersection_virtual_compatibility,
-        cta_label: body.bannersection_cta_label,
-        cta_link: body.bannersection_cta_link,
-        video_trailer: body.bannersection_video_trailer,
-        content_heading: body.contentsection_heading,
-        content_content: body.contentsection_content,
-        image_card_section_heading: body.imagescardsection_heading,
+        banner_heading: body.banner_heading,
+        banner_description: body.banner_description,
+        banner_content: body.banner_content,
+        challenge_level: body.challenge_level,
+        competitive_activity: body.competitive_activity,
+        immersive_rating: body.immersive_rating,
+        capacity: body.capacity,
+        duration: body.duration,
+        virtual_compatibility: body.virtual_compatibility,
+        cta_label: body.cta_label,
+        cta_link: body.cta_link,
+        video_trailer: body.video_trailer,
+        content_heading: body.content_heading,
+        content_content: body.content_content,
+        image_card_section_heading: body.image_card_section_heading,
         isActive: body.isActive === 'on',
       };
 
       // Banner image
-      if (files.bannersection_image && files.bannersection_image[0]) {
-        activityData.banner_image = `/uploads/activity/${files.bannersection_image[0].filename}`;
-      } else if (body.bannersection_image) {
-        activityData.banner_image = body.bannersection_image;
+      if (files.banner_image && files.banner_image[0]) {
+        activityData.banner_image = `/uploads/activity/${files.banner_image[0].filename}`;
+      } else if (body.banner_image) {
+        activityData.banner_image = body.banner_image;
       }
 
       // Fixed images 1,2,3
       for (let i = 1; i <= 3; i++) {
-        const field = `imagesection_image${i}`;
+        const field = `image${i}`;   // file input names: image1, image2, image3
         if (files[field] && files[field][0]) {
           activityData[`image${i}`] = `/uploads/activity/${files[field][0].filename}`;
         } else if (body[field]) {
@@ -213,38 +213,38 @@ const ActivityController = {
       const updateData = {
         title: body.title,
         slug: body.slug || slugify(body.title, { lower: true, strict: true }),
-        banner_heading: body.bannersection_heading,
-        banner_description: body.bannersection_description,
-        banner_content: body.bannersection_content,
-        challenge_level: body.bannersection_challenge_level,
-        competitive_activity: body.bannersection_competitive_activity,
-        immersive_rating: body.bannersection_immersive_rating,
-        capacity: body.bannersection_capacity,
-        duration: body.bannersection_duration,
-        virtual_compatibility: body.bannersection_virtual_compatibility,
-        cta_label: body.bannersection_cta_label,
-        cta_link: body.bannersection_cta_link,
-        video_trailer: body.bannersection_video_trailer,
-        content_heading: body.contentsection_heading,
-        content_content: body.contentsection_content,
-        image_card_section_heading: body.imagescardsection_heading,
+        banner_heading: body.banner_heading,
+        banner_description: body.banner_description,
+        banner_content: body.banner_content,
+        challenge_level: body.challenge_level,
+        competitive_activity: body.competitive_activity,
+        immersive_rating: body.immersive_rating,
+        capacity: body.capacity,
+        duration: body.duration,
+        virtual_compatibility: body.virtual_compatibility,
+        cta_label: body.cta_label,
+        cta_link: body.cta_link,
+        video_trailer: body.video_trailer,
+        content_heading: body.content_heading,
+        content_content: body.content_content,
+        image_card_section_heading: body.image_card_section_heading,
         isActive: body.isActive === 'on',
       };
 
       // Banner image
-      if (files.bannersection_image && files.bannersection_image[0]) {
+      if (files.banner_image && files.banner_image[0]) {
         if (activity.banner_image) {
           const oldPath = getImageAbsolutePath(activity.banner_image);
           if (oldPath && fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
         }
-        updateData.banner_image = `/uploads/activity/${files.bannersection_image[0].filename}`;
-      } else if (body.bannersection_image) {
-        updateData.banner_image = body.bannersection_image;
+        updateData.banner_image = `/uploads/activity/${files.banner_image[0].filename}`;
+      } else if (body.banner_image) {
+        updateData.banner_image = body.banner_image;
       }
 
       // Fixed images
       for (let i = 1; i <= 3; i++) {
-        const field = `imagesection_image${i}`;
+        const field = `image${i}`;
         if (files[field] && files[field][0]) {
           if (activity[`image${i}`]) {
             const oldPath = getImageAbsolutePath(activity[`image${i}`]);

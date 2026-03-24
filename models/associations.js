@@ -1242,21 +1242,35 @@ module.exports = (db) => {
 
   // ==================== CORPORATE ACTIVITIES ASSOCIATIONS ====================
 
-  module.exports = (db) => {
-    const { Activity, ActivityImageCard, ActivityEscapeRoom } = db;
+  const { Activity, ActivityImageCard, ActivityEscapeRoom } = db;
 
-    Activity.hasMany(ActivityImageCard, {
-      foreignKey: "activity_id",
-      as: "imageCards",
-    });
-    Activity.hasMany(ActivityEscapeRoom, {
-      foreignKey: "activity_id",
-      as: "escaperooms",
-    });
+  Activity.hasMany(ActivityImageCard, {
+    foreignKey: "activity_id",
+    as: "imageCards",
+  });
+  Activity.hasMany(ActivityEscapeRoom, {
+    foreignKey: "activity_id",
+    as: "escaperooms",
+  });
 
-    ActivityImageCard.belongsTo(Activity, { foreignKey: "activity_id" });
-    ActivityEscapeRoom.belongsTo(Activity, { foreignKey: "activity_id" });
-  };
+  ActivityImageCard.belongsTo(Activity, { foreignKey: "activity_id" });
+  ActivityEscapeRoom.belongsTo(Activity, { foreignKey: "activity_id" });
+
+  // ==================== HOME PAGE ASSOCIATIONS ====================
+
+  const { HomePage, HomePageCounterCard } = db;
+
+  // HomePage → Counter Cards
+  HomePage.hasMany(HomePageCounterCard, {
+    foreignKey: "home_page_id",
+    as: "counterCards",
+    onDelete: "CASCADE",
+  });
+
+  HomePageCounterCard.belongsTo(HomePage, {
+    foreignKey: "home_page_id",
+    as: "homePage",
+  });
 
   console.log("✓ All model associations have been established successfully");
 };

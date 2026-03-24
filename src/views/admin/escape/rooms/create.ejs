@@ -974,7 +974,7 @@
         showNotification('Escape room created successfully!', 'success');
         setTimeout(() => {
           window.location.href = '/admin/escape/rooms';
-        }, 1500);
+        }, 1000);
       } else {
         showNotification(result.message || 'Failed to create room', 'error');
         submitBtn.disabled = false;

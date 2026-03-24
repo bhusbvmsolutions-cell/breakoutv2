@@ -29,6 +29,7 @@ const adminCorporateRetreatArchiveRoutes = require('./admin/corporateretreatarch
 const adminCorporateLdInnerRoutes = require('./admin/corporateldinner.routes'); 
 const adminLocationRoutes = require('./admin/location.routes'); 
 const adminActivityRoutes = require('./admin/activity.routes'); 
+const adminHomePageRoutes = require('./admin/homepage.routes'); 
 
 
 
@@ -63,6 +64,7 @@ router.use('/admin/corporate/retreat/archive', adminCorporateRetreatArchiveRoute
 router.use('/admin/corporate/ld/inner', adminCorporateLdInnerRoutes); 
 router.use('/admin/location', adminLocationRoutes); 
 router.use('/admin/activity', adminActivityRoutes); 
+router.use('/admin/home', adminHomePageRoutes); 
 
 // API routes
 router.use('/api', apiTestRoutes);
