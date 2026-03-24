@@ -1,0 +1,200 @@
+<%- contentFor('title') %> <%= page.title %>
+<%- contentFor('head') %>
+<style>
+  .show-section {
+    background: #fff;
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  .section-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #fcad00;
+    display: inline-block;
+  }
+  .image-thumb {
+    max-width: 100px;
+    max-height: 80px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 2px;
+    margin-top: 0.5rem;
+  }
+  .card-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 0.75rem;
+  }
+  .grid-card {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 0.75rem;
+    flex: 1 1 180px;
+    text-align: center;
+  }
+  .info-row {
+    display: flex;
+    margin-bottom: 0.5rem;
+  }
+  .info-label {
+    font-weight: 500;
+    width: 120px;
+    color: #6c757d;
+  }
+  .info-value {
+    flex: 1;
+  }
+  @media (max-width: 768px) {
+    .info-row { flex-direction: column; margin-bottom: 0.75rem; }
+    .info-label { width: auto; margin-bottom: 0.25rem; }
+  }
+</style>
+
+<%- contentFor('body') %>
+<div class="container-fluid py-3">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="card-title mb-0">Page Details: <strong><%= page.title %></strong></h4>
+            <div>
+              <a href="/admin/corporate/ld/inner/edit/<%= page.id %>" class="btn btn-warning btn-sm me-1"><i class="bx bx-edit"></i> Edit</a>
+              <a href="/admin/corporate/ld/inner" class="btn btn-secondary btn-sm"><i class="bx bx-arrow-back"></i> Back</a>
+            </div>
+          </div>
+
+          <!-- Basic Info -->
+          <div class="show-section">
+            <h5 class="section-title"><i class="bx bx-info-circle me-2"></i> Basic Information</h5>
+            <div class="info-row">
+              <div class="info-label">Title:</div>
+              <div class="info-value"><%= page.title %></div>
+            </div>
+            <div class="info-row">
+              <div class="info-label">Slug:</div>
+              <div class="info-value"><%= page.slug %></div>
+            </div>
+            <div class="info-row">
+              <div class="info-label">Status:</div>
+              <div class="info-value"><span class="badge <%= page.isActive ? 'bg-success' : 'bg-secondary' %>"><%= page.isActive ? 'Active' : 'Inactive' %></span></div>
+            </div>
+          </div>
+
+          <!-- Banner Section -->
+          <div class="show-section">
+            <h5 class="section-title"><i class="bx bx-image-alt me-2"></i> Banner Section</h5>
+            <div class="info-row">
+              <div class="info-label">Heading:</div>
+              <div class="info-value"><%= page.banner_heading || '—' %></div>
+            </div>
+            <div class="info-row">
+              <div class="info-label">Description:</div>
+              <div class="info-value"><%= page.banner_description || '—' %></div>
+            </div>
+            <div class="info-row">
+              <div class="info-label">Image:</div>
+              <div class="info-value">
+                <% if (page.banner_image) { %>
+                  <img src="<%= page.banner_image %>" class="image-thumb">
+                <% } else { %>
+                  —
+                <% } %>
+              </div>
+            </div>
+          </div>
+
+          <!-- Content Section -->
+          <div class="show-section">
+            <h5 class="section-title"><i class="bx bx-file me-2"></i> Content Section</h5>
+            <div><%- page.content || '—' %></div>
+          </div>
+
+          <!-- Image Card Section -->
+          <div class="show-section">
+            <h5 class="section-title"><i class="bx bx-images me-2"></i> Image Card Section</h5>
+            <div class="info-row">
+              <div class="info-label">Heading:</div>
+              <div class="info-value"><%= page.image_card_heading || '—' %></div>
+            </div>
+            <div class="info-row">
+              <div class="info-label">Description:</div>
+              <div class="info-value"><%= page.image_card_description || '—' %></div>
+            </div>
+            <div class="card-grid">
+              <% if (page.imageCards && page.imageCards.length) { %>
+                <% page.imageCards.forEach(card => { %>
+                  <div class="grid-card">
+                    <% if (card.image) { %>
+                      <img src="<%= card.image %>" class="image-thumb">
+                    <% } %>
+                    <div class="mt-1"><strong><%= card.heading || '—' %></strong></div>
+                  </div>
+                <% }); %>
+              <% } else { %>
+                <span class="text-muted">No image cards</span>
+              <% } %>
+            </div>
+          </div>
+
+          <!-- Points Section -->
+          <div class="show-section">
+            <h5 class="section-title"><i class="bx bx-list-ul me-2"></i> Points Section</h5>
+            <div class="info-row">
+              <div class="info-label">Heading:</div>
+              <div class="info-value"><%= page.points_heading || '—' %></div>
+            </div>
+            <div class="info-row">
+              <div class="info-label">Description:</div>
+              <div class="info-value"><%= page.points_description || '—' %></div>
+            </div>
+            <div class="card-grid">
+              <% if (page.points && page.points.length) { %>
+                <% page.points.forEach(point => { %>
+                  <div class="grid-card">
+                    <% if (point.image) { %>
+                      <img src="<%= point.image %>" class="image-thumb">
+                    <% } %>
+                    <div class="mt-1"><strong><%= point.heading || '—' %></strong></div>
+                    <div class="small text-muted"><%= point.description || '—' %></div>
+                  </div>
+                <% }); %>
+              <% } else { %>
+                <span class="text-muted">No points</span>
+              <% } %>
+            </div>
+          </div>
+
+          <!-- Key Resources Section -->
+          <div class="show-section">
+            <h5 class="section-title"><i class="bx bx-resource me-2"></i> Key Resources Section</h5>
+            <div class="info-row">
+              <div class="info-label">Heading:</div>
+              <div class="info-value"><%= page.key_resources_heading || '—' %></div>
+            </div>
+            <div class="card-grid">
+              <% if (page.keyResources && page.keyResources.length) { %>
+                <% page.keyResources.forEach(res => { %>
+                  <div class="grid-card">
+                    <% if (res.image) { %>
+                      <img src="<%= res.image %>" class="image-thumb">
+                    <% } %>
+                    <div class="mt-1"><strong><%= res.heading || '—' %></strong></div>
+                  </div>
+                <% }); %>
+              <% } else { %>
+                <span class="text-muted">No key resources</span>
+              <% } %>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

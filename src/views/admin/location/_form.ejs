@@ -1,0 +1,62 @@
+<% if (location) { %>
+  <input type="hidden" name="_method" value="PUT">
+<% } %>
+
+<div class="card border-0 shadow-sm mb-3">
+  <div class="card-header bg-white border-0 pt-3 pb-0"><h6 class="fw-bold mb-0"><i class="bx bx-info-circle me-2"></i> Basic Information</h6></div>
+  <div class="card-body pt-2">
+    <div class="row g-2">
+      <div class="col-md-6"><label class="form-label small text-muted">Title *</label><input type="text" name="title" id="title" class="form-control form-control-sm" value="<%= location?.title || '' %>" required></div>
+      <div class="col-md-6"><label class="form-label small text-muted">Slug</label><input type="text" name="slug" id="slug" class="form-control form-control-sm" value="<%= location?.slug || '' %>"><div class="form-text small">Leave blank to auto-generate</div></div>
+      <div class="col-12"><label class="form-label small text-muted">Banner Image</label><input type="file" name="banner_image" class="form-control form-control-sm" accept="image/*"><% if (location?.banner_image) { %><img src="<%= location.banner_image %>" class="img-thumbnail mt-1" style="max-width:80px;"><% } %></div>
+      <div class="col-12"><label class="form-label small text-muted">Description</label><textarea name="description" class="form-control form-control-sm" rows="3"><%= location?.description || '' %></textarea></div>
+    </div>
+  </div>
+</div>
+
+<div class="card border-0 shadow-sm mb-3">
+  <div class="card-header bg-white border-0 pt-3 pb-0"><h6 class="fw-bold mb-0"><i class="bx bx-search-alt me-2"></i> SEO Settings</h6></div>
+  <div class="card-body pt-2">
+    <div class="row g-2">
+      <div class="col-12"><label class="form-label small text-muted">Meta Title</label><input type="text" name="meta_title" class="form-control form-control-sm" value="<%= location?.meta_title || '' %>"></div>
+      <div class="col-12"><label class="form-label small text-muted">Meta Description</label><textarea name="meta_description" class="form-control form-control-sm" rows="2"><%= location?.meta_description || '' %></textarea></div>
+      <div class="col-12"><label class="form-label small text-muted">Meta Keywords</label><input type="text" name="meta_keywords" class="form-control form-control-sm" value="<%= location?.meta_keywords || '' %>" placeholder="Separate with commas"></div>
+    </div>
+  </div>
+</div>
+
+<div class="card border-0 shadow-sm mb-3">
+  <div class="card-body pt-2">
+    <div class="form-check"><input class="form-check-input" type="checkbox" name="isActive" value="on" <%= location?.isActive !== false ? 'checked' : '' %>><label class="form-check-label small">Active</label></div>
+  </div>
+</div>
+
+<button type="submit" class="btn btn-primary btn-sm px-4 mt-2"><i class="bx bx-save me-1"></i> <%= location ? 'Update Location' : 'Create Location' %></button>
+
+<script>
+  $(document).ready(function() {
+    function setupImagePreview(inputElem, previewElem) {
+      inputElem.on('change', function() {
+        const file = this.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(e) { previewElem.attr('src', e.target.result).show(); };
+          reader.readAsDataURL(file);
+        } else {
+          previewElem.hide().attr('src', '');
+        }
+      });
+    }
+    $('input[type="file"]').each(function() {
+      const preview = $(this).next('.img-thumbnail');
+      if (preview.length) setupImagePreview($(this), preview);
+    });
+
+    $('#title').on('blur', function() {
+      if ($('#slug').val() === '') {
+        let slug = $(this).val().toLowerCase().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-').replace(/^-+|-+$/g, '');
+        $('#slug').val(slug);
+      }
+    });
+  });
+</script>

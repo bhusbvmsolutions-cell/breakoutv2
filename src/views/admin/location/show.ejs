@@ -1,0 +1,45 @@
+<%- contentFor('title') %> <%= location.title %>
+<%- contentFor('head') %>
+<style>
+  .show-section { background: #fff; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+  .section-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 2px solid #fcad00; display: inline-block; }
+  .image-thumb { max-width: 200px; border-radius: 8px; }
+</style>
+
+<%- contentFor('body') %>
+<div class="py-1">
+  <div class="row">
+    <div class="col-12">
+      <div>
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4 class="card-title">Location: <strong><%= location.title %></strong></h4>
+            <div><a href="/admin/location/edit/<%= location.id %>" class="btn btn-warning btn-sm me-2"><i class="bx bx-edit"></i> Edit</a><a href="/admin/location" class="btn btn-secondary btn-sm"><i class="bx bx-arrow-back"></i> Back</a></div>
+          </div>
+
+          <div class="show-section">
+            <h5 class="section-title">Basic Information</h5>
+            <div class="row">
+              <div class="col-md-6"><strong>Title:</strong> <%= location.title %></div>
+              <div class="col-md-6"><strong>Slug:</strong> <%= location.slug %></div>
+              <div class="col-12 mt-2"><strong>Status:</strong> <span class="badge <%= location.isActive ? 'bg-success' : 'bg-secondary' %>"><%= location.isActive ? 'Active' : 'Inactive' %></span></div>
+              <% if (location.banner_image) { %>
+                <div class="col-12 mt-2"><strong>Banner Image:</strong><br><img src="<%= location.banner_image %>" class="image-thumb mt-1"></div>
+              <% } %>
+              <div class="col-12 mt-2"><strong>Description:</strong><br><%= location.description || '—' %></div>
+            </div>
+          </div>
+
+          <div class="show-section">
+            <h5 class="section-title">SEO Settings</h5>
+            <div class="row">
+              <div class="col-12"><strong>Meta Title:</strong> <%= location.meta_title || '—' %></div>
+              <div class="col-12 mt-2"><strong>Meta Description:</strong> <%= location.meta_description || '—' %></div>
+              <div class="col-12 mt-2"><strong>Meta Keywords:</strong> <%= location.meta_keywords || '—' %></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

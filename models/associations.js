@@ -1133,5 +1133,112 @@ module.exports = (db) => {
   CorporateLdVideo.belongsTo(CorporateLdArchive, { foreignKey: "archive_id" });
   CorporateLdVideo.belongsTo(Video, { foreignKey: "video_id" });
 
+  // ==================== CORPORATE RETREAT ASSOCIATIONS ====================
+  const {
+    CorporateRetreatArchive,
+    CorporateRetreatCounterCard,
+    CorporateRetreatImageCard,
+    CorporateRetreatChoiceItem,
+    CorporateRetreatWhyChooseUsItem,
+    CorporateRetreatVideo,
+  } = db;
+
+  CorporateRetreatArchive.hasMany(CorporateRetreatCounterCard, {
+    foreignKey: "archive_id",
+    as: "counterCards",
+  });
+  CorporateRetreatArchive.hasMany(CorporateRetreatImageCard, {
+    foreignKey: "archive_id",
+    as: "imageCards",
+  });
+  CorporateRetreatArchive.hasMany(CorporateRetreatChoiceItem, {
+    foreignKey: "archive_id",
+    as: "choiceItems",
+  });
+  CorporateRetreatArchive.hasMany(CorporateRetreatWhyChooseUsItem, {
+    foreignKey: "archive_id",
+    as: "whyChooseUsItems",
+  });
+
+  CorporateRetreatCounterCard.belongsTo(CorporateRetreatArchive, {
+    foreignKey: "archive_id",
+  });
+  CorporateRetreatImageCard.belongsTo(CorporateRetreatArchive, {
+    foreignKey: "archive_id",
+  });
+  CorporateRetreatChoiceItem.belongsTo(CorporateRetreatArchive, {
+    foreignKey: "archive_id",
+  });
+  CorporateRetreatWhyChooseUsItem.belongsTo(CorporateRetreatArchive, {
+    foreignKey: "archive_id",
+  });
+
+  CorporateRetreatArchive.belongsToMany(Video, {
+    through: CorporateRetreatVideo,
+    foreignKey: "archive_id",
+    otherKey: "video_id",
+    as: "videos",
+  });
+  Video.belongsToMany(CorporateRetreatArchive, {
+    through: CorporateRetreatVideo,
+    foreignKey: "video_id",
+    otherKey: "archive_id",
+    as: "corporateRetreatArchives",
+  });
+  CorporateRetreatVideo.belongsTo(CorporateRetreatArchive, {
+    foreignKey: "archive_id",
+  });
+  CorporateRetreatVideo.belongsTo(Video, { foreignKey: "video_id" });
+
+  // ==================== CORPORATE L & D INNER PAGES ASSOCIATIONS ====================
+
+  const {
+    CorporateLdInnerPage,
+    CorporateLdInnerImageCard,
+    CorporateLdInnerPoint,
+    CorporateLdInnerKeyResource,
+    CorporateLdInnerVideo,
+  } = db;
+
+  CorporateLdInnerPage.hasMany(CorporateLdInnerImageCard, {
+    foreignKey: "page_id",
+    as: "imageCards",
+  });
+  CorporateLdInnerPage.hasMany(CorporateLdInnerPoint, {
+    foreignKey: "page_id",
+    as: "points",
+  });
+  CorporateLdInnerPage.hasMany(CorporateLdInnerKeyResource, {
+    foreignKey: "page_id",
+    as: "keyResources",
+  });
+
+  CorporateLdInnerPage.belongsToMany(Video, {
+    through: CorporateLdInnerVideo,
+    foreignKey: "page_id",
+    otherKey: "video_id",
+    as: "videos",
+  });
+  Video.belongsToMany(CorporateLdInnerPage, {
+    through: CorporateLdInnerVideo,
+    foreignKey: "video_id",
+    otherKey: "page_id",
+    as: "corporateLdInnerPages",
+  });
+
+  CorporateLdInnerImageCard.belongsTo(CorporateLdInnerPage, {
+    foreignKey: "page_id",
+  });
+  CorporateLdInnerPoint.belongsTo(CorporateLdInnerPage, {
+    foreignKey: "page_id",
+  });
+  CorporateLdInnerKeyResource.belongsTo(CorporateLdInnerPage, {
+    foreignKey: "page_id",
+  });
+  CorporateLdInnerVideo.belongsTo(CorporateLdInnerPage, {
+    foreignKey: "page_id",
+  });
+  CorporateLdInnerVideo.belongsTo(Video, { foreignKey: "video_id" });
+
   console.log("✓ All model associations have been established successfully");
 };

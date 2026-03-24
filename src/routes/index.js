@@ -25,6 +25,9 @@ const adminBirthdayInnerRoutes = require('./admin/birthdayinner.routes');
 const adminCorporateArchiveRoutes = require('./admin/corporatearchive.routes'); 
 const adminCorporateUnwindArchiveRoutes = require('./admin/corporateunwindarchive.routes'); 
 const adminCorporateLdArchiveRoutes = require('./admin/corporateldarchive.routes'); 
+const adminCorporateRetreatArchiveRoutes = require('./admin/corporateretreatarchive.routes'); 
+const adminCorporateLdInnerRoutes = require('./admin/corporateldinner.routes'); 
+const adminLocationRoutes = require('./admin/location.routes'); 
 
 
 
@@ -55,6 +58,9 @@ router.use('/admin/party/birthday', adminBirthdayInnerRoutes);
 router.use('/admin/corporate/archive', adminCorporateArchiveRoutes); 
 router.use('/admin/corporate/unwind/archive', adminCorporateUnwindArchiveRoutes); 
 router.use('/admin/corporate/ld/archive', adminCorporateLdArchiveRoutes); 
+router.use('/admin/corporate/retreat/archive', adminCorporateRetreatArchiveRoutes); 
+router.use('/admin/corporate/ld/inner', adminCorporateLdInnerRoutes); 
+router.use('/admin/location', adminLocationRoutes); 
 
 // API routes
 router.use('/api', apiTestRoutes);

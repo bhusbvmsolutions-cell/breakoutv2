@@ -1,4 +1,4 @@
-<%- contentFor('title') %> Corporate Unwind Archive
+<%- contentFor('title') %> Corporate Retreat Archive
 <%- contentFor('head') %>
 <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -20,12 +20,7 @@
   .remove-item { position: absolute; top: 0.5rem; right: 0.5rem; cursor: pointer; color: #dc3545; background: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; z-index: 10; }
   .btn-submit { background: linear-gradient(135deg, #fcad00 0%, #ffd966 100%); border: none; border-radius: 2rem; padding: 0.5rem 1.5rem; font-weight: 600; transition: transform 0.2s; }
   .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 0.5rem 1rem rgba(252,173,0,0.3); }
-  .package-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
-  .package-table th, .package-table td { border: 1px solid #dee2e6; padding: 0.5rem; vertical-align: middle; text-align: center; }
-  .package-table th { background-color: #f8f9fa; }
-  .package-table td:first-child { text-align: left; }
-  .package-table input { width: 100%; border: none; background: transparent; padding: 0.25rem; }
-  .package-table input:focus { outline: none; background: #fff; }
+  .select2-container--default .select2-selection--multiple .select2-selection__choice { background-color: #fcad00 !important; border: none; color: #2c3e50 !important; font-size: 0.75rem; }
 </style>
 
 <%- contentFor('body') %>
@@ -33,11 +28,11 @@
   <div class="form-container">
     <div class="card card-custom">
       <div class="card-header-custom">
-        <h4><i class="bx bx-building me-2"></i> Corporate Unwind Archive</h4>
-        <p>Manage the corporate unwind page content</p>
+        <h4><i class="bx bx-building me-2"></i> Corporate Retreat Archive</h4>
+        <p>Manage corporate retreat page content</p>
       </div>
       <div class="card-body p-4">
-        <form id="corporateUnwindForm" action="/admin/corporate/unwind/archive" method="POST" enctype="multipart/form-data">
+        <form id="corporateRetreatForm" action="/admin/corporate/retreat/archive" method="POST" enctype="multipart/form-data">
           <!-- Banner Section -->
           <div class="form-section">
             <h5 class="section-title"><i class="bx bx-image-alt me-2"></i> Banner Section</h5>
@@ -131,7 +126,7 @@
             <h5 class="section-title"><i class="bx bx-images me-2"></i> Image Card Section</h5>
             <div class="row g-3 mb-3">
               <div class="col-12">
-                <label class="form-label">Section Heading</label>
+                <label class="form-label">Heading</label>
                 <input type="text" name="image_card_heading" class="form-control" value="<%= archive?.image_card_heading || '' %>">
               </div>
             </div>
@@ -146,10 +141,6 @@
                     <input type="text" name="image_cards[<%= idx %>][heading]" class="form-control" value="<%= item.heading %>">
                   </div>
                   <div class="col-md-6">
-                    <label class="form-label">Game Page Link</label>
-                    <input type="text" name="image_cards[<%= idx %>][game_link]" class="form-control" value="<%= item.game_link || '' %>" placeholder="/game-page-slug or https://example.com">
-                  </div>
-                  <div class="col-md-12">
                     <label class="form-label">Image</label>
                     <input type="file" name="image_cards[<%= idx %>][image]" class="form-control" accept="image/*">
                     <% if (item.image) { %>
@@ -171,10 +162,6 @@
                     <input type="text" name="image_cards[0][heading]" class="form-control">
                   </div>
                   <div class="col-md-6">
-                    <label class="form-label">Game Page Link</label>
-                    <input type="text" name="image_cards[0][game_link]" class="form-control" placeholder="/game-page-slug or https://example.com">
-                  </div>
-                  <div class="col-md-12">
                     <label class="form-label">Image</label>
                     <input type="file" name="image_cards[0][image]" class="form-control" accept="image/*">
                     <img class="image-preview mt-2">
@@ -187,38 +174,38 @@
             <button type="button" class="btn btn-sm btn-outline-primary mt-2 add-image-card"><i class="bx bx-plus"></i> Add Image Card</button>
           </div>
 
-          <!-- Addons Section (Repeater) -->
+          <!-- Choices Section (Repeater) -->
           <div class="form-section">
-            <h5 class="section-title"><i class="bx bx-plus-circle me-2"></i> Addons Section</h5>
+            <h5 class="section-title"><i class="bx bx-list-ul me-2"></i> Choices Section</h5>
             <div class="row g-3 mb-3">
               <div class="col-12">
-                <label class="form-label">Section Heading</label>
-                <input type="text" name="addons_heading" class="form-control" value="<%= archive?.addons_heading || '' %>">
+                <label class="form-label">Heading</label>
+                <input type="text" name="choices_heading" class="form-control" value="<%= archive?.choices_heading || '' %>">
               </div>
             </div>
-            <div id="addonsContainer">
-              <% if (archive?.addonItems && archive.addonItems.length) {
-                archive.addonItems.forEach((item, idx) => { %>
+            <div id="choicesContainer">
+              <% if (archive?.choiceItems && archive.choiceItems.length) {
+                archive.choiceItems.forEach((item, idx) => { %>
               <div class="repeater-item">
                 <div class="remove-item" onclick="removeItem(this)"><i class="bx bx-trash"></i></div>
                 <div class="row g-3">
                   <div class="col-md-6">
                     <label class="form-label">Heading</label>
-                    <input type="text" name="addon_items[<%= idx %>][heading]" class="form-control" value="<%= item.heading %>">
+                    <input type="text" name="choice_items[<%= idx %>][heading]" class="form-control" value="<%= item.heading %>">
                   </div>
                   <div class="col-md-6">
-                    <label class="form-label">Blog Link</label>
-                    <input type="text" name="addon_items[<%= idx %>][blog_link]" class="form-control" value="<%= item.blog_link || '' %>" placeholder="/blog-slug or https://example.com">
+                    <label class="form-label">Game Page Link</label>
+                    <input type="text" name="choice_items[<%= idx %>][game_link]" class="form-control" value="<%= item.game_link || '' %>" placeholder="/game-page-slug or https://example.com">
                   </div>
                   <div class="col-md-12">
                     <label class="form-label">Image</label>
-                    <input type="file" name="addon_items[<%= idx %>][image]" class="form-control" accept="image/*">
+                    <input type="file" name="choice_items[<%= idx %>][image]" class="form-control" accept="image/*">
                     <% if (item.image) { %>
                       <img src="<%= item.image %>" class="image-preview mt-2" style="display:block">
                     <% } else { %>
                       <img class="image-preview mt-2">
                     <% } %>
-                    <input type="hidden" name="addon_items[<%= idx %>][image]" value="<%= item.image || '' %>">
+                    <input type="hidden" name="choice_items[<%= idx %>][image]" value="<%= item.image || '' %>">
                   </div>
                 </div>
               </div>
@@ -229,53 +216,68 @@
                 <div class="row g-3">
                   <div class="col-md-6">
                     <label class="form-label">Heading</label>
-                    <input type="text" name="addon_items[0][heading]" class="form-control">
+                    <input type="text" name="choice_items[0][heading]" class="form-control">
                   </div>
                   <div class="col-md-6">
-                    <label class="form-label">Blog Link</label>
-                    <input type="text" name="addon_items[0][blog_link]" class="form-control" placeholder="/blog-slug or https://example.com">
+                    <label class="form-label">Game Page Link</label>
+                    <input type="text" name="choice_items[0][game_link]" class="form-control" placeholder="/game-page-slug or https://example.com">
                   </div>
                   <div class="col-md-12">
                     <label class="form-label">Image</label>
-                    <input type="file" name="addon_items[0][image]" class="form-control" accept="image/*">
+                    <input type="file" name="choice_items[0][image]" class="form-control" accept="image/*">
                     <img class="image-preview mt-2">
-                    <input type="hidden" name="addon_items[0][image]" value="">
+                    <input type="hidden" name="choice_items[0][image]" value="">
                   </div>
                 </div>
               </div>
               <% } %>
             </div>
-            <button type="button" class="btn btn-sm btn-outline-primary mt-2 add-addon"><i class="bx bx-plus"></i> Add Addon</button>
+            <button type="button" class="btn btn-sm btn-outline-primary mt-2 add-choice"><i class="bx bx-plus"></i> Add Choice</button>
           </div>
 
-          <!-- Why Us Section (Repeater) -->
+          <!-- Ready to Transform Your Team Section -->
           <div class="form-section">
-            <h5 class="section-title"><i class="bx bx-like me-2"></i> Why Us Section</h5>
-            <div class="row g-3 mb-3">
+            <h5 class="section-title"><i class="bx bx-rocket me-2"></i> Ready to Transform Your Team</h5>
+            <div class="row g-3">
               <div class="col-12">
-                <label class="form-label">Section Heading</label>
-                <input type="text" name="why_us_heading" class="form-control" value="<%= archive?.why_us_heading || '' %>">
+                <label class="form-label">Heading</label>
+                <input type="text" name="ready_to_transform_heading" class="form-control" value="<%= archive?.ready_to_transform_heading || '' %>">
+              </div>
+              <div class="col-12">
+                <label class="form-label">Description</label>
+                <textarea name="ready_to_transform_description" class="form-control" rows="3"><%= archive?.ready_to_transform_description || '' %></textarea>
               </div>
             </div>
-            <div id="whyUsContainer">
-              <% if (archive?.whyUsItems && archive.whyUsItems.length) {
-                archive.whyUsItems.forEach((item, idx) => { %>
+          </div>
+
+          <!-- Why Choose Us Section (Repeater) -->
+          <div class="form-section">
+            <h5 class="section-title"><i class="bx bx-check-circle me-2"></i> Why Choose Us Section</h5>
+            <div class="row g-3 mb-3">
+              <div class="col-12">
+                <label class="form-label">Heading</label>
+                <input type="text" name="why_choose_us_heading" class="form-control" value="<%= archive?.why_choose_us_heading || '' %>">
+              </div>
+            </div>
+            <div id="whyChooseUsContainer">
+              <% if (archive?.whyChooseUsItems && archive.whyChooseUsItems.length) {
+                archive.whyChooseUsItems.forEach((item, idx) => { %>
               <div class="repeater-item">
                 <div class="remove-item" onclick="removeItem(this)"><i class="bx bx-trash"></i></div>
                 <div class="row g-3">
                   <div class="col-md-6">
                     <label class="form-label">Heading</label>
-                    <input type="text" name="why_us_items[<%= idx %>][heading]" class="form-control" value="<%= item.heading %>">
+                    <input type="text" name="why_choose_us_items[<%= idx %>][heading]" class="form-control" value="<%= item.heading %>">
                   </div>
                   <div class="col-md-6">
                     <label class="form-label">Image</label>
-                    <input type="file" name="why_us_items[<%= idx %>][image]" class="form-control" accept="image/*">
+                    <input type="file" name="why_choose_us_items[<%= idx %>][image]" class="form-control" accept="image/*">
                     <% if (item.image) { %>
                       <img src="<%= item.image %>" class="image-preview mt-2" style="display:block">
                     <% } else { %>
                       <img class="image-preview mt-2">
                     <% } %>
-                    <input type="hidden" name="why_us_items[<%= idx %>][image]" value="<%= item.image || '' %>">
+                    <input type="hidden" name="why_choose_us_items[<%= idx %>][image]" value="<%= item.image || '' %>">
                   </div>
                 </div>
               </div>
@@ -286,88 +288,19 @@
                 <div class="row g-3">
                   <div class="col-md-6">
                     <label class="form-label">Heading</label>
-                    <input type="text" name="why_us_items[0][heading]" class="form-control">
+                    <input type="text" name="why_choose_us_items[0][heading]" class="form-control">
                   </div>
                   <div class="col-md-6">
                     <label class="form-label">Image</label>
-                    <input type="file" name="why_us_items[0][image]" class="form-control" accept="image/*">
+                    <input type="file" name="why_choose_us_items[0][image]" class="form-control" accept="image/*">
                     <img class="image-preview mt-2">
-                    <input type="hidden" name="why_us_items[0][image]" value="">
+                    <input type="hidden" name="why_choose_us_items[0][image]" value="">
                   </div>
                 </div>
               </div>
               <% } %>
             </div>
-            <button type="button" class="btn btn-sm btn-outline-primary mt-2 add-why-us"><i class="bx bx-plus"></i> Add Why Us Item</button>
-          </div>
-
-          <!-- Compare Section (Repeater) -->
-          <div class="form-section">
-            <h5 class="section-title"><i class="bx bx-compare me-2"></i> Compare Section</h5>
-            <div class="row g-3 mb-3">
-              <div class="col-12">
-                <label class="form-label">Section Heading</label>
-                <input type="text" name="compare_heading" class="form-control" value="<%= archive?.compare_heading || '' %>">
-              </div>
-              <div class="col-md-6">
-                <label class="form-label">Left Heading</label>
-                <input type="text" name="compare_left_heading" class="form-control" value="<%= archive?.compare_left_heading || '' %>">
-              </div>
-              <div class="col-md-6">
-                <label class="form-label">Right Heading</label>
-                <input type="text" name="compare_right_heading" class="form-control" value="<%= archive?.compare_right_heading || '' %>">
-              </div>
-            </div>
-            <div id="compareContainer">
-              <% if (archive?.compareItems && archive.compareItems.length) {
-                archive.compareItems.forEach((item, idx) => { %>
-              <div class="repeater-item">
-                <div class="remove-item" onclick="removeItem(this)"><i class="bx bx-trash"></i></div>
-                <div class="row g-3">
-                  <div class="col-md-4">
-                    <label class="form-label">Left Point</label>
-                    <input type="text" name="compare_items[<%= idx %>][left_point]" class="form-control" value="<%= item.left_point || '' %>">
-                  </div>
-                  <div class="col-md-4">
-                    <label class="form-label">Right Point Image</label>
-                    <input type="file" name="compare_items[<%= idx %>][right_image]" class="form-control" accept="image/*">
-                    <% if (item.right_image) { %>
-                      <img src="<%= item.right_image %>" class="image-preview mt-2" style="display:block">
-                    <% } else { %>
-                      <img class="image-preview mt-2">
-                    <% } %>
-                    <input type="hidden" name="compare_items[<%= idx %>][right_image]" value="<%= item.right_image || '' %>">
-                  </div>
-                  <div class="col-md-4">
-                    <label class="form-label">Right Point</label>
-                    <input type="text" name="compare_items[<%= idx %>][right_point]" class="form-control" value="<%= item.right_point || '' %>">
-                  </div>
-                </div>
-              </div>
-              <% });
-              } else { %>
-              <div class="repeater-item">
-                <div class="remove-item" onclick="removeItem(this)"><i class="bx bx-trash"></i></div>
-                <div class="row g-3">
-                  <div class="col-md-4">
-                    <label class="form-label">Left Point</label>
-                    <input type="text" name="compare_items[0][left_point]" class="form-control">
-                  </div>
-                  <div class="col-md-4">
-                    <label class="form-label">Right Point Image</label>
-                    <input type="file" name="compare_items[0][right_image]" class="form-control" accept="image/*">
-                    <img class="image-preview mt-2">
-                    <input type="hidden" name="compare_items[0][right_image]" value="">
-                  </div>
-                  <div class="col-md-4">
-                    <label class="form-label">Right Point</label>
-                    <input type="text" name="compare_items[0][right_point]" class="form-control">
-                  </div>
-                </div>
-              </div>
-              <% } %>
-            </div>
-            <button type="button" class="btn btn-sm btn-outline-primary mt-2 add-compare"><i class="bx bx-plus"></i> Add Compare Item</button>
+            <button type="button" class="btn btn-sm btn-outline-primary mt-2 add-why-choose"><i class="bx bx-plus"></i> Add Why Choose Us Item</button>
           </div>
 
           <!-- Images Section (3 fixed) -->
@@ -386,12 +319,6 @@
               </div>
               <% } %>
             </div>
-          </div>
-
-          <!-- Pricing Section (Matrix) -->
-          <div class="form-section">
-            <h5 class="section-title"><i class="bx bx-dollar-circle me-2"></i> Pricing Section</h5>
-            <div id="packageMatrixContainer"></div>
           </div>
 
           <!-- Video Testimonials -->
@@ -423,7 +350,7 @@
               </div>
               <div class="col-12">
                 <label class="form-label">Content</label>
-                <textarea name="footer_content" class="form-control summernote" rows="3"><%= archive?.footer_content || '' %></textarea>
+                <textarea name="footer_content" class="form-control" rows="3"><%= archive?.footer_content || '' %></textarea>
               </div>
               <div class="col-12">
                 <div class="form-check">
@@ -450,8 +377,6 @@
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
 <script>
   const pageData = <%- JSON.stringify(archive || {}) %>;
-  const packageColumns = pageData?.packageColumns || [];
-  const packageRows = pageData?.packageRows || [];
 
   $(document).ready(function() {
     // Initialize Select2
@@ -532,10 +457,6 @@
               <input type="text" name="image_cards[${newIndex}][heading]" class="form-control">
             </div>
             <div class="col-md-6">
-              <label class="form-label">Game Page Link</label>
-              <input type="text" name="image_cards[${newIndex}][game_link]" class="form-control" placeholder="/game-page-slug or https://example.com">
-            </div>
-            <div class="col-md-12">
               <label class="form-label">Image</label>
               <input type="file" name="image_cards[${newIndex}][image]" class="form-control" accept="image/*">
               <img class="image-preview mt-2">
@@ -550,225 +471,63 @@
       setupImagePreview(fileInput, preview);
     });
 
-    // ----- Addons Repeater -----
-    let addonIndex = $('#addonsContainer .repeater-item').length;
-    $('.add-addon').click(function() {
-      const newIndex = addonIndex++;
+    // ----- Choices Repeater -----
+    let choiceIndex = $('#choicesContainer .repeater-item').length;
+    $('.add-choice').click(function() {
+      const newIndex = choiceIndex++;
       const newItem = `
         <div class="repeater-item">
           <div class="remove-item" onclick="removeItem(this)"><i class="bx bx-trash"></i></div>
           <div class="row g-3">
             <div class="col-md-6">
               <label class="form-label">Heading</label>
-              <input type="text" name="addon_items[${newIndex}][heading]" class="form-control">
+              <input type="text" name="choice_items[${newIndex}][heading]" class="form-control">
             </div>
             <div class="col-md-6">
-              <label class="form-label">Blog Link</label>
-              <input type="text" name="addon_items[${newIndex}][blog_link]" class="form-control" placeholder="/blog-slug or https://example.com">
+              <label class="form-label">Game Page Link</label>
+              <input type="text" name="choice_items[${newIndex}][game_link]" class="form-control" placeholder="/game-page-slug or https://example.com">
             </div>
             <div class="col-md-12">
               <label class="form-label">Image</label>
-              <input type="file" name="addon_items[${newIndex}][image]" class="form-control" accept="image/*">
+              <input type="file" name="choice_items[${newIndex}][image]" class="form-control" accept="image/*">
               <img class="image-preview mt-2">
-              <input type="hidden" name="addon_items[${newIndex}][image]" value="">
+              <input type="hidden" name="choice_items[${newIndex}][image]" value="">
             </div>
           </div>
         </div>
       `;
-      $('#addonsContainer').append(newItem);
-      const fileInput = $(`#addonsContainer .repeater-item:last input[type="file"]`);
+      $('#choicesContainer').append(newItem);
+      const fileInput = $(`#choicesContainer .repeater-item:last input[type="file"]`);
       const preview = fileInput.next('.image-preview');
       setupImagePreview(fileInput, preview);
     });
 
-    // ----- Why Us Repeater -----
-    let whyUsIndex = $('#whyUsContainer .repeater-item').length;
-    $('.add-why-us').click(function() {
-      const newIndex = whyUsIndex++;
+    // ----- Why Choose Us Repeater -----
+    let whyChooseIndex = $('#whyChooseUsContainer .repeater-item').length;
+    $('.add-why-choose').click(function() {
+      const newIndex = whyChooseIndex++;
       const newItem = `
         <div class="repeater-item">
           <div class="remove-item" onclick="removeItem(this)"><i class="bx bx-trash"></i></div>
           <div class="row g-3">
             <div class="col-md-6">
               <label class="form-label">Heading</label>
-              <input type="text" name="why_us_items[${newIndex}][heading]" class="form-control">
+              <input type="text" name="why_choose_us_items[${newIndex}][heading]" class="form-control">
             </div>
             <div class="col-md-6">
               <label class="form-label">Image</label>
-              <input type="file" name="why_us_items[${newIndex}][image]" class="form-control" accept="image/*">
+              <input type="file" name="why_choose_us_items[${newIndex}][image]" class="form-control" accept="image/*">
               <img class="image-preview mt-2">
-              <input type="hidden" name="why_us_items[${newIndex}][image]" value="">
+              <input type="hidden" name="why_choose_us_items[${newIndex}][image]" value="">
             </div>
           </div>
         </div>
       `;
-      $('#whyUsContainer').append(newItem);
-      const fileInput = $(`#whyUsContainer .repeater-item:last input[type="file"]`);
+      $('#whyChooseUsContainer').append(newItem);
+      const fileInput = $(`#whyChooseUsContainer .repeater-item:last input[type="file"]`);
       const preview = fileInput.next('.image-preview');
       setupImagePreview(fileInput, preview);
     });
-
-    // ----- Compare Repeater -----
-    let compareIndex = $('#compareContainer .repeater-item').length;
-    $('.add-compare').click(function() {
-      const newIndex = compareIndex++;
-      const newItem = `
-        <div class="repeater-item">
-          <div class="remove-item" onclick="removeItem(this)"><i class="bx bx-trash"></i></div>
-          <div class="row g-3">
-            <div class="col-md-4">
-              <label class="form-label">Left Point</label>
-              <input type="text" name="compare_items[${newIndex}][left_point]" class="form-control">
-            </div>
-            <div class="col-md-4">
-              <label class="form-label">Right Point Image</label>
-              <input type="file" name="compare_items[${newIndex}][right_image]" class="form-control" accept="image/*">
-              <img class="image-preview mt-2">
-              <input type="hidden" name="compare_items[${newIndex}][right_image]" value="">
-            </div>
-            <div class="col-md-4">
-              <label class="form-label">Right Point</label>
-              <input type="text" name="compare_items[${newIndex}][right_point]" class="form-control">
-            </div>
-          </div>
-        </div>
-      `;
-      $('#compareContainer').append(newItem);
-      const fileInput = $(`#compareContainer .repeater-item:last input[type="file"]`);
-      const preview = fileInput.next('.image-preview');
-      setupImagePreview(fileInput, preview);
-    });
-
-    // ----- Package Matrix -----
-    function buildPackageMatrix() {
-      let columns = packageColumns.map(col => ({ ...col }));
-      let rows = packageRows.map(row => ({ ...row, cells: row.cells || [] }));
-
-      if (columns.length === 0) {
-        columns = [{ title: '', duration: '', image: '' }];
-        rows = [{ feature: '', cells: [] }];
-      }
-
-      const html = `
-        <div class="table-responsive">
-          <table class="package-table" id="packageTable">
-            <thead>
-              <tr>
-                <th>Feature</th>
-                ${columns.map((col, colIndex) => `
-                  <th>
-                    <div class="mb-2">
-                      <button type="button" class="btn btn-sm btn-primary select-package-image" data-col="${colIndex}">Image</button>
-                      <input type="hidden" name="package_columns[${colIndex}][image]" value="${escapeHtml(col.image || '')}">
-                      ${col.image ? `<img src="${col.image}" style="max-width:60px; display:block; margin-top:5px;">` : ''}
-                    </div>
-                    <input type="text" name="package_columns[${colIndex}][title]" class="form-control form-control-sm mb-1" placeholder="Title" value="${escapeHtml(col.title || '')}">
-                    <input type="text" name="package_columns[${colIndex}][duration]" class="form-control form-control-sm" placeholder="Duration" value="${escapeHtml(col.duration || '')}">
-                  </th>
-                `).join('')}
-                <th><button type="button" class="btn btn-sm btn-warning add-column">+ Column</button></th>
-               </tr>
-            </thead>
-            <tbody>
-              ${rows.map((row, rowIndex) => `
-                <tr>
-                  <td><input type="text" name="package_rows[${rowIndex}][feature]" class="form-control form-control-sm" value="${escapeHtml(row.feature || '')}"></td>
-                  ${columns.map((col, colIndex) => {
-                    const cellValue = row.cells.find(c => c.column_id === col.id)?.value || row[`col${colIndex}`] || 'No';
-                    return `<td><input type="text" name="package_rows[${rowIndex}][col${colIndex}]" class="form-control form-control-sm" value="${escapeHtml(cellValue)}"></td>`;
-                  }).join('')}
-                  <td><button type="button" class="btn btn-sm btn-danger remove-row">Remove</button></td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-        </div>
-        <div class="mt-2 text-end">
-          <button type="button" class="btn btn-sm btn-dark add-row">+ Row</button>
-        </div>
-      `;
-
-      $('#packageMatrixContainer').html(html);
-
-      $('#packageMatrixContainer').off('click', '.add-column').on('click', '.add-column', addPackageColumn);
-      $('#packageMatrixContainer').off('click', '.add-row').on('click', '.add-row', addPackageRow);
-      $('#packageMatrixContainer').off('click', '.remove-row').on('click', '.remove-row', function() {
-        $(this).closest('tr').remove();
-        reindexPackageRows();
-      });
-      $('#packageMatrixContainer').off('click', '.select-package-image').on('click', '.select-package-image', function() {
-        const colIndex = $(this).data('col');
-        const fileInput = $('<input type="file" accept="image/*">');
-        fileInput.on('change', function(e) {
-          const file = e.target.files[0];
-          if (file) {
-            const reader = new FileReader();
-            reader.onload = function(ev) {
-              const dataUrl = ev.target.result;
-              $(`input[name="package_columns[${colIndex}][image]"]`).val(dataUrl);
-              $(this).closest('th').find('img').remove();
-              $(this).closest('th').append(`<img src="${dataUrl}" style="max-width:60px; display:block; margin-top:5px;">`);
-            }.bind(this);
-            reader.readAsDataURL(file);
-          }
-        });
-        fileInput.trigger('click');
-      });
-    }
-
-    function addPackageColumn() {
-      const colCount = $('.package-table thead tr th').length - 2;
-      const newIndex = colCount;
-      const newTh = `
-        <th>
-          <div class="mb-2">
-            <button type="button" class="btn btn-sm btn-primary select-package-image" data-col="${newIndex}">Image</button>
-            <input type="hidden" name="package_columns[${newIndex}][image]" value="">
-          </div>
-          <input type="text" name="package_columns[${newIndex}][title]" class="form-control form-control-sm mb-1" placeholder="Title">
-          <input type="text" name="package_columns[${newIndex}][duration]" class="form-control form-control-sm" placeholder="Duration">
-        </th>
-      `;
-      $('.package-table thead tr').find('th:last-child').before(newTh);
-
-      $('.package-table tbody tr').each(function(rowIndex) {
-        const newTd = `<td><input type="text" name="package_rows[${rowIndex}][col${newIndex}]" class="form-control form-control-sm" value="No"></td>`;
-        $(this).find('td:last-child').before(newTd);
-      });
-      reindexPackageRows();
-    }
-
-    function addPackageRow() {
-      const rowCount = $('.package-table tbody tr').length;
-      const newIndex = rowCount;
-      const colCount = $('.package-table thead tr th').length - 2;
-      let rowHtml = `
-        <tr>
-          <td><input type="text" name="package_rows[${newIndex}][feature]" class="form-control form-control-sm"></td>
-      `;
-      for (let i = 0; i < colCount; i++) {
-        rowHtml += `<td><input type="text" name="package_rows[${newIndex}][col${i}]" class="form-control form-control-sm" value="No"></td>`;
-      }
-      rowHtml += `<td><button type="button" class="btn btn-sm btn-danger remove-row">Remove</button></td></tr>`;
-      $('.package-table tbody').append(rowHtml);
-    }
-
-    function reindexPackageRows() {
-      $('.package-table tbody tr').each(function(idx) {
-        $(this).find('input[name^="package_rows["]').each(function() {
-          const name = $(this).attr('name');
-          const newName = name.replace(/package_rows\[\d+\]/, `package_rows[${idx}]`);
-          $(this).attr('name', newName);
-        });
-      });
-    }
-
-    function escapeHtml(str) {
-      if (!str) return '';
-      return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
-    }
-
-    buildPackageMatrix();
 
     // ----- Video Titles -----
     function updateVideoTitles() {
@@ -782,7 +541,7 @@
           let existingTitle = '';
           if (pageData?.videos) {
             const vid = pageData.videos.find(v => v.id == id);
-            if (vid && vid.CorporateUnwindVideo) existingTitle = vid.CorporateUnwindVideo.custom_title;
+            if (vid && vid.CorporateRetreatVideo) existingTitle = vid.CorporateRetreatVideo.custom_title;
           }
           container.append(`
             <div class="mb-2">
@@ -793,6 +552,12 @@
         });
       }
     }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
+    }
+
     $('#videoSelect').on('change', updateVideoTitles);
     updateVideoTitles();
   });

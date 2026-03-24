@@ -1,0 +1,268 @@
+<% if (page) { %>
+  <input type="hidden" name="_method" value="PUT">
+<% } %>
+
+<!-- Title & Slug -->
+<div class="card border-0 shadow-sm mb-3">
+  <div class="card-header bg-white border-0 pt-3 pb-0"><h6 class="fw-bold mb-0"><i class="bx bx-info-circle me-2"></i> Basic Information</h6></div>
+  <div class="card-body pt-2">
+    <div class="row g-2">
+      <div class="col-md-6"><label class="form-label small text-muted">Title *</label><input type="text" name="title" id="title" class="form-control form-control-sm" value="<%= page?.title || '' %>" required></div>
+      <div class="col-md-6"><label class="form-label small text-muted">Slug</label><input type="text" name="slug" id="slug" class="form-control form-control-sm" value="<%= page?.slug || '' %>"><div class="form-text small">Leave blank to auto-generate</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- Banner Section -->
+<div class="card border-0 shadow-sm mb-3">
+  <div class="card-header bg-white border-0 pt-3 pb-0"><h6 class="fw-bold mb-0"><i class="bx bx-image-alt me-2"></i> Banner Section</h6></div>
+  <div class="card-body pt-2">
+    <div class="row g-2">
+      <div class="col-12"><label class="form-label small text-muted">Heading</label><input type="text" name="banner_heading" class="form-control form-control-sm" value="<%= page?.banner_heading || '' %>"></div>
+      <div class="col-12"><label class="form-label small text-muted">Description</label><textarea name="banner_description" class="form-control form-control-sm" rows="3"><%= page?.banner_description || '' %></textarea></div>
+      <div class="col-12"><label class="form-label small text-muted">Image</label><input type="file" name="banner_image" class="form-control form-control-sm" accept="image/*"><% if (page?.banner_image) { %><img src="<%= page.banner_image %>" class="img-thumbnail mt-1" style="max-width:80px;"><% } %></div>
+    </div>
+  </div>
+</div>
+
+<!-- Content Section -->
+<div class="card border-0 shadow-sm mb-3">
+  <div class="card-header bg-white border-0 pt-3 pb-0"><h6 class="fw-bold mb-0"><i class="bx bx-file me-2"></i> Content Section</h6></div>
+  <div class="card-body pt-2">
+    <div class="row g-2"><div class="col-12"><label class="form-label small text-muted">Content</label><textarea name="content" class="form-control summernote" rows="5"><%= page?.content || '' %></textarea></div></div>
+  </div>
+</div>
+
+<!-- Image Card Section -->
+<div class="card border-0 shadow-sm mb-3">
+  <div class="card-header bg-white border-0 pt-3 pb-0"><h6 class="fw-bold mb-0"><i class="bx bx-images me-2"></i> Image Card Section</h6></div>
+  <div class="card-body pt-2">
+    <div class="row g-2 mb-2">
+      <div class="col-12"><label class="form-label small text-muted">Section Heading</label><input type="text" name="image_card_heading" class="form-control form-control-sm" value="<%= page?.image_card_heading || '' %>"></div>
+      <div class="col-12"><label class="form-label small text-muted">Section Description</label><textarea name="image_card_description" class="form-control form-control-sm" rows="3"><%= page?.image_card_description || '' %></textarea></div>
+    </div>
+    <div id="imageCardsContainer">
+      <% if (page?.imageCards && page.imageCards.length) {
+        page.imageCards.forEach((item, idx) => { %>
+      <div class="repeater-item bg-light p-2 rounded mb-2 position-relative">
+        <div class="remove-item" onclick="removeItem(this)"><i class="bx bx-trash"></i></div>
+        <div class="row g-2">
+          <div class="col-md-6"><label class="form-label small text-muted">Heading</label><input type="text" name="image_cards[<%= idx %>][heading]" class="form-control form-control-sm" value="<%= item.heading %>"></div>
+          <div class="col-md-6"><label class="form-label small text-muted">Image</label><input type="file" name="image_cards[<%= idx %>][image]" class="form-control form-control-sm" accept="image/*"><% if (item.image) { %><img src="<%= item.image %>" class="img-thumbnail mt-1" style="max-width:80px;"><% } %><input type="hidden" name="image_cards[<%= idx %>][image]" value="<%= item.image || '' %>"></div>
+        </div>
+      </div>
+      <% });
+      } else { %>
+      <div class="repeater-item bg-light p-2 rounded mb-2 position-relative">
+        <div class="remove-item" onclick="removeItem(this)"><i class="bx bx-trash"></i></div>
+        <div class="row g-2">
+          <div class="col-md-6"><label class="form-label small text-muted">Heading</label><input type="text" name="image_cards[0][heading]" class="form-control form-control-sm"></div>
+          <div class="col-md-6"><label class="form-label small text-muted">Image</label><input type="file" name="image_cards[0][image]" class="form-control form-control-sm" accept="image/*"><img class="img-thumbnail mt-1"><input type="hidden" name="image_cards[0][image]" value=""></div>
+        </div>
+      </div>
+      <% } %>
+    </div>
+    <button type="button" class="btn btn-sm btn-outline-primary mt-2 add-image-card"><i class="bx bx-plus"></i> Add Image Card</button>
+  </div>
+</div>
+
+<!-- Points Section -->
+<div class="card border-0 shadow-sm mb-3">
+  <div class="card-header bg-white border-0 pt-3 pb-0"><h6 class="fw-bold mb-0"><i class="bx bx-list-ul me-2"></i> Points Section</h6></div>
+  <div class="card-body pt-2">
+    <div class="row g-2 mb-2">
+      <div class="col-12"><label class="form-label small text-muted">Section Heading</label><input type="text" name="points_heading" class="form-control form-control-sm" value="<%= page?.points_heading || '' %>"></div>
+      <div class="col-12"><label class="form-label small text-muted">Section Description</label><textarea name="points_description" class="form-control form-control-sm" rows="3"><%= page?.points_description || '' %></textarea></div>
+    </div>
+    <div id="pointsContainer">
+      <% if (page?.points && page.points.length) {
+        page.points.forEach((item, idx) => { %>
+      <div class="repeater-item bg-light p-2 rounded mb-2 position-relative">
+        <div class="remove-item" onclick="removeItem(this)"><i class="bx bx-trash"></i></div>
+        <div class="row g-2">
+          <div class="col-md-4"><label class="form-label small text-muted">Image</label><input type="file" name="points[<%= idx %>][image]" class="form-control form-control-sm" accept="image/*"><% if (item.image) { %><img src="<%= item.image %>" class="img-thumbnail mt-1" style="max-width:80px;"><% } %><input type="hidden" name="points[<%= idx %>][image]" value="<%= item.image || '' %>"></div>
+          <div class="col-md-4"><label class="form-label small text-muted">Heading</label><input type="text" name="points[<%= idx %>][heading]" class="form-control form-control-sm" value="<%= item.heading %>"></div>
+          <div class="col-md-4"><label class="form-label small text-muted">Description</label><input type="text" name="points[<%= idx %>][description]" class="form-control form-control-sm" value="<%= item.description %>"></div>
+        </div>
+      </div>
+      <% });
+      } else { %>
+      <div class="repeater-item bg-light p-2 rounded mb-2 position-relative">
+        <div class="remove-item" onclick="removeItem(this)"><i class="bx bx-trash"></i></div>
+        <div class="row g-2">
+          <div class="col-md-4"><label class="form-label small text-muted">Image</label><input type="file" name="points[0][image]" class="form-control form-control-sm" accept="image/*"><img class="img-thumbnail mt-1"><input type="hidden" name="points[0][image]" value=""></div>
+          <div class="col-md-4"><label class="form-label small text-muted">Heading</label><input type="text" name="points[0][heading]" class="form-control form-control-sm"></div>
+          <div class="col-md-4"><label class="form-label small text-muted">Description</label><input type="text" name="points[0][description]" class="form-control form-control-sm"></div>
+        </div>
+      </div>
+      <% } %>
+    </div>
+    <button type="button" class="btn btn-sm btn-outline-primary mt-2 add-point"><i class="bx bx-plus"></i> Add Point</button>
+  </div>
+</div>
+
+<!-- Key Resources Section -->
+<div class="card border-0 shadow-sm mb-3">
+  <div class="card-header bg-white border-0 pt-3 pb-0"><h6 class="fw-bold mb-0"><i class="bx bx-resource me-2"></i> Key Resources Section</h6></div>
+  <div class="card-body pt-2">
+    <div class="row g-2 mb-2">
+      <div class="col-12"><label class="form-label small text-muted">Section Heading</label><input type="text" name="key_resources_heading" class="form-control form-control-sm" value="<%= page?.key_resources_heading || '' %>"></div>
+    </div>
+    <div id="keyResourcesContainer">
+      <% if (page?.keyResources && page.keyResources.length) {
+        page.keyResources.forEach((item, idx) => { %>
+      <div class="repeater-item bg-light p-2 rounded mb-2 position-relative">
+        <div class="remove-item" onclick="removeItem(this)"><i class="bx bx-trash"></i></div>
+        <div class="row g-2">
+          <div class="col-md-6"><label class="form-label small text-muted">Heading</label><input type="text" name="key_resources[<%= idx %>][heading]" class="form-control form-control-sm" value="<%= item.heading %>"></div>
+          <div class="col-md-6"><label class="form-label small text-muted">Image</label><input type="file" name="key_resources[<%= idx %>][image]" class="form-control form-control-sm" accept="image/*"><% if (item.image) { %><img src="<%= item.image %>" class="img-thumbnail mt-1" style="max-width:80px;"><% } %><input type="hidden" name="key_resources[<%= idx %>][image]" value="<%= item.image || '' %>"></div>
+        </div>
+      </div>
+      <% });
+      } else { %>
+      <div class="repeater-item bg-light p-2 rounded mb-2 position-relative">
+        <div class="remove-item" onclick="removeItem(this)"><i class="bx bx-trash"></i></div>
+        <div class="row g-2">
+          <div class="col-md-6"><label class="form-label small text-muted">Heading</label><input type="text" name="key_resources[0][heading]" class="form-control form-control-sm"></div>
+          <div class="col-md-6"><label class="form-label small text-muted">Image</label><input type="file" name="key_resources[0][image]" class="form-control form-control-sm" accept="image/*"><img class="img-thumbnail mt-1"><input type="hidden" name="key_resources[0][image]" value=""></div>
+        </div>
+      </div>
+      <% } %>
+    </div>
+    <button type="button" class="btn btn-sm btn-outline-primary mt-2 add-key-resource"><i class="bx bx-plus"></i> Add Resource</button>
+  </div>
+</div>
+
+<!-- Status -->
+<div class="card border-0 shadow-sm mb-3">
+  <div class="card-body pt-2">
+    <div class="form-check"><input class="form-check-input" type="checkbox" name="isActive" value="on" <%= page?.isActive !== false ? 'checked' : '' %>><label class="form-check-label small">Active</label></div>
+  </div>
+</div>
+
+<button type="submit" class="btn btn-primary btn-sm px-4 mt-2"><i class="bx bx-save me-1"></i> <%= page ? 'Update Page' : 'Create Page' %></button>
+
+<script>
+  $(document).ready(function() {
+    $('.summernote').summernote({
+        placeholder: 'Write your content here...',
+        tabsize: 2,
+        height: 300,
+        fontNames: [
+          'Arial', 'Arial Black', 'Comic Sans MS', 'Courier New',
+          'Georgia', 'Tahoma', 'Times New Roman', 'Verdana',
+
+          'Poppins', 'Roboto', 'Open Sans', 'Lato',
+          'Montserrat', 'Raleway', 'Nunito',
+          'Playfair Display', 'Merriweather'
+        ],
+        fontNamesIgnoreCheck: [
+          'Poppins', 'Roboto', 'Open Sans', 'Lato',
+          'Montserrat', 'Raleway', 'Nunito',
+          'Playfair Display', 'Merriweather'
+        ],
+        fontSizes: ['8', '10', '12', '14', '16', '18', '20', '24', '28', '32', '36', '48', '64'],
+        toolbar: [
+          ['style', ['style']],
+          ['font', ['bold', 'italic', 'underline', 'strikethrough', 'clear']],
+          ['fontname', ['fontname']],
+          ['fontsize', ['fontsize']],
+          ['color', ['forecolor', 'backcolor']],
+          ['para', ['ul', 'ol', 'paragraph', 'height']],
+          ['insert', ['link', 'picture', 'video', 'table']],
+          ['view', ['fullscreen', 'codeview']]
+        ],
+        lineHeights: ['0.8', '1.0', '1.2', '1.5', '2.0', '3.0'],
+        callbacks: {
+          onChange: function(contents) {
+            // Update the hidden textarea when content changes
+            const textarea = $(this).closest('.text-editor').find('.text-content');
+            textarea.val(contents);
+          }
+        }
+      });
+
+    function setupImagePreview(inputElem, previewElem) {
+      inputElem.on('change', function() {
+        const file = this.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(e) { previewElem.attr('src', e.target.result).show(); };
+          reader.readAsDataURL(file);
+        } else {
+          previewElem.hide().attr('src', '');
+        }
+      });
+    }
+    $('input[type="file"]').each(function() {
+      const preview = $(this).next('.img-thumbnail');
+      if (preview.length) setupImagePreview($(this), preview);
+    });
+
+    $('#title').on('blur', function() {
+      if ($('#slug').val() === '') {
+        let slug = $(this).val().toLowerCase().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-').replace(/^-+|-+$/g, '');
+        $('#slug').val(slug);
+      }
+    });
+
+    let imageCardIndex = $('#imageCardsContainer .repeater-item').length;
+    $('.add-image-card').click(function() {
+      const newIndex = imageCardIndex++;
+      const newItem = `
+        <div class="repeater-item bg-light p-2 rounded mb-2 position-relative">
+          <div class="remove-item" onclick="removeItem(this)"><i class="bx bx-trash"></i></div>
+          <div class="row g-2">
+            <div class="col-md-6"><label class="form-label small text-muted">Heading</label><input type="text" name="image_cards[${newIndex}][heading]" class="form-control form-control-sm"></div>
+            <div class="col-md-6"><label class="form-label small text-muted">Image</label><input type="file" name="image_cards[${newIndex}][image]" class="form-control form-control-sm" accept="image/*"><img class="img-thumbnail mt-1"><input type="hidden" name="image_cards[${newIndex}][image]" value=""></div>
+          </div>
+        </div>
+      `;
+      $('#imageCardsContainer').append(newItem);
+      const fileInput = $(`#imageCardsContainer .repeater-item:last input[type="file"]`);
+      const preview = fileInput.next('.img-thumbnail');
+      setupImagePreview(fileInput, preview);
+    });
+
+    let pointIndex = $('#pointsContainer .repeater-item').length;
+    $('.add-point').click(function() {
+      const newIndex = pointIndex++;
+      const newItem = `
+        <div class="repeater-item bg-light p-2 rounded mb-2 position-relative">
+          <div class="remove-item" onclick="removeItem(this)"><i class="bx bx-trash"></i></div>
+          <div class="row g-2">
+            <div class="col-md-4"><label class="form-label small text-muted">Image</label><input type="file" name="points[${newIndex}][image]" class="form-control form-control-sm" accept="image/*"><img class="img-thumbnail mt-1"><input type="hidden" name="points[${newIndex}][image]" value=""></div>
+            <div class="col-md-4"><label class="form-label small text-muted">Heading</label><input type="text" name="points[${newIndex}][heading]" class="form-control form-control-sm"></div>
+            <div class="col-md-4"><label class="form-label small text-muted">Description</label><input type="text" name="points[${newIndex}][description]" class="form-control form-control-sm"></div>
+          </div>
+        </div>
+      `;
+      $('#pointsContainer').append(newItem);
+      const fileInput = $(`#pointsContainer .repeater-item:last input[type="file"]`);
+      const preview = fileInput.next('.img-thumbnail');
+      setupImagePreview(fileInput, preview);
+    });
+
+    let keyResourceIndex = $('#keyResourcesContainer .repeater-item').length;
+    $('.add-key-resource').click(function() {
+      const newIndex = keyResourceIndex++;
+      const newItem = `
+        <div class="repeater-item bg-light p-2 rounded mb-2 position-relative">
+          <div class="remove-item" onclick="removeItem(this)"><i class="bx bx-trash"></i></div>
+          <div class="row g-2">
+            <div class="col-md-6"><label class="form-label small text-muted">Heading</label><input type="text" name="key_resources[${newIndex}][heading]" class="form-control form-control-sm"></div>
+            <div class="col-md-6"><label class="form-label small text-muted">Image</label><input type="file" name="key_resources[${newIndex}][image]" class="form-control form-control-sm" accept="image/*"><img class="img-thumbnail mt-1"><input type="hidden" name="key_resources[${newIndex}][image]" value=""></div>
+          </div>
+        </div>
+      `;
+      $('#keyResourcesContainer').append(newItem);
+      const fileInput = $(`#keyResourcesContainer .repeater-item:last input[type="file"]`);
+      const preview = fileInput.next('.img-thumbnail');
+      setupImagePreview(fileInput, preview);
+    });
+  });
+
+  function removeItem(btn) {
+    $(btn).closest('.repeater-item').remove();
+  }
+</script>
