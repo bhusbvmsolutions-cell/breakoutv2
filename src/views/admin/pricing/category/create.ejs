@@ -1,0 +1,72 @@
+<%- contentFor('title') %> Add Category
+<%- contentFor('head') %>
+<style>
+  body { background: #f5f7fb; }
+  .form-container { max-width: 100%; margin: 0 auto; }
+  .card-custom { border-radius: 1rem; overflow: hidden; border: none; box-shadow: 0 0.5rem 1.5rem rgba(0,0,0,0.08); }
+  .card-header-custom { background: linear-gradient(135deg, #fcad00 0%, #ffd966 100%); padding: 0.75rem 1.25rem; }
+  .card-header-custom h4 { margin: 0; color: #2c3e50; font-weight: 600; font-size: 1.1rem; }
+  .card-header-custom p { margin: 0; font-size: 0.8rem; color: #2c3e50; opacity: 0.9; }
+  .form-label { font-weight: 500; margin-bottom: 0.25rem; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: #6c757d; }
+  .form-control { border-radius: 0.5rem; border: 1px solid #e2e8f0; padding: 0.5rem 0.75rem; font-size: 0.9rem; transition: all 0.2s; }
+  .form-control:focus { border-color: #fcad00; box-shadow: 0 0 0 0.2rem rgba(252,173,0,0.25); }
+  .btn-submit { background: linear-gradient(135deg, #fcad00 0%, #ffd966 100%); border: none; border-radius: 2rem; padding: 0.5rem 1.5rem; font-weight: 600; transition: transform 0.2s; }
+  .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 0.5rem 1rem rgba(252,173,0,0.3); }
+  .btn-cancel { background: #6c757d; border: none; border-radius: 2rem; padding: 0.5rem 1.5rem; font-weight: 500; }
+</style>
+
+<%- contentFor('body') %>
+<div class="container py-4">
+  <div class="form-container">
+    <div class="card card-custom">
+      <div class="card-header-custom">
+        <h4><i class="bx bx-category me-2"></i> Add Pricing Package Category</h4>
+        <p class="mb-0">Create a new category for pricing packages</p>
+      </div>
+      <div class="card-body p-4">
+        <form action="/admin/pricing/category/store" method="POST">
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="form-label">Name *</label>
+              <input type="text" name="name" id="name" class="form-control" required>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Slug</label>
+              <input type="text" name="slug" id="slug" class="form-control">
+              <div class="form-text small">Leave blank to auto-generate from name</div>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Description</label>
+              <textarea name="description" class="form-control" rows="3"></textarea>
+            </div>
+            <div class="col-12">
+              <div class="form-check">
+                <input type="checkbox" name="isActive" class="form-check-input" value="on" checked>
+                <label class="form-check-label small">Active</label>
+              </div>
+            </div>
+          </div>
+          <div class="d-flex justify-content-end mt-4">
+            <a href="/admin/pricing/category" class="btn btn-cancel btn-sm me-2">Cancel</a>
+            <button type="submit" class="btn btn-submit btn-sm"><i class="bx bx-save me-1"></i> Save Category</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- contentFor('js') %>
+<script>
+  $(document).ready(function() {
+    $('#name').on('blur', function() {
+      if ($('#slug').val() === '') {
+        let slug = $(this).val().toLowerCase()
+          .replace(/[^\w\s-]/g, '')
+          .replace(/[\s_-]+/g, '-')
+          .replace(/^-+|-+$/g, '');
+        $('#slug').val(slug);
+      }
+    });
+  });
+</script>

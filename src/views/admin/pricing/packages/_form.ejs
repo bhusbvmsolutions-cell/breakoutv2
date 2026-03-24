@@ -1,0 +1,155 @@
+<% if (package) { %>
+    <input type="hidden" name="_method" value="PUT">
+  <% } %>
+  
+  <div class="card border-0 shadow-sm mb-3">
+    <div class="card-header bg-white border-0 pt-3 pb-0"><h6 class="fw-bold mb-0"><i class="bx bx-info-circle me-2"></i> Basic Information</h6></div>
+    <div class="card-body pt-2">
+      <div class="row g-2">
+        <div class="col-md-6">
+          <label class="form-label small text-muted">Package Name *</label>
+          <input type="text" name="name" class="form-control form-control-sm" value="<%= package?.name || '' %>" required>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label small text-muted">Min Capacity</label>
+          <input type="number" name="mincapacity" class="form-control form-control-sm" value="<%= package?.min_capacity || '' %>">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label small text-muted">Max Capacity</label>
+          <input type="number" name="maxcapacity" class="form-control form-control-sm" value="<%= package?.max_capacity || '' %>">
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Categories (Multi-select) -->
+  <div class="card border-0 shadow-sm mb-3">
+    <div class="card-header bg-white border-0 pt-3 pb-0"><h6 class="fw-bold mb-0"><i class="bx bx-category me-2"></i> Categories</h6></div>
+    <div class="card-body pt-2">
+      <div class="row g-2">
+        <div class="col-12">
+          <label class="form-label small text-muted">Select Categories</label>
+          <select name="categories[]" id="categorySelect" class="form-control select2-multiple" multiple>
+            <% categories.forEach(cat => { %>
+              <option value="<%= cat.id %>" <%= package?.categories?.some(c => c.id == cat.id) ? 'selected' : '' %>>
+                <%= cat.name %>
+              </option>
+            <% }); %>
+          </select>
+          <div class="form-text small">Select one or more categories for this package</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Package Attributes (Repeater) -->
+  <div class="card border-0 shadow-sm mb-3">
+    <div class="card-header bg-white border-0 pt-3 pb-0"><h6 class="fw-bold mb-0"><i class="bx bx-list-ul me-2"></i> Package Attributes</h6></div>
+    <div class="card-body pt-2">
+      <div id="attributesContainer">
+        <% if (package?.attributes && package.attributes.length) {
+          package.attributes.forEach((attr, idx) => { %>
+            <div class="repeater-item bg-light p-2 rounded mb-2 position-relative">
+              <div class="remove-item" onclick="removeItem(this)"><i class="bx bx-trash"></i></div>
+              <div class="row g-2">
+                <div class="col-md-4">
+                  <label class="form-label small text-muted">Name</label>
+                  <input type="text" name="attributes[<%= idx %>][name]" class="form-control form-control-sm" value="<%= attr.name %>" required>
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label small text-muted">Type</label>
+                  <select name="attributes[<%= idx %>][type]" class="form-control form-control-sm" required>
+                    <option value="variable" <%= attr.type === 'variable' ? 'selected' : '' %>>Per Person</option>
+                    <option value="constant" <%= attr.type === 'constant' ? 'selected' : '' %>>Fixed</option>
+                  </select>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label small text-muted">Price</label>
+                  <input type="number" step="0.01" name="attributes[<%= idx %>][price]" class="form-control form-control-sm" value="<%= attr.price %>" required>
+                </div>
+              </div>
+            </div>
+          <% });
+        } else { %>
+          <div class="repeater-item bg-light p-2 rounded mb-2 position-relative">
+            <div class="remove-item" onclick="removeItem(this)"><i class="bx bx-trash"></i></div>
+            <div class="row g-2">
+              <div class="col-md-4">
+                <label class="form-label small text-muted">Name</label>
+                <input type="text" name="attributes[0][name]" class="form-control form-control-sm" required>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label small text-muted">Type</label>
+                <select name="attributes[0][type]" class="form-control form-control-sm" required>
+                  <option value="variable">Per Person</option>
+                  <option value="constant">Fixed</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label small text-muted">Price</label>
+                <input type="number" step="0.01" name="attributes[0][price]" class="form-control form-control-sm" required>
+              </div>
+            </div>
+          </div>
+        <% } %>
+      </div>
+      <button type="button" class="btn btn-sm btn-outline-primary mt-2 add-attribute"><i class="bx bx-plus"></i> Add Attribute</button>
+    </div>
+  </div>
+  
+  <!-- Status -->
+  <div class="card border-0 shadow-sm mb-3">
+    <div class="card-body pt-2">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" name="isActive" value="on" <%= package?.isActive !== false ? 'checked' : '' %>>
+        <label class="form-check-label small">Active</label>
+      </div>
+    </div>
+  </div>
+  
+  <button type="submit" class="btn btn-primary btn-sm px-4 mt-2"><i class="bx bx-save me-1"></i> <%= package ? 'Update Package' : 'Create Package' %></button>
+  
+  <script>
+    $(document).ready(function() {
+      // Initialize Select2 for categories
+      $('#categorySelect').select2({
+        theme: 'bootstrap-5',
+        width: '100%',
+        placeholder: 'Select categories...',
+        allowClear: true
+      });
+  
+      // Attribute repeater
+      let attrIndex = $('#attributesContainer .repeater-item').length;
+      $('.add-attribute').click(function() {
+        const newIndex = attrIndex++;
+        const newItem = `
+          <div class="repeater-item bg-light p-2 rounded mb-2 position-relative">
+            <div class="remove-item" onclick="removeItem(this)"><i class="bx bx-trash"></i></div>
+            <div class="row g-2">
+              <div class="col-md-4">
+                <label class="form-label small text-muted">Name</label>
+                <input type="text" name="attributes[${newIndex}][name]" class="form-control form-control-sm" required>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label small text-muted">Type</label>
+                <select name="attributes[${newIndex}][type]" class="form-control form-control-sm" required>
+                  <option value="variable">Per Person</option>
+                  <option value="constant">Fixed</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label small text-muted">Price</label>
+                <input type="number" step="0.01" name="attributes[${newIndex}][price]" class="form-control form-control-sm" required>
+              </div>
+            </div>
+          </div>
+        `;
+        $('#attributesContainer').append(newItem);
+      });
+    });
+  
+    function removeItem(btn) {
+      $(btn).closest('.repeater-item').remove();
+    }
+  </script>

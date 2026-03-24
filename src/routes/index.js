@@ -34,6 +34,9 @@ const adminAboutUsPageRoutes = require('./admin/aboutus.routes');
 const adminStaticPageRoutes = require('./admin/staticpage.routes');
 const adminTNCRoutes = require('./admin/tnc.routes');
 const adminFounderMessageRoutes = require('./admin/foundermessage.routes');
+const adminPricingPackageCategoryRoutes = require('./admin/pricingpackagecategories.routes');
+const adminPricingPackageRoutes = require('./admin/pricingpackages.routes');
+
 
 
 
@@ -73,6 +76,8 @@ router.use('/admin/about', adminAboutUsPageRoutes);
 router.use('/admin/static/page', adminStaticPageRoutes);
 router.use('/admin/tnc', adminTNCRoutes);
 router.use('/admin/founder/message', adminFounderMessageRoutes);
+router.use('/admin/pricing/packages', adminPricingPackageRoutes);
+router.use('/admin/pricing/category', adminPricingPackageCategoryRoutes);
 
 
 

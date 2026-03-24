@@ -1,0 +1,165 @@
+<%- contentFor('title') %> Pricing Packages <%- contentFor('head') %>
+<style>
+  body {
+    background: #f5f7fb;
+  }
+  .pages-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+  }
+  .pages-grid-empty {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
+    gap: 1.5rem;
+  }
+  .package-card {
+    background: #fff;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s ease;
+  }
+  .package-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.8);
+  }
+  .package-card-header {
+    background: linear-gradient(135deg, #fcad00 0%, #ffd966 100%);
+    padding: 1rem;
+  }
+  .package-card-header h5 {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+  .package-card-body {
+    padding: 1rem;
+  }
+  .package-capacity {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-bottom: 0.5rem;
+  }
+  .package-categories {
+    margin-bottom: 0.5rem;
+  }
+  .category-badge {
+    background: #e9ecef;
+    color: #495057;
+    padding: 0.2rem 0.5rem;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    display: inline-block;
+    margin: 0.2rem;
+  }
+  .package-card-footer {
+    padding: 0.75rem 1rem;
+    border-top: 1px solid #eef2f6;
+    text-align: right;
+  }
+  .btn-sm {
+    padding: 0.2rem 0.5rem;
+    font-size: 0.7rem;
+  }
+</style>
+
+<%- contentFor('body') %>
+<div class="container-fluid py-3">
+  <div class="row mb-3 align-items-center">
+    <div class="col-md-8">
+      <h4 class="mb-0 fw-bold">Pricing Packages</h4>
+      <p class="text-muted small mb-0">Manage pricing packages</p>
+    </div>
+    <div class="col-md-4 text-md-end">
+      <a href="/admin/pricing/packages/create" class="btn btn-primary btn-sm"
+        ><i class="bx bx-plus-circle me-1"></i> Add Package</a
+      >
+    </div>
+  </div>
+  
+
+  
+  <% if (packages && packages.length > 0){ %>
+    
+  
+    
+  <div class="pages-grid">
+    <% packages.forEach(pkg => { %>
+    <div class="package-card">
+      <div class="package-card-header">
+        <h5><%= pkg.name %></h5>
+      </div>
+      <div class="package-card-body">
+        <div class="package-capacity">
+          <i class="bx bx-group"></i> Capacity: <%= pkg.min_capacity || '0' %> -
+          <%= pkg.max_capacity || '∞' %>
+        </div>
+        <div class="package-categories">
+          <strong>Categories:</strong>
+          <% if (pkg.categories && pkg.categories.length) { %> <%
+          pkg.categories.forEach(cat => { %>
+          <span class="category-badge"><%= cat.name %></span>
+          <% }); %> <% } else { %>
+          <span class="text-muted">No categories</span>
+          <% } %>
+        </div>
+        <div class="package-status mt-2">
+          <span
+            class="badge <%= pkg.isActive ? 'bg-success' : 'bg-secondary' %>"
+            ><%= pkg.isActive ? 'Active' : 'Inactive' %></span
+          >
+        </div>
+      </div>
+      <div class="package-card-footer">
+        <a
+          href="/admin/pricing/packages/edit/<%= pkg.id %>"
+          class="btn btn-sm btn-warning"
+          ><i class="bx bx-edit"></i> Edit</a
+        >
+        <button
+          class="btn btn-sm btn-danger delete-package"
+          data-id="<%= pkg.id %>"
+        >
+          <i class="bx bx-trash"></i> Delete
+        </button>
+      </div>
+    </div>
+    <% }); %>
+  </div>
+  <% }else { %>
+
+    <div class="pages-grid-empty">
+      <div class="package-card">
+        <div class="package-card-header">
+          <h5>No Package Found</h5>
+        </div>
+        <div class="package-card-body">
+          <div class="package-card-footer text-center">
+            <a
+              href="/admin/pricing/packages/create"
+              class="btn btn btn-primary"
+              ><i class="bx bx-edit"></i> Create First Package</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <% } %>
+</div>
+
+<%- contentFor('js') %>
+<script>
+  document.querySelectorAll(".delete-package").forEach((btn) => {
+    btn.addEventListener("click", async (e) => {
+      if (!confirm("Delete this package?")) return;
+      const id = btn.dataset.id;
+      const res = await fetch(`/admin/pricing/packages/delete/${id}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (data.success) location.reload();
+      else alert(data.message);
+    });
+  });
+</script>

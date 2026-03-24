@@ -1311,5 +1311,37 @@ module.exports = (db) => {
     as: "bannerVideo",
   });
 
+  // ==================== PRICING PACKAGES ASSOCIATIONS ====================
+
+  const {
+    PricingPackageCategory,
+    PricingPackage,
+    PricingPackageAttribute,
+    PricingPackageCategoryMapping,
+  } = db;
+
+  // Category ↔ Package (many-to-many)
+  PricingPackageCategory.belongsToMany(PricingPackage, {
+    through: PricingPackageCategoryMapping,
+    foreignKey: "category_id",
+    otherKey: "package_id",
+    as: "packages",
+  });
+  PricingPackage.belongsToMany(PricingPackageCategory, {
+    through: PricingPackageCategoryMapping,
+    foreignKey: "package_id",
+    otherKey: "category_id",
+    as: "categories",
+  });
+
+  // Package ↔ Attributes
+  PricingPackage.hasMany(PricingPackageAttribute, {
+    foreignKey: "package_id",
+    as: "attributes",
+  });
+  PricingPackageAttribute.belongsTo(PricingPackage, {
+    foreignKey: "package_id",
+  });
+
   console.log("✓ All model associations have been established successfully");
 };
