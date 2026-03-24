@@ -95,9 +95,18 @@ const videoController = {
         return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
       };
 
+      const updatedVideos = videos.map(video => {
+        const videoData = video.toJSON ? video.toJSON() : video;
+      
+        return {
+          ...videoData,
+          copy_url: `${req.protocol}://${req.get('host')}/${videoData.url}`
+        };
+      });
+
       res.render('admin/videos/index', {
         title: 'Video Management',
-        videos,
+        videos:updatedVideos,
         pagination: {
           page,
           limit,

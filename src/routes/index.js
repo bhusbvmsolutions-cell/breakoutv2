@@ -33,6 +33,7 @@ const adminHomePageRoutes = require('./admin/homepage.routes');
 const adminAboutUsPageRoutes = require('./admin/aboutus.routes'); 
 const adminStaticPageRoutes = require('./admin/staticpage.routes');
 const adminTNCRoutes = require('./admin/tnc.routes');
+const adminFounderMessageRoutes = require('./admin/foundermessage.routes');
 
 
 
@@ -71,6 +72,7 @@ router.use('/admin/home', adminHomePageRoutes);
 router.use('/admin/about', adminAboutUsPageRoutes); 
 router.use('/admin/static/page', adminStaticPageRoutes);
 router.use('/admin/tnc', adminTNCRoutes);
+router.use('/admin/founder/message', adminFounderMessageRoutes);
 
 
 

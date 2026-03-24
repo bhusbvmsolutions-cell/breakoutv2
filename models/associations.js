@@ -1272,7 +1272,7 @@ module.exports = (db) => {
     as: "homePage",
   });
 
-  // ==================== ABOUTUS PAGE ASSOCIATIONS ====================
+  // ==================== ABOUT US PAGE ASSOCIATIONS ====================
   const {
     AboutUs,
     AboutUsCard,
@@ -1294,6 +1294,22 @@ module.exports = (db) => {
     as: "counterCards",
   });
   AboutUsCounterCard.belongsTo(AboutUs, { foreignKey: "about_id" });
+
+  // ==================== FOUNDER MESSAGE ASSOCIATIONS ====================
+
+  const { FounderMessage, FounderMessageImage } = db;
+
+  FounderMessage.hasMany(FounderMessageImage, {
+    foreignKey: "founder_message_id",
+    as: "images",
+  });
+  FounderMessageImage.belongsTo(FounderMessage, {
+    foreignKey: "founder_message_id",
+  });
+  FounderMessage.belongsTo(Video, {
+    foreignKey: "banner_video_id",
+    as: "bannerVideo",
+  });
 
   console.log("✓ All model associations have been established successfully");
 };

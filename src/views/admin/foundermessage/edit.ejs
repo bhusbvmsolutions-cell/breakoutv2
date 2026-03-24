@@ -1,0 +1,265 @@
+<%- contentFor('title') %> <%= title %>
+<%- contentFor('head') %>
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
+<style>
+  body { background: #f5f7fb; }
+  .form-container { max-width: 100%; margin: 0 auto; }
+  .card-custom { border-radius: 1rem; overflow: hidden; border: none; box-shadow: 0 0.5rem 1.5rem rgba(0,0,0,0.08); }
+  .card-header-custom { background: linear-gradient(135deg, #fcad00 0%, #ffd966 100%); padding: 0.75rem 1.25rem; }
+  .card-header-custom h4 { margin: 0; color: #2c3e50; font-weight: 600; font-size: 1.1rem; }
+  .card-header-custom p { margin: 0; font-size: 0.8rem; color: #2c3e50; opacity: 0.9; }
+  .form-section { background: #fff; border-radius: 0.75rem; padding: 1.25rem; margin-bottom: 1.5rem; border: 1px solid #eef2f6; }
+  .form-label { font-weight: 500; margin-bottom: 0.25rem; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: #6c757d; }
+  .form-control { border-radius: 0.5rem; border: 1px solid #e2e8f0; padding: 0.5rem 0.75rem; font-size: 0.9rem; }
+  .form-control:focus { border-color: #fcad00; box-shadow: 0 0 0 0.2rem rgba(252,173,0,0.25); }
+  .repeater-item { background: #f8f9fa; border: 1px solid #e2e8f0; border-radius: 0.5rem; padding: 1rem; margin-bottom: 1rem; position: relative; }
+  .remove-item { position: absolute; top: 0.5rem; right: 0.5rem; cursor: pointer; color: #dc3545; background: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; z-index: 10; }
+  .btn-submit { background: linear-gradient(135deg, #fcad00 0%, #ffd966 100%); border: none; border-radius: 2rem; padding: 0.5rem 1.5rem; font-weight: 600; transition: transform 0.2s; }
+  .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 0.5rem 1rem rgba(252,173,0,0.3); }
+  .img-thumbnail{
+    width: 400px;
+  }
+</style>
+
+<%- contentFor('body') %>
+<div class="py-4">
+  <div class="form-container">
+    <div class="card card-custom">
+      <div class="card-header-custom">
+        <h4><i class="bx bx-message-square-detail me-2"></i> <%= title %></h4>
+        <p class="mb-0">Edit the founder message for this page</p>
+      </div>
+      <div class="card-body p-4">
+        <form id="founderMessageForm" method="POST" enctype="multipart/form-data">
+          <div class="form-section">
+            <div class="row g-3">
+              <div class="col-12">
+                <label class="form-label">Page</label>
+                <input type="text" class="form-control" value="<%= message.page %>" disabled>
+              </div>
+              <div class="col-12">
+                <label class="form-label">Heading</label>
+                <input type="text" name="heading" class="form-control" value="<%= message.heading || '' %>" required>
+              </div>
+              <div class="col-12">
+                <label class="form-label">Message Title</label>
+                <input type="text" name="message_title" class="form-control" value="<%= message.message_title || '' %>" required>
+              </div>
+              <div class="col-12">
+                <label class="form-label">Content</label>
+                <textarea class="form-control summernote" name="content"><%= message.content || '' %></textarea>
+              </div>
+              <div class="col-12">
+                <label class="form-label">Video Trailer Link</label>
+                <input type="text" name="video" class="form-control" value="<%= message.video || '' %>">
+              </div>
+              <div class="col-12">
+                <label class="form-label">Banner Video</label>
+                <select name="banner_video_id" class="form-control select2-single">
+                  <option value="">-- Select a video --</option>
+                  <% videos.forEach(video => { %>
+                    <option value="<%= video.id %>" <%= message.banner_video_id == video.id ? 'selected' : '' %>>
+                      <%= video.title || video.filename %>
+                    </option>
+                  <% }); %>
+                </select>
+                <div class="form-text small">Select a video for the banner</div>
+              </div>
+              <div class="col-12">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="isActive" value="on" <%= message.isActive ? 'checked' : '' %>>
+                  <label class="form-check-label">Active</label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Images Section (Repeater) -->
+          <div class="form-section">
+            <h5 class="section-title"><i class="bx bx-images me-2"></i> Images</h5>
+            <div id="imagesContainer">
+              <% if (message.images && message.images.length) {
+                message.images.forEach((img, idx) => { %>
+                <div class="repeater-item">
+                  <div class="remove-item" onclick="removeItem(this)"><i class="bx bx-trash"></i></div>
+                  <div class="row g-3">
+                    <div class="col-12">
+                      <label class="form-label">Image</label>
+                      <input type="file" name="images[<%= idx %>][image_file]" class="form-control" accept="image/*">
+                      <% if (img.image) { %>
+                        <img src="<%= img.image %>" class="img-thumbnail mt-1" style="max-width:80px;">
+                      <% } %>
+                      <input type="hidden" name="images[<%= idx %>][image]" value="<%= img.image || '' %>">
+                    </div>
+                  </div>
+                </div>
+              <% });
+              } else { %>
+              <div class="repeater-item">
+                <div class="remove-item" onclick="removeItem(this)"><i class="bx bx-trash"></i></div>
+                <div class="row g-3">
+                  <div class="col-12">
+                    <label class="form-label">Image</label>
+                    <input type="file" name="images[0][image_file]" class="form-control" accept="image/*">
+                    <img class="img-thumbnail mt-1">
+                    <input type="hidden" name="images[0][image]" value="">
+                  </div>
+                </div>
+              </div>
+              <% } %>
+            </div>
+            <button type="button" class="btn btn-sm btn-outline-primary mt-2 add-image"><i class="bx bx-plus"></i> Add Image</button>
+          </div>
+
+          <div class="d-flex justify-content-end mt-3">
+            <a href="/admin/founder/message" class="btn btn-secondary btn-sm me-2">Back to List</a>
+            <button type="submit" class="btn btn-submit"><i class="bx bx-save me-1"></i> Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Toast container (ensure it's in the layout or include it) -->
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999">
+    <div id="globalToast" class="toast align-items-center text-white border-0" role="alert">
+      <div class="d-flex">
+        <div class="toast-body"></div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+      </div>
+    </div>
+  </div>
+
+<%- contentFor('js') %>
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+<script>
+  $(document).ready(function() {
+    $('.summernote').summernote({
+      placeholder: 'Write your content here...',
+      tabsize: 2,
+      height: 300,
+      fontNames: [
+        'Arial', 'Arial Black', 'Comic Sans MS', 'Courier New',
+        'Georgia', 'Tahoma', 'Times New Roman', 'Verdana',
+
+        'Poppins', 'Roboto', 'Open Sans', 'Lato',
+        'Montserrat', 'Raleway', 'Nunito',
+        'Playfair Display', 'Merriweather'
+      ],
+      fontNamesIgnoreCheck: [
+        'Poppins', 'Roboto', 'Open Sans', 'Lato',
+        'Montserrat', 'Raleway', 'Nunito',
+        'Playfair Display', 'Merriweather'
+      ],
+      fontSizes: ['8', '10', '12', '14', '16', '18', '20', '24', '28', '32', '36', '48', '64'],
+      toolbar: [
+        ['style', ['style']],
+        ['font', ['bold', 'italic', 'underline', 'strikethrough', 'clear']],
+        ['fontname', ['fontname']],
+        ['fontsize', ['fontsize']],
+        ['color', ['forecolor', 'backcolor']],
+        ['para', ['ul', 'ol', 'paragraph', 'height']],
+        ['insert', ['link', 'picture', 'video', 'table']],
+        ['view', ['fullscreen', 'codeview']]
+      ],
+      lineHeights: ['0.8', '1.0', '1.2', '1.5', '2.0', '3.0'],
+      callbacks: {
+        onChange: function(contents) {
+          // Update the hidden textarea when content changes
+          const textarea = $(this).closest('.text-editor').find('.text-content');
+          textarea.val(contents);
+        }
+      }
+    });
+
+    function setupImagePreview(inputElem, previewElem) {
+      inputElem.on('change', function() {
+        const file = this.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(e) { previewElem.attr('src', e.target.result).show(); };
+          reader.readAsDataURL(file);
+        } else {
+          previewElem.hide().attr('src', '');
+        }
+      });
+    }
+    $('input[type="file"]').each(function() {
+      const preview = $(this).next('.img-thumbnail');
+      if (preview.length) setupImagePreview($(this), preview);
+    });
+
+    let imageIndex = $('#imagesContainer .repeater-item').length;
+    $('.add-image').click(function() {
+      const newIndex = imageIndex++;
+      const newItem = `
+        <div class="repeater-item">
+          <div class="remove-item" onclick="removeItem(this)"><i class="bx bx-trash"></i></div>
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="form-label">Image</label>
+              <input type="file" name="images[${newIndex}][image_file]" class="form-control" accept="image/*">
+              <img class="img-thumbnail mt-1">
+              <input type="hidden" name="images[${newIndex}][image]" value="">
+            </div>
+          </div>
+        </div>
+      `;
+      $('#imagesContainer').append(newItem);
+      const fileInput = $(`#imagesContainer .repeater-item:last input[type="file"]`);
+      const preview = fileInput.next('.img-thumbnail');
+      setupImagePreview(fileInput, preview);
+    });
+
+    $('#founderMessageForm').on('submit', function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      const page = '<%= message.page %>';
+      fetch(`/admin/founder/message/${page}`, {
+        method: 'POST',
+        headers: {
+          Authorization: 'Bearer ' + localStorage.getItem('token'),
+        },
+        body: formData,
+      })
+        .then(res => res.json())
+        .then(res => {
+          if (res.success) {
+            showToast('Updated successfully', 'success');
+            setTimeout(() => {
+              window.location.href = '/admin/founder/message';
+            }, 1000);
+          } else if (!res.success) {
+            showToast(res.message || 'Update failed', 'error');
+          }
+          else{
+            console.log("jskdfhjksdhfjklsdfhsdjklfhsdjkfhsd")
+          }
+        })
+        .catch(error => {
+          console.error(error);
+          showToast('Something went wrong', 'error');
+        });
+    });
+  });
+
+  function removeItem(btn) {
+    $(btn).closest('.repeater-item').remove();
+  }
+
+  function showToast(message, type = 'success') {
+    const toastEl = document.getElementById('globalToast');
+    const toastBody = toastEl.querySelector('.toast-body');
+    toastBody.textContent = message;
+    toastEl.classList.remove('bg-success', 'bg-danger', 'bg-warning');
+    if (type === 'success') toastEl.classList.add('bg-success');
+    if (type === 'error') toastEl.classList.add('bg-danger');
+    if (type === 'warning') toastEl.classList.add('bg-warning');
+    const toast = new bootstrap.Toast(toastEl);
+    toast.show();
+  }
+</script>
+

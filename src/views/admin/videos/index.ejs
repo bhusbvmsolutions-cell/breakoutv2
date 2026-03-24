@@ -1,5 +1,19 @@
 <%- contentFor('title') %>
 <%- contentFor('head') %>
+<style>
+  .video-card {
+    transition: transform 0.2s;
+  }
+  .video-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+  }
+  .video-checkbox {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+  }
+</style>
 <%- contentFor('body') %>
 
 <div class="row">
@@ -139,11 +153,14 @@
           </div>
           <div class="card-footer bg-transparent">
             <div class="btn-group w-100">
+              <button type="button" class="btn btn-sm btn-outline-secondary copy-video-url" data-url="<%= video.copy_url %>">
+                <i class="bi bi-link-45deg"></i>
+              </button>
               <a href="/admin/videos/<%= video.id %>" class="btn btn-sm btn-outline-primary">
-                <i class="bi bi-eye"></i> View
+                <i class="bi bi-eye"></i>
               </a>
               <button type="button" class="btn btn-sm btn-outline-danger delete-video" data-id="<%= video.id %>">
-                <i class="bi bi-trash"></i> Delete
+                <i class="bi bi-trash"></i>
               </button>
             </div>
           </div>
@@ -212,6 +229,60 @@
         });
       }
     });
+
+    $('.copy-video-url').on('click', function() {
+      const videoUrl = $(this).data('url');
+    
+      // Copy to clipboard
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(videoUrl).then(() => {
+          showTooltip($(this), 'Link copied!');
+        }).catch(() => {
+          showTooltip($(this), 'Failed to copy', 'danger');
+        });
+      } else {
+        const textarea = document.createElement('textarea');
+        textarea.value = videoUrl;
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+          document.execCommand('copy');
+          showTooltip($(this), 'Link copied!');
+        } catch (err) {
+          showTooltip($(this), 'Failed to copy', 'danger');
+        }
+        document.body.removeChild(textarea);
+      }
+    });
+    
+    function showTooltip($element, message, type = 'success') {
+      // Create a temporary tooltip div
+      const tooltip = $('<div class="copy-tooltip">' + message + '</div>');
+      const $btn = $element;
+      const offset = $btn.offset();
+      const btnHeight = $btn.outerHeight();
+      const tooltipHeight = 30; // approximate height
+    
+      tooltip.css({
+        position: 'absolute',
+        top: offset.top - tooltipHeight - 5,
+        left: offset.left + ($btn.outerWidth() / 2) - 50,
+        backgroundColor: type === 'danger' ? '#dc3545' : '#28a745',
+        color: '#fff',
+        padding: '4px 8px',
+        borderRadius: '4px',
+        fontSize: '12px',
+        whiteSpace: 'nowrap',
+        zIndex: 9999,
+        boxShadow: '0 2px 5px rgba(0,0,0,0.2)'
+      });
+      $('body').append(tooltip);
+      setTimeout(() => {
+        tooltip.fadeOut(200, function() {
+          $(this).remove();
+        });
+      }, 1500);
+    }
 
     // Handle checkbox selection
     $('.video-checkbox').on('change', function() {
@@ -290,17 +361,3 @@
   });
 </script>
 
-<style>
-  .video-card {
-    transition: transform 0.2s;
-  }
-  .video-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-  }
-  .video-checkbox {
-    width: 20px;
-    height: 20px;
-    cursor: pointer;
-  }
-</style>
