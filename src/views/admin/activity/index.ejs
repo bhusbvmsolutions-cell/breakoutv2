@@ -1,0 +1,233 @@
+<%- contentFor('title') %> Corporate Activities
+<%- contentFor('head') %>
+<style>
+  body { background: #f5f7fb; }
+  .stats-card {
+    background: linear-gradient(135deg, #fcad00 0%, #ffd966 100%);
+    border-radius: 10px;
+    padding: 0.75rem;
+    color: #2c3e50;
+    text-align: center;
+    transition: transform 0.2s;
+  }
+  .stats-card:hover { transform: translateY(-3px); }
+  .stats-card h3 { font-size: 1.5rem; margin-bottom: 0; }
+  .stats-card p { margin-bottom: 0; font-size: 0.7rem; opacity: 0.9; }
+  .search-box { position: relative; max-width: 300px; }
+  .search-box input { padding-left: 2rem; border-radius: 20px; border: 1px solid #dee2e6; font-size: 0.8rem; height: 32px; }
+  .search-box input:focus { border-color: #fcad00; box-shadow: 0 0 0 0.2rem rgba(252,173,0,0.25); }
+  .search-box i { position: absolute; left: 0.6rem; top: 50%; transform: translateY(-50%); font-size: 0.9rem; color: #adb5bd; }
+  .activities-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+  .activities-grid-empty {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
+    gap: 1rem;
+  }
+  .activity-card {
+    background: #fff;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    transition: all 0.2s;
+  }
+  .activity-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  }
+  .activity-card-image {
+    height: 140px;
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .activity-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.2s;
+  }
+  .activity-card:hover .activity-card-image img { transform: scale(1.03); }
+  .activity-card-content { padding: 0.75rem; }
+  .activity-card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: #2c3e50;
+  }
+  .activity-card-slug {
+    font-size: 0.7rem;
+    color: #6c757d;
+    margin-bottom: 0.5rem;
+    word-break: break-all;
+  }
+  .activity-card-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+  }
+  .activity-card-status {
+    font-size: 0.65rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 20px;
+    font-weight: 500;
+  }
+  .activity-card-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+  }
+  .no-activities {
+    text-align: center;
+    padding: 2rem;
+    background: #f8f9fa;
+    border-radius: 12px;
+    color: #6c757d;
+  }
+  .btn-sm {
+    padding: 0.2rem 0.5rem;
+    font-size: 0.7rem;
+  }
+  @media (max-width: 768px) {
+    .activities-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+<%- contentFor('body') %>
+<div class="container-fluid py-3">
+  <div class="row mb-3 align-items-center">
+    <div class="col-md-8">
+      <h4 class="mb-0 fw-bold">Corporate Activities</h4>
+      <p class="text-muted small mb-0">Manage all corporate activities</p>
+    </div>
+    <div class="col-md-4 text-md-end mt-2 mt-md-0">
+      <a href="/admin/activity/create" class="btn btn-primary btn-sm">
+        <i class="bx bx-plus-circle me-1"></i> Add New Activity
+      </a>
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="row g-2 mb-3">
+    <div class="col-md-4">
+      <div class="stats-card">
+        <h3 id="totalActivities">0</h3>
+        <p>Total Activities</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="stats-card">
+        <h3 id="activeActivities">0</h3>
+        <p>Active Activities</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="stats-card">
+        <h3 id="inactiveActivities">0</h3>
+        <p>Inactive Activities</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search and Filter -->
+  <div class="row mb-3 align-items-center">
+    <div class="col-md-6">
+      <div class="search-box">
+        <i class="bx bx-search"></i>
+        <input type="text" id="searchActivities" class="form-control" placeholder="Search by title or slug...">
+      </div>
+    </div>
+    <div class="col-md-6 text-md-end">
+      <div class="btn-group btn-group-sm">
+        <button class="btn btn-outline-secondary filter-status active" data-status="all">All</button>
+        <button class="btn btn-outline-secondary filter-status" data-status="active">Active</button>
+        <button class="btn btn-outline-secondary filter-status" data-status="inactive">Inactive</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Activities Grid -->
+  <% if (activities && activities.length) { %>
+  <div id="activitiesContainer" class="activities-grid">
+      <% activities.forEach(act => { %>
+        <div class="activity-card" data-title="<%= act.title.toLowerCase() %>" data-slug="<%= act.slug.toLowerCase() %>" data-status="<%= act.isActive ? 'active' : 'inactive' %>">
+          <div class="activity-card-image">
+            <% if (act.banner_image) { %>
+              <img src="<%= act.banner_image %>" alt="<%= act.title %>">
+            <% } else { %>
+              <div class="d-flex flex-column align-items-center justify-content-center h-100 text-muted">
+                <i class="bx bx-image-alt fs-3"></i>
+                <span class="small mt-1">No image</span>
+              </div>
+            <% } %>
+          </div>
+          <div class="activity-card-content">
+            <h5 class="activity-card-title"><%= act.title %></h5>
+            <div class="activity-card-slug"><i class="bx bx-link-alt me-1"></i> <%= act.slug %></div>
+            <div class="activity-card-meta">
+              <span class="activity-card-status badge <%= act.isActive ? 'bg-success' : 'bg-secondary' %>">
+                <%= act.isActive ? 'Active' : 'Inactive' %>
+              </span>
+              <span class="small"><i class="bx bx-calendar me-1"></i> <%= new Date(act.createdAt).toLocaleDateString() %></span>
+            </div>
+            <div class="activity-card-actions">
+              <a href="/admin/activity/view/<%= act.id %>" class="btn btn-sm btn-info"><i class="bx bx-show"></i> View</a>
+              <a href="/admin/activity/edit/<%= act.id %>" class="btn btn-sm btn-warning"><i class="bx bx-edit"></i> Edit</a>
+              <button class="btn btn-sm btn-danger delete-activity" data-id="<%= act.id %>"><i class="bx bx-trash"></i> Delete</button>
+            </div>
+          </div>
+        </div>
+        <% }); %>
+    </div>
+    <% } else { %>
+        <div id="activitiesContainer" class="activities-grid-empty">
+      <div class="no-activities">
+        <i class="bx bx-ghost fs-2"></i>
+        <h5 class="mt-2">No activities found</h5>
+        <p class="small">Get started by creating your first activity.</p>
+        <a href="/admin/activity/create" class="btn btn-primary btn-sm mt-1">Add New Activity</a>
+      </div>
+    </div>
+    <% } %>
+</div>
+
+<%- contentFor('js') %>
+<script>
+  const activities = document.querySelectorAll('.activity-card');
+  function updateStats() {
+    const total = activities.length;
+    const active = Array.from(activities).filter(a => a.dataset.status === 'active').length;
+    document.getElementById('totalActivities').innerText = total;
+    document.getElementById('activeActivities').innerText = active;
+    document.getElementById('inactiveActivities').innerText = total - active;
+  }
+  function filterActivities() {
+    const term = document.getElementById('searchActivities').value.toLowerCase().trim();
+    const status = document.querySelector('.filter-status.active').dataset.status;
+    activities.forEach(card => {
+      const title = card.dataset.title, slug = card.dataset.slug, cardStatus = card.dataset.status;
+      const match = (term === '' || title.includes(term) || slug.includes(term)) && (status === 'all' || cardStatus === status);
+      card.style.display = match ? '' : 'none';
+    });
+  }
+  document.getElementById('searchActivities').addEventListener('input', filterActivities);
+  document.querySelectorAll('.filter-status').forEach(btn => btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-status').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    filterActivities();
+  }));
+  updateStats();
+  document.querySelectorAll('.delete-activity').forEach(btn => btn.addEventListener('click', async e => {
+    if (!confirm('Delete this activity?')) return;
+    const id = btn.dataset.id;
+    const res = await fetch(`/admin/activity/delete/${id}`, { method: 'DELETE' });
+    const data = await res.json();
+    if (data.success) location.reload(); else alert(data.message);
+  }));
+</script>

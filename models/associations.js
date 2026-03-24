@@ -1240,5 +1240,23 @@ module.exports = (db) => {
   });
   CorporateLdInnerVideo.belongsTo(Video, { foreignKey: "video_id" });
 
+  // ==================== CORPORATE ACTIVITIES ASSOCIATIONS ====================
+
+  module.exports = (db) => {
+    const { Activity, ActivityImageCard, ActivityEscapeRoom } = db;
+
+    Activity.hasMany(ActivityImageCard, {
+      foreignKey: "activity_id",
+      as: "imageCards",
+    });
+    Activity.hasMany(ActivityEscapeRoom, {
+      foreignKey: "activity_id",
+      as: "escaperooms",
+    });
+
+    ActivityImageCard.belongsTo(Activity, { foreignKey: "activity_id" });
+    ActivityEscapeRoom.belongsTo(Activity, { foreignKey: "activity_id" });
+  };
+
   console.log("✓ All model associations have been established successfully");
 };

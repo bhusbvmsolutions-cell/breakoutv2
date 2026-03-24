@@ -1,0 +1,101 @@
+<%- contentFor('title') %> <%= activity.title %>
+<%- contentFor('head') %>
+<style>
+  .show-section { background: #fff; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+  .section-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 2px solid #fcad00; display: inline-block; }
+  .image-thumb { max-width: 200px; border-radius: 8px; }
+  .room-list { list-style: none; padding-left: 0; }
+  .room-list li { margin-bottom: 0.5rem; }
+</style>
+
+<%- contentFor('body') %>
+<div class="container-fluid py-4">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4 class="card-title">Activity: <strong><%= activity.title %></strong></h4>
+            <div><a href="/admin/activity/edit/<%= activity.id %>" class="btn btn-warning btn-sm me-2"><i class="bx bx-edit"></i> Edit</a><a href="/admin/activity" class="btn btn-secondary btn-sm"><i class="bx bx-arrow-back"></i> Back</a></div>
+          </div>
+
+          <div class="show-section">
+            <h5 class="section-title">Basic Information</h5>
+            <div class="row"><div class="col-md-6"><strong>Title:</strong> <%= activity.title %></div><div class="col-md-6"><strong>Slug:</strong> <%= activity.slug %></div><div class="col-12 mt-2"><strong>Status:</strong> <span class="badge <%= activity.isActive ? 'bg-success' : 'bg-secondary' %>"><%= activity.isActive ? 'Active' : 'Inactive' %></span></div></div>
+          </div>
+
+          <div class="show-section">
+            <h5 class="section-title">Banner Section</h5>
+            <div class="row">
+              <div class="col-12"><strong>Heading:</strong> <%= activity.banner_heading || '—' %></div>
+              <div class="col-12"><strong>Description:</strong> <%= activity.banner_description || '—' %></div>
+              <div class="col-12"><strong>Content:</strong> <%= activity.banner_content || '—' %></div>
+              <div class="col-12"><strong>Challenge Level:</strong> <%= activity.challenge_level || '—' %></div>
+              <div class="col-12"><strong>Competitive Activity:</strong> <%= activity.competitive_activity || '—' %></div>
+              <div class="col-12"><strong>Immersive Rating:</strong> <%= activity.immersive_rating || '—' %></div>
+              <div class="col-12"><strong>Capacity:</strong> <%= activity.capacity || '—' %></div>
+              <div class="col-12"><strong>Duration:</strong> <%= activity.duration || '—' %></div>
+              <div class="col-12"><strong>Virtual Compatibility:</strong> <%= activity.virtual_compatibility || '—' %></div>
+              <div class="col-12"><strong>CTA Label:</strong> <%= activity.cta_label || '—' %></div>
+              <div class="col-12"><strong>CTA Link:</strong> <%= activity.cta_link || '—' %></div>
+              <div class="col-12"><strong>Video Trailer:</strong> <%= activity.video_trailer || '—' %></div>
+              <% if (activity.banner_image) { %><div class="col-12 mt-2"><strong>Image:</strong><br><img src="<%= activity.banner_image %>" class="image-thumb"></div><% } %>
+            </div>
+          </div>
+
+          <div class="show-section">
+            <h5 class="section-title">Content Section</h5>
+            <div><strong>Heading:</strong> <%= activity.content_heading || '—' %></div>
+            <div><strong>Content:</strong> <%- activity.content_content || '—' %></div>
+          </div>
+
+          <div class="show-section">
+            <h5 class="section-title">Included Activities</h5>
+            <div class="row">
+              <div class="col-md-6">
+                <strong>Physical Escape Rooms</strong>
+                <ul class="room-list">
+                  <% physicalRooms.forEach(room => { %>
+                    <li><%= room.title %></li>
+                  <% }); %>
+                  <% if (physicalRooms.length === 0) { %><li>None selected</li><% } %>
+                </ul>
+              </div>
+              <div class="col-md-6">
+                <strong>Virtual Games</strong>
+                <ul class="room-list">
+                  <% virtualRooms.forEach(game => { %>
+                    <li><%= game.title %></li>
+                  <% }); %>
+                  <% if (virtualRooms.length === 0) { %><li>None selected</li><% } %>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="show-section">
+            <h5 class="section-title">Images Section</h5>
+            <div class="row">
+              <% for (let i = 1; i <= 3; i++) { if (activity['image' + i]) { %>
+                <div class="col-md-4"><img src="<%= activity['image' + i] %>" class="image-thumb"></div>
+              <% } } %>
+            </div>
+          </div>
+
+          <div class="show-section">
+            <h5 class="section-title">Image Card Section</h5>
+            <div><strong>Section Heading:</strong> <%= activity.image_card_section_heading || '—' %></div>
+            <div class="row">
+              <% activity.imageCards?.forEach(card => { %>
+                <div class="col-md-3 text-center">
+                  <% if (card.image) { %><img src="<%= card.image %>" class="image-thumb" style="max-width:100px;"><% } %>
+                  <div><%= card.heading %></div>
+                </div>
+              <% }) %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

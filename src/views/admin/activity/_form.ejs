@@ -1,0 +1,203 @@
+<% if (activity) { %>
+  <input type="hidden" name="_method" value="PUT">
+<% } %>
+
+<div class="card border-0 shadow-sm mb-3">
+  <div class="card-header bg-white border-0 pt-3 pb-0"><h6 class="fw-bold mb-0"><i class="bx bx-info-circle me-2"></i> Basic Information</h6></div>
+  <div class="card-body pt-2">
+    <div class="row g-2">
+      <div class="col-md-6"><label class="form-label small text-muted">Title *</label><input type="text" name="title" id="title" class="form-control form-control-sm" value="<%= activity?.title || '' %>" required></div>
+      <div class="col-md-6"><label class="form-label small text-muted">Slug</label><input type="text" name="slug" id="slug" class="form-control form-control-sm" value="<%= activity?.slug || '' %>"><div class="form-text small">Leave blank to auto-generate</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- Banner Section -->
+<div class="card border-0 shadow-sm mb-3">
+  <div class="card-header bg-white border-0 pt-3 pb-0"><h6 class="fw-bold mb-0"><i class="bx bx-image-alt me-2"></i> Banner Section</h6></div>
+  <div class="card-body pt-2">
+    <div class="row g-2">
+      <div class="col-12"><label class="form-label small text-muted">Heading</label><input type="text" name="banner_heading" class="form-control form-control-sm" value="<%= activity?.banner_heading || '' %>"></div>
+      <div class="col-12"><label class="form-label small text-muted">Image</label><input type="file" name="banner_image" class="form-control form-control-sm" accept="image/*"><% if (activity?.banner_image) { %><img src="<%= activity.banner_image %>" class="img-thumbnail mt-1" style="max-width:80px;"><% } %></div>
+      <div class="col-12"><label class="form-label small text-muted">Description</label><textarea name="banner_description" class="form-control form-control-sm" rows="3"><%= activity?.banner_description || '' %></textarea></div>
+      <div class="col-12"><label class="form-label small text-muted">Content</label><textarea name="banner_content" class="form-control form-control-sm" rows="3"><%= activity?.banner_content || '' %></textarea></div>
+      <div class="col-md-4"><label class="form-label small text-muted">Challenge Level</label><input type="text" name="challenge_level" class="form-control form-control-sm" value="<%= activity?.challenge_level || '' %>" placeholder="Hard, Medium, Easy"></div>
+      <div class="col-md-4"><label class="form-label small text-muted">Competitive Activity</label><input type="text" name="competitive_activity" class="form-control form-control-sm" value="<%= activity?.competitive_activity || '' %>" placeholder="Yes, No"></div>
+      <div class="col-md-4"><label class="form-label small text-muted">Immersive Rating</label><input type="text" name="immersive_rating" class="form-control form-control-sm" value="<%= activity?.immersive_rating || '' %>" placeholder="4.8/5"></div>
+      <div class="col-md-4"><label class="form-label small text-muted">Capacity</label><input type="text" name="capacity" class="form-control form-control-sm" value="<%= activity?.capacity || '' %>" placeholder="10-150"></div>
+      <div class="col-md-4"><label class="form-label small text-muted">Duration</label><input type="text" name="duration" class="form-control form-control-sm" value="<%= activity?.duration || '' %>" placeholder="120 min"></div>
+      <div class="col-md-4"><label class="form-label small text-muted">Virtual Compatibility</label><input type="text" name="virtual_compatibility" class="form-control form-control-sm" value="<%= activity?.virtual_compatibility || '' %>" placeholder="Yes, No"></div>
+      <div class="col-md-6"><label class="form-label small text-muted">CTA Label</label><input type="text" name="cta_label" class="form-control form-control-sm" value="<%= activity?.cta_label || '' %>"></div>
+      <div class="col-md-6"><label class="form-label small text-muted">CTA Link</label><input type="text" name="cta_link" class="form-control form-control-sm" value="<%= activity?.cta_link || '' %>"></div>
+      <div class="col-12"><label class="form-label small text-muted">Video Trailer Link</label><input type="text" name="video_trailer" class="form-control form-control-sm" value="<%= activity?.video_trailer || '' %>"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Content Section -->
+<div class="card border-0 shadow-sm mb-3">
+  <div class="card-header bg-white border-0 pt-3 pb-0"><h6 class="fw-bold mb-0"><i class="bx bx-file me-2"></i> Content Section</h6></div>
+  <div class="card-body pt-2">
+    <div class="row g-2">
+      <div class="col-12"><label class="form-label small text-muted">Heading</label><input type="text" name="content_heading" class="form-control form-control-sm" value="<%= activity?.content_heading || '' %>"></div>
+      <div class="col-12"><label class="form-label small text-muted">Content</label><textarea name="content_content" class="form-control summernote" rows="5"><%= activity?.content_content || '' %></textarea></div>
+    </div>
+  </div>
+</div>
+
+<!-- Escape Rooms Selection -->
+<div class="card border-0 shadow-sm mb-3">
+  <div class="card-header bg-white border-0 pt-3 pb-0"><h6 class="fw-bold mb-0"><i class="bx bx-door-open me-2"></i> Escape Rooms & Virtual Games</h6></div>
+  <div class="card-body pt-2">
+    <div class="row g-2">
+      <div class="col-12">
+        <label class="form-label small text-muted">Select Activities</label>
+        <select name="selected_escaperooms[]" id="escaperoomSelect" class="form-control select2-multiple" multiple>
+          <optgroup label="Physical Escape Rooms">
+            <% physicalRooms.forEach(room => { %>
+              <option value="physical_<%= room.id %>" <%= activity?.escaperooms?.some(e => e.escaperoom_type === 'physical' && e.escaperoom_id == room.id) ? 'selected' : '' %>>
+                <%= room.title || room.name %>
+              </option>
+            <% }); %>
+          </optgroup>
+          <optgroup label="Virtual Games">
+            <% virtualRooms.forEach(game => { %>
+              <option value="virtual_<%= game.id %>" <%= activity?.escaperooms?.some(e => e.escaperoom_type === 'virtual' && e.escaperoom_id == game.id) ? 'selected' : '' %>>
+                <%= game.title || game.name %>
+              </option>
+            <% }); %>
+          </optgroup>
+        </select>
+        <div class="form-text small">Search and select multiple escape rooms or virtual games</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Images Section (3 fixed) -->
+<div class="card border-0 shadow-sm mb-3">
+  <div class="card-header bg-white border-0 pt-3 pb-0"><h6 class="fw-bold mb-0"><i class="bx bx-images me-2"></i> Images Section</h6></div>
+  <div class="card-body pt-2">
+    <div class="row g-2">
+      <% for (let i = 1; i <= 3; i++) { %>
+        <div class="col-md-4">
+          <label class="form-label small text-muted">Image <%= i %></label>
+          <input type="file" name="image<%= i %>" class="form-control form-control-sm" accept="image/*">
+          <% if (activity?.['image' + i]) { %><img src="<%= activity['image' + i] %>" class="img-thumbnail mt-1" style="max-width:80px;"><% } %>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<!-- Image Card Section (Repeater) -->
+<div class="card border-0 shadow-sm mb-3">
+  <div class="card-header bg-white border-0 pt-3 pb-0"><h6 class="fw-bold mb-0"><i class="bx bx-images me-2"></i> Image Card Section</h6></div>
+  <div class="card-body pt-2">
+    <div class="row g-2 mb-2">
+      <div class="col-12"><label class="form-label small text-muted">Section Heading</label><input type="text" name="image_card_section_heading" class="form-control form-control-sm" value="<%= activity?.image_card_section_heading || '' %>"></div>
+    </div>
+    <div id="imageCardsContainer">
+      <% if (activity?.imageCards && activity.imageCards.length) {
+        activity.imageCards.forEach((item, idx) => { %>
+      <div class="repeater-item bg-light p-2 rounded mb-2 position-relative">
+        <div class="remove-item" onclick="removeItem(this)"><i class="bx bx-trash"></i></div>
+        <div class="row g-2">
+          <div class="col-md-6"><label class="form-label small text-muted">Heading</label><input type="text" name="image_cards[<%= idx %>][heading]" class="form-control form-control-sm" value="<%= item.heading %>"></div>
+          <div class="col-md-6"><label class="form-label small text-muted">Image</label><input type="file" name="image_cards[<%= idx %>][image]" class="form-control form-control-sm" accept="image/*"><% if (item.image) { %><img src="<%= item.image %>" class="img-thumbnail mt-1" style="max-width:80px;"><% } %><input type="hidden" name="image_cards[<%= idx %>][image]" value="<%= item.image || '' %>"></div>
+        </div>
+      </div>
+      <% });
+      } else { %>
+      <div class="repeater-item bg-light p-2 rounded mb-2 position-relative">
+        <div class="remove-item" onclick="removeItem(this)"><i class="bx bx-trash"></i></div>
+        <div class="row g-2">
+          <div class="col-md-6"><label class="form-label small text-muted">Heading</label><input type="text" name="image_cards[0][heading]" class="form-control form-control-sm"></div>
+          <div class="col-md-6"><label class="form-label small text-muted">Image</label><input type="file" name="image_cards[0][image]" class="form-control form-control-sm" accept="image/*"><img class="img-thumbnail mt-1"><input type="hidden" name="image_cards[0][image]" value=""></div>
+        </div>
+      </div>
+      <% } %>
+    </div>
+    <button type="button" class="btn btn-sm btn-outline-primary mt-2 add-image-card"><i class="bx bx-plus"></i> Add Image Card</button>
+  </div>
+</div>
+
+<!-- Status -->
+<div class="card border-0 shadow-sm mb-3">
+  <div class="card-body pt-2">
+    <div class="form-check"><input class="form-check-input" type="checkbox" name="isActive" value="on" <%= activity?.isActive !== false ? 'checked' : '' %>><label class="form-check-label small">Active</label></div>
+  </div>
+</div>
+
+<button type="submit" class="btn btn-primary btn-sm px-4 mt-2"><i class="bx bx-save me-1"></i> <%= activity ? 'Update Activity' : 'Create Activity' %></button>
+
+<script>
+  $(document).ready(function() {
+    $('.summernote').summernote({
+      height: 200,
+      toolbar: [
+        ['style', ['style']],
+        ['font', ['bold', 'italic', 'underline', 'strikethrough', 'clear']],
+        ['fontname', ['fontname']],
+        ['fontsize', ['fontsize']],
+        ['color', ['color']],
+        ['para', ['ul', 'ol', 'paragraph']],
+        ['insert', ['link', 'picture', 'video']],
+        ['view', ['fullscreen', 'codeview']]
+      ]
+    });
+
+    $('#escaperoomSelect').select2({
+      theme: 'bootstrap-5',
+      width: '100%',
+      placeholder: 'Search and select escape rooms or virtual games...',
+      allowClear: true
+    });
+
+    function setupImagePreview(inputElem, previewElem) {
+      inputElem.on('change', function() {
+        const file = this.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(e) { previewElem.attr('src', e.target.result).show(); };
+          reader.readAsDataURL(file);
+        } else {
+          previewElem.hide().attr('src', '');
+        }
+      });
+    }
+    $('input[type="file"]').each(function() {
+      const preview = $(this).next('.img-thumbnail');
+      if (preview.length) setupImagePreview($(this), preview);
+    });
+
+    $('#title').on('blur', function() {
+      if ($('#slug').val() === '') {
+        let slug = $(this).val().toLowerCase().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-').replace(/^-+|-+$/g, '');
+        $('#slug').val(slug);
+      }
+    });
+
+    let imageCardIndex = $('#imageCardsContainer .repeater-item').length;
+    $('.add-image-card').click(function() {
+      const newIndex = imageCardIndex++;
+      const newItem = `
+        <div class="repeater-item bg-light p-2 rounded mb-2 position-relative">
+          <div class="remove-item" onclick="removeItem(this)"><i class="bx bx-trash"></i></div>
+          <div class="row g-2">
+            <div class="col-md-6"><label class="form-label small text-muted">Heading</label><input type="text" name="image_cards[${newIndex}][heading]" class="form-control form-control-sm"></div>
+            <div class="col-md-6"><label class="form-label small text-muted">Image</label><input type="file" name="image_cards[${newIndex}][image]" class="form-control form-control-sm" accept="image/*"><img class="img-thumbnail mt-1"><input type="hidden" name="image_cards[${newIndex}][image]" value=""></div>
+          </div>
+        </div>
+      `;
+      $('#imageCardsContainer').append(newItem);
+      const fileInput = $(`#imageCardsContainer .repeater-item:last input[type="file"]`);
+      const preview = fileInput.next('.img-thumbnail');
+      setupImagePreview(fileInput, preview);
+    });
+  });
+
+  function removeItem(btn) {
+    $(btn).closest('.repeater-item').remove();
+  }
+</script>
