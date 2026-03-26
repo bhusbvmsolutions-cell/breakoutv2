@@ -16,8 +16,6 @@ module.exports = (sequelize, DataTypes) => {
       website: DataTypes.STRING,
       address: DataTypes.TEXT,
       google_map: DataTypes.STRING,
-      content_left: DataTypes.TEXT,
-      content_right: DataTypes.TEXT,
       isActive: { type: DataTypes.BOOLEAN, defaultValue: true },
     },
     {

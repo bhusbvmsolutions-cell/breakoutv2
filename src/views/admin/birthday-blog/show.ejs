@@ -1,0 +1,78 @@
+<%- contentFor('title') %> <%= blog.title %>
+<%- contentFor('head') %>
+<style>
+  .show-section { background: #fff; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+  .section-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 2px solid #fcad00; display: inline-block; }
+  .image-thumb { max-width: 200px; border-radius: 8px; }
+</style>
+
+<%- contentFor('body') %>
+<div class="container-fluid py-4">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4 class="card-title">Blog: <strong><%= blog.title %></strong></h4>
+            <div>
+              <a href="/admin/birthday-blog/edit/<%= blog.id %>" class="btn btn-warning btn-sm me-2"><i class="bx bx-edit"></i> Edit</a>
+              <a href="/admin/birthday-blog" class="btn btn-secondary btn-sm"><i class="bx bx-arrow-back"></i> Back</a>
+            </div>
+          </div>
+
+          <div class="show-section">
+            <h5 class="section-title">Basic Info</h5>
+            <div><strong>Title:</strong> <%= blog.title %></div>
+            <div><strong>Slug:</strong> <%= blog.slug %></div>
+            <div><strong>Status:</strong> <span class="badge <%= blog.isActive ? 'bg-success' : 'bg-secondary' %>"><%= blog.isActive ? 'Active' : 'Inactive' %></span></div>
+            <% if (blog.featured_image) { %><div class="mt-2"><strong>Featured Image:</strong><br><img src="<%= blog.featured_image %>" class="image-thumb"></div><% } %>
+          </div>
+
+          <div class="show-section">
+            <h5 class="section-title">Banner Section</h5>
+            <div><strong>Heading:</strong> <%= blog.banner_heading || '—' %></div>
+            <div><strong>Description:</strong> <%= blog.banner_description || '—' %></div>
+            <% if (blog.banner_image) { %><div><strong>Image:</strong><br><img src="<%= blog.banner_image %>" class="image-thumb"></div><% } %>
+            <div><strong>Content:</strong> <%- blog.banner_content || '—' %></div>
+          </div>
+
+          <div class="show-section">
+            <h5 class="section-title">At a Glance</h5>
+            <div><strong>Heading:</strong> <%= blog.glance_heading || '—' %></div>
+            <div><strong>Content:</strong> <%- blog.glance_content || '—' %></div>
+          </div>
+
+          <div class="show-section">
+            <h5 class="section-title">Icons Section</h5>
+            <div><strong>Heading:</strong> <%= blog.icons_heading || '—' %></div>
+            <div><strong>Description:</strong> <%= blog.icons_description || '—' %></div>
+            <div class="row mt-3">
+              <% blog.iconItems?.forEach(item => { %>
+                <div class="col-md-3 text-center mb-3">
+                  <% if (item.image) { %><img src="<%= item.image %>" class="image-thumb" style="max-width:80px;"><% } %>
+                  <div><strong><%= item.heading %></strong></div>
+                  <% if (item.link) { %><div class="small"><a href="<%= item.link %>" target="_blank">Link</a></div><% } %>
+                </div>
+              <% }) %>
+            </div>
+          </div>
+
+          <div class="show-section">
+            <h5 class="section-title">Footer</h5>
+            <div><strong>Heading:</strong> <%= blog.footer_heading || '—' %></div>
+            <div><strong>Content:</strong> <%= blog.footer_content || '—' %></div>
+          </div>
+
+          <div class="show-section">
+            <h5 class="section-title">SEO</h5>
+            <div><strong>Meta Title:</strong> <%= blog.meta_title || '—' %></div>
+            <div><strong>Meta Description:</strong> <%= blog.meta_description || '—' %></div>
+            <div><strong>Meta Keywords:</strong> <%= blog.meta_keywords || '—' %></div>
+            <div><strong>OG Title:</strong> <%= blog.og_title || '—' %></div>
+            <div><strong>OG Description:</strong> <%= blog.og_description || '—' %></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -559,20 +559,34 @@ a:hover {
                         </div>
 
                         <!-- Tags -->
-                        <% if (room.tag && room.tag.length > 0) { %>
-                            <div class="tags-container">
-                                <% room.tag.slice(0, 3).forEach(tag => { %>
-                                    <span class="tag"><%= tag %></span>
-                                <% }) %>
-                                <% if (room.tag.length > 3) { %>
-                                    <span class="tag">+<%= room.tag.length - 3 %></span>
-                                <% } %>
-                            </div>
-                        <% } else { %>
-                            <div class="tags-container">
-                                <span class="tag text-muted">No tags</span>
-                            </div>
-                        <% } %>
+                        <%
+                // Ensure tags is always an array
+                let tags = [];
+                if (Array.isArray(room.tag)) {
+                  tags = room.tag;
+                } else if (room.tag) {
+                  // Try to parse JSON first, fallback to comma-split
+                  try {
+                    tags = JSON.parse(room.tag);
+                    if (!Array.isArray(tags)) tags = room.tag.split(',');
+                  } catch (e) {
+                    tags = room.tag.split(',');
+                  }
+                }
+              %>
+                        
+                        <div class="tags-container">
+                          <% if (tags.length > 0) { %>
+                              <% tags.slice(0, 3).forEach(tag => { %>
+                                  <span class="tag"><%= tag.trim() %></span>
+                              <% }) %>
+                              <% if (tags.length > 3) { %>
+                                  <span class="tag">+<%= tags.length - 3 %></span>
+                              <% } %>
+                          <% } else { %>
+                              <span class="tag text-muted">No tags</span>
+                          <% } %>
+                        </div>
 
                         <div class="room-meta">
                             <span class="meta-date">

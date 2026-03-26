@@ -1,0 +1,371 @@
+<% if (blog) { %>
+<input type="hidden" name="_method" value="PUT">
+<% } %>
+
+<div class="row g-3">
+  <div class="col-md-6">
+    <label class="form-label">Title *</label>
+    <input type="text" name="title" id="title" class="form-control" value="<%= blog?.title || '' %>" required>
+  </div>
+  <div class="col-md-6">
+    <label class="form-label">Slug</label>
+    <input type="text" name="slug" id="slug" class="form-control" value="<%= blog?.slug || '' %>">
+    <div class="form-text small">Leave blank to auto-generate</div>
+  </div>
+  <div class="col-12">
+    <label class="form-label">Featured Image</label>
+    <input type="file" name="featured_image" class="form-control" accept="image/*">
+    <% if (blog?.featured_image) { %>
+    <img src="<%= blog.featured_image %>" class="img-thumbnail mt-2" style="max-width:120px;">
+    <% } %>
+  </div>
+</div>
+
+<hr>
+
+<!-- Banner Section -->
+<div class="card border-0 shadow-sm mb-3">
+  <div class="card-header bg-white border-0 pt-3 pb-0">
+    <h6 class="fw-bold mb-0"><i class="bx bx-image-alt me-2"></i> Banner Section</h6>
+  </div>
+  <div class="card-body pt-2">
+    <div class="row g-2">
+      <div class="col-12"><label class="form-label small text-muted">Heading</label><input type="text" name="banner_heading" class="form-control form-control-sm" value="<%= blog?.banner_heading || '' %>"></div>
+      <div class="col-12"><label class="form-label small text-muted">Description</label><textarea name="banner_description" class="form-control form-control-sm" rows="3"><%= blog?.banner_description || '' %></textarea></div>
+      <div class="col-12">
+        <label class="form-label small text-muted">Banner Video</label>
+        <select name="banner_video_id" class="form-control form-control-sm">
+          <option value="">-- Select a video --</option>
+          <% videos.forEach(video => { %>
+          <option value="<%= video.id %>" <%= blog?.banner_video_id == video.id ? 'selected' : '' %>><%= video.title || video.filename %></option>
+          <% }); %>
+        </select>
+      </div>
+      <div class="col-12"><label class="form-label small text-muted">Content</label><textarea name="banner_content" class="form-control summernote" rows="5"><%= blog?.banner_content || '' %></textarea></div>
+    </div>
+  </div>
+</div>
+
+<!-- Content Sections Repeater -->
+<div class="card border-0 shadow-sm mb-3">
+  <div class="card-header bg-white border-0 pt-3 pb-0">
+    <h6 class="fw-bold mb-0"><i class="bx bx-file me-2"></i> Content Sections</h6>
+  </div>
+  <div class="card-body pt-2">
+    <div id="contentSectionsContainer">
+      <% if (blog?.contentSections && blog.contentSections.length) {
+          blog.contentSections.forEach((section, idx) => { %>
+      <div class="content-section bg-light p-3 rounded mb-3" data-section-index="<%= idx %>">
+        <div class="d-flex justify-content-end mb-2">
+          <button type="button" class="btn btn-sm btn-danger remove-section"><i class="bx bx-trash"></i> Remove Section</button>
+        </div>
+        <div class="row g-2">
+          <div class="col-12"><label class="form-label small text-muted">Heading</label><input type="text" name="content_sections[<%= idx %>][heading]" class="form-control form-control-sm" value="<%= section.heading || '' %>"></div>
+          <div class="col-12"><label class="form-label small text-muted">Description</label><textarea name="content_sections[<%= idx %>][description]" class="form-control summernote" rows="5"><%= section.description || '' %></textarea></div>
+          <div class="col-12">
+            <div class="form-check"><input type="checkbox" name="content_sections[<%= idx %>][isActive]" class="form-check-input" value="on" <%= section.isActive !== false ? 'checked' : '' %>><label class="form-check-label small">Active</label></div>
+          </div>
+        </div>
+
+        <!-- Content Images (with title, link) -->
+        <div class="mt-3">
+          <h6 class="small text-muted">Content Images <button type="button" class="btn btn-sm btn-outline-primary ms-2 add-content-image" data-section="<%= idx %>"><i class="bx bx-plus"></i> Add Image</button></h6>
+          <div class="content-images-container" data-section="<%= idx %>">
+            <% if (section.contentImages && section.contentImages.length) {
+                    section.contentImages.forEach((img, imgIdx) => { %>
+            <div class="repeater-item bg-light p-2 rounded mb-2 position-relative">
+              <div class="remove-item" onclick="removeItem(this)"><i class="bx bx-trash"></i></div>
+              <div class="row g-2">
+                <div class="col-md-4"><label class="form-label small text-muted">Image</label><input type="file" name="content_sections[<%= idx %>][content_images][<%= imgIdx %>][image_file]" class="form-control form-control-sm" accept="image/*"><% if (img.image) { %><img src="<%= img.image %>" class="img-thumbnail mt-1" style="max-width:60px;"><% } %><input type="hidden" name="content_sections[<%= idx %>][content_images][<%= imgIdx %>][image]" value="<%= img.image || '' %>"></div>
+                <div class="col-md-4"><label class="form-label small text-muted">Title</label><input type="text" name="content_sections[<%= idx %>][content_images][<%= imgIdx %>][title]" class="form-control form-control-sm" value="<%= img.title || '' %>"></div>
+                <div class="col-md-4"><label class="form-label small text-muted">Link</label><input type="text" name="content_sections[<%= idx %>][content_images][<%= imgIdx %>][link]" class="form-control form-control-sm" value="<%= img.link || '' %>"></div>
+                <div class="col-12">
+                  <div class="form-check"><input type="checkbox" name="content_sections[<%= idx %>][content_images][<%= imgIdx %>][isActive]" class="form-check-input" value="on" <%= img.isActive !== false ? 'checked' : '' %>><label class="form-check-label small">Active</label></div>
+                </div>
+              </div>
+            </div>
+            <% });
+                  } else { %>
+            <div class="repeater-item bg-light p-2 rounded mb-2 position-relative">
+              <div class="remove-item" onclick="removeItem(this)"><i class="bx bx-trash"></i></div>
+              <div class="row g-2">
+                <div class="col-md-4"><label class="form-label small text-muted">Image</label><input type="file" name="content_sections[<%= idx %>][content_images][0][image_file]" class="form-control form-control-sm" accept="image/*"><img class="img-thumbnail mt-1"><input type="hidden" name="content_sections[<%= idx %>][content_images][0][image]" value=""></div>
+                <div class="col-md-4"><label class="form-label small text-muted">Title</label><input type="text" name="content_sections[<%= idx %>][content_images][0][title]" class="form-control form-control-sm"></div>
+                <div class="col-md-4"><label class="form-label small text-muted">Link</label><input type="text" name="content_sections[<%= idx %>][content_images][0][link]" class="form-control form-control-sm"></div>
+                <div class="col-12">
+                  <div class="form-check"><input type="checkbox" name="content_sections[<%= idx %>][content_images][0][isActive]" class="form-check-input" value="on" checked><label class="form-check-label small">Active</label></div>
+                </div>
+              </div>
+            </div>
+            <% } %>
+          </div>
+        </div>
+
+        <!-- Gallery Images (just images) -->
+        <div class="mt-3">
+          <h6 class="small text-muted">Gallery Images <button type="button" class="btn btn-sm btn-outline-primary ms-2 add-gallery-image" data-section="<%= idx %>"><i class="bx bx-plus"></i> Add Gallery Image</button></h6>
+          <div class="gallery-images-container" data-section="<%= idx %>">
+            <% if (section.galleryImages && section.galleryImages.length) {
+                    section.galleryImages.forEach((gal, galIdx) => { %>
+            <div class="repeater-item bg-light p-2 rounded mb-2 position-relative">
+              <div class="remove-item" onclick="removeItem(this)"><i class="bx bx-trash"></i></div>
+              <div class="row g-2">
+                <div class="col-12"><label class="form-label small text-muted">Image</label><input type="file" name="content_sections[<%= idx %>][gallery_images][<%= galIdx %>][image_file]" class="form-control form-control-sm" accept="image/*"><% if (gal.image) { %><img src="<%= gal.image %>" class="img-thumbnail mt-1" style="max-width:60px;"><% } %><input type="hidden" name="content_sections[<%= idx %>][gallery_images][<%= galIdx %>][image]" value="<%= gal.image || '' %>"></div>
+                <div class="col-12">
+                  <div class="form-check"><input type="checkbox" name="content_sections[<%= idx %>][gallery_images][<%= galIdx %>][isActive]" class="form-check-input" value="on" <%= gal.isActive !== false ? 'checked' : '' %>><label class="form-check-label small">Active</label></div>
+                </div>
+              </div>
+            </div>
+            <% });
+                  } else { %>
+            <div class="repeater-item bg-light p-2 rounded mb-2 position-relative">
+              <div class="remove-item" onclick="removeItem(this)"><i class="bx bx-trash"></i></div>
+              <div class="row g-2">
+                <div class="col-12"><label class="form-label small text-muted">Image</label><input type="file" name="content_sections[<%= idx %>][gallery_images][0][image_file]" class="form-control form-control-sm" accept="image/*"><img class="img-thumbnail mt-1"><input type="hidden" name="content_sections[<%= idx %>][gallery_images][0][image]" value=""></div>
+                <div class="col-12">
+                  <div class="form-check"><input type="checkbox" name="content_sections[<%= idx %>][gallery_images][0][isActive]" class="form-check-input" value="on" checked><label class="form-check-label small">Active</label></div>
+                </div>
+              </div>
+            </div>
+            <% } %>
+          </div>
+        </div>
+      </div>
+      <% });
+        } else { %>
+      <div class="content-section bg-light p-3 rounded mb-3" data-section-index="0">
+        <div class="d-flex justify-content-end mb-2">
+          <button type="button" class="btn btn-sm btn-danger remove-section"><i class="bx bx-trash"></i> Remove Section</button>
+        </div>
+        <div class="row g-2">
+          <div class="col-12"><label class="form-label small text-muted">Heading</label><input type="text" name="content_sections[0][heading]" class="form-control form-control-sm"></div>
+          <div class="col-12"><label class="form-label small text-muted">Description</label><textarea name="content_sections[0][description]" class="form-control summernote" rows="5"></textarea></div>
+          <div class="col-12">
+            <div class="form-check"><input type="checkbox" name="content_sections[0][isActive]" class="form-check-input" value="on" checked><label class="form-check-label small">Active</label></div>
+          </div>
+        </div>
+
+        <div class="mt-3">
+          <h6 class="small text-muted">Content Images <button type="button" class="btn btn-sm btn-outline-primary ms-2 add-content-image" data-section="0"><i class="bx bx-plus"></i> Add Image</button></h6>
+          <div class="content-images-container" data-section="0">
+            <div class="repeater-item bg-light p-2 rounded mb-2 position-relative">
+              <div class="remove-item" onclick="removeItem(this)"><i class="bx bx-trash"></i></div>
+              <div class="row g-2">
+                <div class="col-md-4"><label class="form-label small text-muted">Image</label><input type="file" name="content_sections[0][content_images][0][image_file]" class="form-control form-control-sm" accept="image/*"><img class="img-thumbnail mt-1"><input type="hidden" name="content_sections[0][content_images][0][image]" value=""></div>
+                <div class="col-md-4"><label class="form-label small text-muted">Title</label><input type="text" name="content_sections[0][content_images][0][title]" class="form-control form-control-sm"></div>
+                <div class="col-md-4"><label class="form-label small text-muted">Link</label><input type="text" name="content_sections[0][content_images][0][link]" class="form-control form-control-sm"></div>
+                <div class="col-12">
+                  <div class="form-check"><input type="checkbox" name="content_sections[0][content_images][0][isActive]" class="form-check-input" value="on" checked><label class="form-check-label small">Active</label></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-3">
+          <h6 class="small text-muted">Gallery Images <button type="button" class="btn btn-sm btn-outline-primary ms-2 add-gallery-image" data-section="0"><i class="bx bx-plus"></i> Add Gallery Image</button></h6>
+          <div class="gallery-images-container" data-section="0">
+            <div class="repeater-item bg-light p-2 rounded mb-2 position-relative">
+              <div class="remove-item" onclick="removeItem(this)"><i class="bx bx-trash"></i></div>
+              <div class="row g-2">
+                <div class="col-12"><label class="form-label small text-muted">Image</label><input type="file" name="content_sections[0][gallery_images][0][image_file]" class="form-control form-control-sm" accept="image/*"><img class="img-thumbnail mt-1"><input type="hidden" name="content_sections[0][gallery_images][0][image]" value=""></div>
+                <div class="col-12">
+                  <div class="form-check"><input type="checkbox" name="content_sections[0][gallery_images][0][isActive]" class="form-check-input" value="on" checked><label class="form-check-label small">Active</label></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <% } %>
+    </div>
+    <button type="button" class="btn btn-sm btn-outline-primary mt-2 add-content-section"><i class="bx bx-plus"></i> Add Content Section</button>
+  </div>
+</div>
+
+<!-- SEO Section -->
+<div class="card border-0 shadow-sm mb-3">
+  <div class="card-header bg-white border-0 pt-3 pb-0">
+    <h6 class="fw-bold mb-0"><i class="bx bx-search-alt me-2"></i> SEO Settings</h6>
+  </div>
+  <div class="card-body pt-2">
+    <div class="row g-2">
+      <div class="col-12"><label class="form-label small text-muted">Meta Title</label><input type="text" name="meta_title" class="form-control form-control-sm" value="<%= blog?.meta_title || '' %>"></div>
+      <div class="col-12"><label class="form-label small text-muted">Meta Description</label><textarea name="meta_description" class="form-control form-control-sm" rows="2"><%= blog?.meta_description || '' %></textarea></div>
+      <div class="col-12"><label class="form-label small text-muted">Meta Keywords</label><input type="text" name="meta_keywords" class="form-control form-control-sm" value="<%= blog?.meta_keywords || '' %>"></div>
+      <div class="col-12"><label class="form-label small text-muted">OG Title</label><input type="text" name="og_title" class="form-control form-control-sm" value="<%= blog?.og_title || '' %>"></div>
+      <div class="col-12"><label class="form-label small text-muted">OG Description</label><textarea name="og_description" class="form-control form-control-sm" rows="2"><%= blog?.og_description || '' %></textarea></div>
+    </div>
+  </div>
+</div>
+
+<div class="col-12">
+  <div class="form-check">
+    <input type="checkbox" name="isActive" class="form-check-input" value="on" <%= blog?.isActive !== false ? 'checked' : '' %>>
+    <label class="form-check-label">Active</label>
+  </div>
+</div>
+
+<button type="submit" class="btn btn-primary mt-3"><i class="bx bx-save me-1"></i> <%= blog ? 'Update Blog' : 'Create Blog' %></button>
+
+<script>
+  $(document).ready(function() {
+    // Initialize Summernote
+    function initSummernote(textarea) {
+      if (!textarea || textarea.length === 0) return;
+      if (textarea.next('.note-editor').length === 0) {
+        textarea.summernote({
+          placeholder: 'Write your content here...',
+          tabsize: 2,
+          height: 200,
+          toolbar: [
+            ['style', ['style']],
+            ['font', ['bold', 'italic', 'underline', 'strikethrough', 'clear']],
+            ['fontname', ['fontname']],
+            ['fontsize', ['fontsize']],
+            ['color', ['color']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['insert', ['link', 'picture', 'video', 'table']],
+            ['view', ['fullscreen', 'codeview']]
+          ]
+        });
+      }
+    }
+
+    $('.summernote').each(function() {
+      initSummernote($(this));
+    });
+
+    // Slug generation
+    $('#title').on('blur', function() {
+      if ($('#slug').val() === '') {
+        let slug = $(this).val().toLowerCase().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-').replace(/^-+|-+$/g, '');
+        $('#slug').val(slug);
+      }
+    });
+
+    // Image preview for file inputs
+    function setupImagePreview(inputElem, previewElem) {
+      inputElem.on('change', function() {
+        const file = this.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            previewElem.attr('src', e.target.result).show();
+          };
+          reader.readAsDataURL(file);
+        } else {
+          previewElem.hide().attr('src', '');
+        }
+      });
+    }
+    $('input[type="file"]').each(function() {
+      const preview = $(this).next('.img-thumbnail');
+      if (preview.length) setupImagePreview($(this), preview);
+    });
+
+    // Function to add a new content section
+    let sectionIndex = $('#contentSectionsContainer .content-section').length;
+    $('.add-content-section').click(function() {
+      const newIdx = sectionIndex++;
+      const newSection = `
+          <div class="content-section bg-light p-3 rounded mb-3" data-section-index="${newIdx}">
+            <div class="d-flex justify-content-end mb-2">
+              <button type="button" class="btn btn-sm btn-danger remove-section"><i class="bx bx-trash"></i> Remove Section</button>
+            </div>
+            <div class="row g-2">
+              <div class="col-12"><label class="form-label small text-muted">Heading</label><input type="text" name="content_sections[${newIdx}][heading]" class="form-control form-control-sm"></div>
+              <div class="col-12"><label class="form-label small text-muted">Description</label><textarea name="content_sections[${newIdx}][description]" class="form-control summernote" rows="5"></textarea></div>
+              <div class="col-12"><div class="form-check"><input type="checkbox" name="content_sections[${newIdx}][isActive]" class="form-check-input" value="on" checked><label class="form-check-label small">Active</label></div></div>
+            </div>
+  
+            <div class="mt-3">
+              <h6 class="small text-muted">Content Images <button type="button" class="btn btn-sm btn-outline-primary ms-2 add-content-image" data-section="${newIdx}"><i class="bx bx-plus"></i> Add Image</button></h6>
+              <div class="content-images-container" data-section="${newIdx}">
+                <div class="repeater-item bg-light p-2 rounded mb-2 position-relative">
+                  <div class="remove-item" onclick="removeItem(this)"><i class="bx bx-trash"></i></div>
+                  <div class="row g-2">
+                    <div class="col-md-4"><label class="form-label small text-muted">Image</label><input type="file" name="content_sections[${newIdx}][content_images][0][image_file]" class="form-control form-control-sm" accept="image/*"><img class="img-thumbnail mt-1"><input type="hidden" name="content_sections[${newIdx}][content_images][0][image]" value=""></div>
+                    <div class="col-md-4"><label class="form-label small text-muted">Title</label><input type="text" name="content_sections[${newIdx}][content_images][0][title]" class="form-control form-control-sm"></div>
+                    <div class="col-md-4"><label class="form-label small text-muted">Link</label><input type="text" name="content_sections[${newIdx}][content_images][0][link]" class="form-control form-control-sm"></div>
+                    <div class="col-12"><div class="form-check"><input type="checkbox" name="content_sections[${newIdx}][content_images][0][isActive]" class="form-check-input" value="on" checked><label class="form-check-label small">Active</label></div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+  
+            <div class="mt-3">
+              <h6 class="small text-muted">Gallery Images <button type="button" class="btn btn-sm btn-outline-primary ms-2 add-gallery-image" data-section="${newIdx}"><i class="bx bx-plus"></i> Add Gallery Image</button></h6>
+              <div class="gallery-images-container" data-section="${newIdx}">
+                <div class="repeater-item bg-light p-2 rounded mb-2 position-relative">
+                  <div class="remove-item" onclick="removeItem(this)"><i class="bx bx-trash"></i></div>
+                  <div class="row g-2">
+                    <div class="col-12"><label class="form-label small text-muted">Image</label><input type="file" name="content_sections[${newIdx}][gallery_images][0][image_file]" class="form-control form-control-sm" accept="image/*"><img class="img-thumbnail mt-1"><input type="hidden" name="content_sections[${newIdx}][gallery_images][0][image]" value=""></div>
+                    <div class="col-12"><div class="form-check"><input type="checkbox" name="content_sections[${newIdx}][gallery_images][0][isActive]" class="form-check-input" value="on" checked><label class="form-check-label small">Active</label></div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      $('#contentSectionsContainer').append(newSection);
+      // Initialize Summernote for the new description
+      const newTextarea = $(`#contentSectionsContainer .content-section:last textarea`);
+      initSummernote(newTextarea);
+    });
+
+    // Add content image within a section
+    $(document).on('click', '.add-content-image', function() {
+      const sectionIdx = $(this).data('section');
+      const container = $(`.content-images-container[data-section="${sectionIdx}"]`);
+      const imgCount = container.find('.repeater-item').length;
+      const newIndex = imgCount;
+      const newItem = `
+          <div class="repeater-item bg-light p-2 rounded mb-2 position-relative">
+            <div class="remove-item" onclick="removeItem(this)"><i class="bx bx-trash"></i></div>
+            <div class="row g-2">
+              <div class="col-md-4"><label class="form-label small text-muted">Image</label><input type="file" name="content_sections[${sectionIdx}][content_images][${newIndex}][image_file]" class="form-control form-control-sm" accept="image/*"><img class="img-thumbnail mt-1"><input type="hidden" name="content_sections[${sectionIdx}][content_images][${newIndex}][image]" value=""></div>
+              <div class="col-md-4"><label class="form-label small text-muted">Title</label><input type="text" name="content_sections[${sectionIdx}][content_images][${newIndex}][title]" class="form-control form-control-sm"></div>
+              <div class="col-md-4"><label class="form-label small text-muted">Link</label><input type="text" name="content_sections[${sectionIdx}][content_images][${newIndex}][link]" class="form-control form-control-sm"></div>
+              <div class="col-12"><div class="form-check"><input type="checkbox" name="content_sections[${sectionIdx}][content_images][${newIndex}][isActive]" class="form-check-input" value="on" checked><label class="form-check-label small">Active</label></div></div>
+            </div>
+          </div>
+        `;
+      container.append(newItem);
+      // Setup preview for the new file input
+      const fileInput = container.find('.repeater-item:last input[type="file"]');
+      const preview = fileInput.next('.img-thumbnail');
+      setupImagePreview(fileInput, preview);
+    });
+
+    // Add gallery image within a section
+    $(document).on('click', '.add-gallery-image', function() {
+      const sectionIdx = $(this).data('section');
+      const container = $(`.gallery-images-container[data-section="${sectionIdx}"]`);
+      const imgCount = container.find('.repeater-item').length;
+      const newIndex = imgCount;
+      const newItem = `
+          <div class="repeater-item bg-light p-2 rounded mb-2 position-relative">
+            <div class="remove-item" onclick="removeItem(this)"><i class="bx bx-trash"></i></div>
+            <div class="row g-2">
+              <div class="col-12"><label class="form-label small text-muted">Image</label><input type="file" name="content_sections[${sectionIdx}][gallery_images][${newIndex}][image_file]" class="form-control form-control-sm" accept="image/*"><img class="img-thumbnail mt-1"><input type="hidden" name="content_sections[${sectionIdx}][gallery_images][${newIndex}][image]" value=""></div>
+              <div class="col-12"><div class="form-check"><input type="checkbox" name="content_sections[${sectionIdx}][gallery_images][${newIndex}][isActive]" class="form-check-input" value="on" checked><label class="form-check-label small">Active</label></div></div>
+            </div>
+          </div>
+        `;
+      container.append(newItem);
+      const fileInput = container.find('.repeater-item:last input[type="file"]');
+      const preview = fileInput.next('.img-thumbnail');
+      setupImagePreview(fileInput, preview);
+    });
+
+    // Remove section
+    $(document).on('click', '.remove-section', function() {
+      $(this).closest('.content-section').remove();
+    });
+  });
+
+  function removeItem(btn) {
+    $(btn).closest('.repeater-item').remove();
+  }
+</script>

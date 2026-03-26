@@ -122,6 +122,14 @@ List Images
           </div>
           <div class="card-footer bg-transparent">
             <div class="btn-group w-100">
+              <a href="#" 
+   class="btn btn-sm btn-outline-secondary copy-btn" 
+   data-url="<%= image.copyUrl %>" 
+   data-bs-toggle="tooltip" 
+   data-bs-placement="top" 
+   title="Copy URL">
+  <i class="bi bi-clipboard"></i> Copy
+</a>
               <a href="/admin/images/<%= image.id %>" class="btn btn-sm btn-outline-primary">
                 <i class="bi bi-eye"></i> View
               </a>
@@ -229,6 +237,43 @@ List Images
           }
         });
       }
+    });
+  });
+</script>
+
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // Initialize Bootstrap tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+
+    // Copy to clipboard functionality
+    const copyButtons = document.querySelectorAll('.copy-btn');
+    copyButtons.forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const url = btn.getAttribute('data-url');
+
+        try {
+          await navigator.clipboard.writeText(url);
+          
+          // Change tooltip text temporarily
+          const tooltip = bootstrap.Tooltip.getInstance(btn);
+          tooltip.setContent({ '.tooltip-inner': 'Copied!' });
+          tooltip.show();
+
+          // Reset tooltip back to original after 1.5s
+          setTimeout(() => {
+            tooltip.setContent({ '.tooltip-inner': 'Copy URL' });
+          }, 1500);
+        } catch (err) {
+          console.error('Failed to copy!', err);
+        }
+      });
     });
   });
 </script>

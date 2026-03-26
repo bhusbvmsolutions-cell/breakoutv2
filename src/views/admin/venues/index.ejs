@@ -209,7 +209,7 @@
   <% if(venues && venues.length > 0) { %>
   <div id="venuesContainer" class="venues-grid">
     <% venues.forEach(venue => { %>
-    <div class="venue-card">
+    <div class="venue-card shadow-lg">
       <div class="venue-card-image">
         <% if (venue.cover_image) { %>
         <img src="<%= venue.cover_image %>" alt="<%= venue.name %>">
@@ -220,7 +220,15 @@
       <div class="venue-card-content">
         <h5 class="venue-card-title"><%= venue.name %></h5>
         <div class="venue-card-meta">
-          <div><i class="bx bx-map"></i> <%= venue.location?.title || 'No location' %></div>
+          
+          <% if(venue.locations && venue.locations.length) { %>
+            <% venue.locations.forEach(location => { %>
+              <div><i class="bx bx-map"></i> <%= location.title || 'No location' %></div>
+            <% }); %>
+          <% } else { %>
+            <span class="text-muted">No locations</span>
+          <% } %>
+            
           <div><i class="bx bx-star"></i> <%= venue.rating || '—' %> / 5</div>
           <div><i class="bx bx-group"></i> <%= venue.capacity || '—' %></div>
         </div>

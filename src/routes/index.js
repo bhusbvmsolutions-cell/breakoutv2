@@ -10,7 +10,6 @@ const adminPermissionRoutes = require('./admin/permissions.routes');
 const adminImageRoutes = require('./admin/images.routes');
 const adminVideoRoutes = require('./admin/videos.routes'); 
 const adminLogoRoutes = require('./admin/logos.routes'); 
-const adminBlogRoutes = require('./admin/blogs.routes'); 
 const adminSiteSettingsRoutes = require('./admin/site_settings.routes'); 
 const adminEscapeRoomArchiveRoutes = require('./admin/escaperoomarchive.routes'); 
 const adminEscapeRoomLocationRoutes = require('./admin/escaperoomlocations.routes'); 
@@ -43,6 +42,8 @@ const venueLookingForRoutes = require('./admin/venuelookingfor.routes');
 const venuePartyTypesRoutes = require('./admin/venuepartytypes.routes');
 const venueSuitableTimesRoutes = require('./admin/venuesuitabletimes.routes');
 const venueBudgetRangesRoutes = require('./admin/venuebudgetranges.routes');
+const adminBirthdayBlogRoutes = require('./admin/birthdayblog.routes');
+const adminBreakoutPartyBlogRoutes = require('./admin/breakoutpartyblog.routes');
 
 // Admin routes
 router.use('/admin', adminAuthRoutes);
@@ -53,7 +54,6 @@ router.use('/admin/permissions', adminPermissionRoutes);
 router.use('/admin/images', adminImageRoutes); 
 router.use('/admin/videos', adminVideoRoutes); 
 router.use('/admin/logos', adminLogoRoutes); 
-router.use('/admin/blogs', adminBlogRoutes); 
 router.use('/admin/site', adminSiteSettingsRoutes); 
 router.use('/admin/escape', adminEscapeRoomArchiveRoutes); 
 router.use('/admin/escape/locations', adminEscapeRoomLocationRoutes); 
@@ -86,6 +86,8 @@ router.use('/admin/venue-looking-for', venueLookingForRoutes);
 router.use('/admin/venue-party-types', venuePartyTypesRoutes);
 router.use('/admin/venue-suitable-times', venueSuitableTimesRoutes);
 router.use('/admin/venue-budget-ranges', venueBudgetRangesRoutes);
+router.use('/admin/birthday-blog', adminBirthdayBlogRoutes);
+router.use('/admin/breakout-party-blog', adminBreakoutPartyBlogRoutes);
 
 
 

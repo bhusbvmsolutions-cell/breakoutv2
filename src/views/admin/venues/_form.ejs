@@ -1,5 +1,5 @@
 <% if (venue) { %>
-<input type="hidden" name="_method" value="PUT">
+  <input type="hidden" name="_method" value="PUT">
 <% } %>
 
 <div class="row g-3">
@@ -126,7 +126,6 @@
     <div id="galleryContainer">
       <% if (venue?.galleryImages && venue.galleryImages.length) {
           venue.galleryImages.forEach((img, idx) => { %>
-            <span>Choose image to Change current image</span>
       <div class="repeater-item bg-light p-2 rounded mb-2 position-relative">
         <div class="remove-item" onclick="removeItem(this)"><i class="bx bx-trash"></i></div>
         <div class="row g-2">
@@ -142,9 +141,7 @@
       <% });
         } else { %>
       <div class="repeater-item bg-light p-2 rounded mb-2 position-relative">
-        <div class="remove-item bg-danger text-white" onclick="removeItem(this)">
-          <i class="bx bx-trash"></i>
-        </div>
+        <div class="remove-item" onclick="removeItem(this)"><i class="bx bx-trash"></i></div>
         <div class="row g-2">
           <div class="col-12">
             <input type="file" name="gallery_images[0][image_file]" class="form-control" accept="image/*">
@@ -158,14 +155,58 @@
     <button type="button" class="btn btn-sm btn-outline-primary mt-2 add-gallery-image"><i class="bx bx-plus"></i> Add Image</button>
   </div>
 
-  <!-- Rich Text Editors -->
-  <div class="col-12">
-    <label class="form-label">Content Left</label>
-    <textarea name="content_left" class="form-control summernote" rows="5"><%= venue?.content_left || '' %></textarea>
-  </div>
-  <div class="col-12">
-    <label class="form-label">Content Right</label>
-    <textarea name="content_right" class="form-control summernote" rows="5"><%= venue?.content_right || '' %></textarea>
+  <!-- Content Sections (Repeater) -->
+  <div class="col-12 py-4">
+    <h5 class="form-label bg-primary text-white p-2 rounded card-header-custom">Content Sections</h5>
+    <p class="text-muted small mb-2">Add multiple content sections with heading (optional) and rich text content</p>
+    <div id="contentSectionsContainer">
+      <% if (venue?.contentSections && venue.contentSections.length > 0) {
+          venue.contentSections.forEach((section, idx) => { %>
+      <div class="repeater-item bg-light p-3 rounded mb-3 position-relative" data-section-id="<%= idx %>">
+        <div class="remove-item" onclick="removeItem(this)"><i class="bx bx-trash"></i></div>
+        <div class="row g-3">
+          <div class="col-12">
+            <label class="form-label">Heading (Optional)</label>
+            <input type="text" name="content_sections[<%= idx %>][heading]" class="form-control" value="<%= section.heading || '' %>" placeholder="Section heading">
+          </div>
+          <div class="col-12">
+            <label class="form-label">Content *</label>
+            <textarea name="content_sections[<%= idx %>][content]" class="form-control summernote-init" rows="5"><%= section.content || '' %></textarea>
+          </div>
+          <div class="col-12">
+            <div class="form-check">
+              <input type="checkbox" name="content_sections[<%= idx %>][isActive]" class="form-check-input" value="on" <%= section.isActive !== false ? 'checked' : '' %>>
+              <label class="form-check-label small">Active</label>
+              </div>
+          </div>
+        </div>
+      </div>
+      <% });
+      } else { %>
+      <div class="repeater-item bg-light p-3 rounded mb-3 position-relative" data-section-id="0">
+        <div class="remove-item" onclick="removeItem(this)"><i class="bx bx-trash"></i></div>
+        <div class="row g-3">
+          <div class="col-12">
+            <label class="form-label">Heading (Optional)</label>
+            <input type="text" name="content_sections[0][heading]" class="form-control" placeholder="Section heading">
+          </div>
+          <div class="col-12">
+            <label class="form-label">Content *</label>
+            <textarea name="content_sections[0][content]" class="form-control summernote-init" rows="5"></textarea>
+          </div>
+          <div class="col-12">
+            <div class="form-check">
+              <input type="checkbox" name="content_sections[0][isActive]" class="form-check-input" value="on" checked>
+              <label class="form-check-label small">Active</label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <% } %>
+    </div>
+    <button type="button" class="btn btn-sm btn-outline-primary mt-2 add-content-section">
+      <i class="bx bx-plus"></i> Add Content Section
+    </button>
   </div>
 
   <div class="col-12">
@@ -179,24 +220,19 @@
 <button type="submit" class="btn btn-primary mt-3"><i class="bx bx-save me-1"></i> <%= venue ? 'Update Venue' : 'Create Venue' %></button>
 
 <script>
-  $(document).ready(function() {
-    // Initialize Select2 on multi-selects
-    $('.select2-multiple').select2({
-      theme: 'bootstrap-5',
-      width: '100%',
-      placeholder: 'Select options...',
-      allowClear: true
-    });
-
-    // Summernote
-    $('.summernote').summernote({
+  // Function to initialize Summernote on a textarea
+  function initSummernote(textarea) {
+    if (!textarea || textarea.length === 0) return;
+    
+    // Check if Summernote is already initialized by looking for the .note-editor container
+    if (textarea.next('.note-editor').length === 0) {
+      textarea.summernote({
         placeholder: 'Write your content here...',
         tabsize: 2,
-        height: 300,
+        height: 200,
         fontNames: [
           'Arial', 'Arial Black', 'Comic Sans MS', 'Courier New',
           'Georgia', 'Tahoma', 'Times New Roman', 'Verdana',
-
           'Poppins', 'Roboto', 'Open Sans', 'Lato',
           'Montserrat', 'Raleway', 'Nunito',
           'Playfair Display', 'Merriweather'
@@ -217,15 +253,24 @@
           ['insert', ['link', 'picture', 'video', 'table']],
           ['view', ['fullscreen', 'codeview']]
         ],
-        lineHeights: ['0.8', '1.0', '1.2', '1.5', '2.0', '3.0'],
-        callbacks: {
-          onChange: function(contents) {
-            // Update the hidden textarea when content changes
-            const textarea = $(this).closest('.text-editor').find('.text-content');
-            textarea.val(contents);
-          }
-        }
+        lineHeights: ['0.8', '1.0', '1.2', '1.5', '2.0', '3.0']
       });
+    }
+  }
+
+  $(document).ready(function() {
+    // Initialize Select2 on multi-selects
+    $('.select2-multiple').select2({
+      theme: 'bootstrap-5',
+      width: '100%',
+      placeholder: 'Select options...',
+      allowClear: true
+    });
+
+    // Initialize Summernote for all elements with class 'summernote-init'
+    $('.summernote-init').each(function() {
+      initSummernote($(this));
+    });
 
     // Slug generation
     $('#name').on('blur', function() {
@@ -250,6 +295,7 @@
         }
       });
     }
+    
     $('input[type="file"]').each(function() {
       const preview = $(this).next('.img-thumbnail');
       if (preview.length) setupImagePreview($(this), preview);
@@ -260,21 +306,53 @@
     $('.add-gallery-image').click(function() {
       const newIndex = galleryIndex++;
       const newItem = `
-          <div class="repeater-item bg-light p-2 rounded mb-2 position-relative">
-            <div class="remove-item" onclick="removeItem(this)"><i class="bx bx-trash"></i></div>
-            <div class="row g-2">
-              <div class="col-12">
-                <input type="file" name="gallery_images[${newIndex}][image_file]" class="form-control" accept="image/*">
-                <img class="img-thumbnail mt-2" style="display:none;">
-                <input type="hidden" name="gallery_images[${newIndex}][image]" value="">
-              </div>
+        <div class="repeater-item bg-light p-2 rounded mb-2 position-relative">
+          <div class="remove-item" onclick="removeItem(this)"><i class="bx bx-trash"></i></div>
+          <div class="row g-2">
+            <div class="col-12">
+              <input type="file" name="gallery_images[${newIndex}][image_file]" class="form-control" accept="image/*">
+              <img class="img-thumbnail mt-2" style="display:none;">
+              <input type="hidden" name="gallery_images[${newIndex}][image]" value="">
             </div>
           </div>
-        `;
+        </div>
+      `;
       $('#galleryContainer').append(newItem);
       const fileInput = $(`#galleryContainer .repeater-item:last input[type="file"]`);
       const preview = fileInput.next('.img-thumbnail');
       setupImagePreview(fileInput, preview);
+    });
+
+    // Content Sections repeater
+    let contentSectionIndex = $('#contentSectionsContainer .repeater-item').length;
+    $('.add-content-section').click(function() {
+      const newIndex = contentSectionIndex++;
+      const newItem = `
+        <div class="repeater-item bg-light p-3 rounded mb-3 position-relative" data-section-id="${newIndex}">
+          <div class="remove-item" onclick="removeItem(this)"><i class="bx bx-trash"></i></div>
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="form-label">Heading (Optional)</label>
+              <input type="text" name="content_sections[${newIndex}][heading]" class="form-control" placeholder="Section heading">
+            </div>
+            <div class="col-12">
+              <label class="form-label">Content *</label>
+              <textarea name="content_sections[${newIndex}][content]" class="form-control summernote-init" rows="5" required></textarea>
+            </div>
+            <div class="col-12">
+              <div class="form-check">
+                <input type="checkbox" name="content_sections[${newIndex}][isActive]" class="form-check-input" value="on" checked>
+                <label class="form-check-label small">Active</label>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      $('#contentSectionsContainer').append(newItem);
+      
+      // Initialize Summernote for the new textarea
+      const newTextarea = $(`#contentSectionsContainer .repeater-item:last textarea`);
+      initSummernote(newTextarea);
     });
   });
 

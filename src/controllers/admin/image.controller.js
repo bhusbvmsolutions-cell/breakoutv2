@@ -87,6 +87,11 @@ const imageController = {
         ],
         group: ['mimeType']
       });
+      const baseUrl = `${req.protocol}://${req.get('host')}`;
+      images.forEach(image => {
+        image.copyUrl = baseUrl + image.url;
+        
+      });
 
       res.render('admin/images/index', {
         title: 'Image Management',

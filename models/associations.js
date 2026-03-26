@@ -131,32 +131,6 @@ module.exports = (db) => {
   // This is a convenience association but requires raw query or multiple includes
   // Better to use the existing many-to-many through roles
 
-  // ==================== Blog CMS Associations ====================
-
-  const { Blog, BlogBlock, BlogBlockItem } = db;
-
-  // Blog → BlogBlocks
-  Blog.hasMany(BlogBlock, {
-    foreignKey: "blogId",
-    as: "blocks",
-  });
-
-  BlogBlock.belongsTo(Blog, {
-    foreignKey: "blogId",
-    as: "blog",
-  });
-
-  // BlogBlock → BlogBlockItems
-  BlogBlock.hasMany(BlogBlockItem, {
-    foreignKey: "blockId",
-    as: "items",
-  });
-
-  BlogBlockItem.belongsTo(BlogBlock, {
-    foreignKey: "blockId",
-    as: "block",
-  });
-
   // ==================== EscapeRoomArchive Associations ====================
 
   const {
@@ -1346,120 +1320,179 @@ module.exports = (db) => {
   // ==================== VENUES ASSOCIATIONS ====================
 
   const {
-  Venue,
-  VenueCategory,
-  VenueExperienceType,
-  VenueExperienceLookingFor,
-  VenuePartType,
-  VenueSuitableTime,
-  VenueBudgetRange,
-  VenueCategoryMapping,
-  VenueExperienceTypeMapping,
-  VenueExperienceLookingForMapping,
-  VenuePartyTypeMapping,
-  VenueSuitableTimeMapping,
-  VenueBudgetRangeMapping,
-  VenueImage,
-  Location,
-  VenueLocationMapping,
-} = db;
+    Venue,
+    VenueCategory,
+    VenueExperienceType,
+    VenueExperienceLookingFor,
+    VenuePartType,
+    VenueSuitableTime,
+    VenueBudgetRange,
+    VenueCategoryMapping,
+    VenueExperienceTypeMapping,
+    VenueExperienceLookingForMapping,
+    VenuePartyTypeMapping,
+    VenueSuitableTimeMapping,
+    VenueBudgetRangeMapping,
+    VenueImage,
+    Location,
+    VenueLocationMapping,
+    VenueContentSection,
+  } = db;
 
-// Many-to-many relationships
-Venue.belongsToMany(VenueCategory, {
-  through: VenueCategoryMapping,
-  foreignKey: "venue_id",
-  otherKey: "category_id",
-  as: "categories",
-});
-VenueCategory.belongsToMany(Venue, {
-  through: VenueCategoryMapping,
-  foreignKey: "category_id",
-  otherKey: "venue_id",
-  as: "venues",
-});
+  // Many-to-many relationships
+  Venue.belongsToMany(VenueCategory, {
+    through: VenueCategoryMapping,
+    foreignKey: "venue_id",
+    otherKey: "category_id",
+    as: "categories",
+  });
+  VenueCategory.belongsToMany(Venue, {
+    through: VenueCategoryMapping,
+    foreignKey: "category_id",
+    otherKey: "venue_id",
+    as: "venues",
+  });
 
-Venue.belongsToMany(VenueExperienceType, {
-  through: VenueExperienceTypeMapping,
-  foreignKey: "venue_id",
-  otherKey: "experience_type_id",
-  as: "experienceTypes",
-});
-VenueExperienceType.belongsToMany(Venue, {
-  through: VenueExperienceTypeMapping,
-  foreignKey: "experience_type_id",
-  otherKey: "venue_id",
-  as: "venues",
-});
+  Venue.belongsToMany(VenueExperienceType, {
+    through: VenueExperienceTypeMapping,
+    foreignKey: "venue_id",
+    otherKey: "experience_type_id",
+    as: "experienceTypes",
+  });
+  VenueExperienceType.belongsToMany(Venue, {
+    through: VenueExperienceTypeMapping,
+    foreignKey: "experience_type_id",
+    otherKey: "venue_id",
+    as: "venues",
+  });
 
-Venue.belongsToMany(VenueExperienceLookingFor, {
-  through: VenueExperienceLookingForMapping,
-  foreignKey: "venue_id",
-  otherKey: "looking_for_id",
-  as: "lookingFor",
-});
-VenueExperienceLookingFor.belongsToMany(Venue, {
-  through: VenueExperienceLookingForMapping,
-  foreignKey: "looking_for_id",
-  otherKey: "venue_id",
-  as: "venues",
-});
+  Venue.belongsToMany(VenueExperienceLookingFor, {
+    through: VenueExperienceLookingForMapping,
+    foreignKey: "venue_id",
+    otherKey: "looking_for_id",
+    as: "lookingFor",
+  });
+  VenueExperienceLookingFor.belongsToMany(Venue, {
+    through: VenueExperienceLookingForMapping,
+    foreignKey: "looking_for_id",
+    otherKey: "venue_id",
+    as: "venues",
+  });
 
-Venue.belongsToMany(VenuePartType, {
-  through: VenuePartyTypeMapping,
-  foreignKey: "venue_id",
-  otherKey: "party_type_id",
-  as: "partyTypes",
-});
-VenuePartType.belongsToMany(Venue, {
-  through: VenuePartyTypeMapping,
-  foreignKey: "party_type_id",
-  otherKey: "venue_id",
-  as: "venues",
-});
+  Venue.belongsToMany(VenuePartType, {
+    through: VenuePartyTypeMapping,
+    foreignKey: "venue_id",
+    otherKey: "party_type_id",
+    as: "partyTypes",
+  });
+  VenuePartType.belongsToMany(Venue, {
+    through: VenuePartyTypeMapping,
+    foreignKey: "party_type_id",
+    otherKey: "venue_id",
+    as: "venues",
+  });
 
-Venue.belongsToMany(VenueSuitableTime, {
-  through: VenueSuitableTimeMapping,
-  foreignKey: "venue_id",
-  otherKey: "suitable_time_id",
-  as: "suitableTimes",
-});
-VenueSuitableTime.belongsToMany(Venue, {
-  through: VenueSuitableTimeMapping,
-  foreignKey: "suitable_time_id",
-  otherKey: "venue_id",
-  as: "venues",
-});
+  Venue.belongsToMany(VenueSuitableTime, {
+    through: VenueSuitableTimeMapping,
+    foreignKey: "venue_id",
+    otherKey: "suitable_time_id",
+    as: "suitableTimes",
+  });
+  VenueSuitableTime.belongsToMany(Venue, {
+    through: VenueSuitableTimeMapping,
+    foreignKey: "suitable_time_id",
+    otherKey: "venue_id",
+    as: "venues",
+  });
 
-Venue.belongsToMany(VenueBudgetRange, {
-  through: VenueBudgetRangeMapping,
-  foreignKey: "venue_id",
-  otherKey: "budget_range_id",
-  as: "budgetRanges",
-});
-VenueBudgetRange.belongsToMany(Venue, {
-  through: VenueBudgetRangeMapping,
-  foreignKey: "budget_range_id",
-  otherKey: "venue_id",
-  as: "venues",
-});
+  Venue.belongsToMany(VenueBudgetRange, {
+    through: VenueBudgetRangeMapping,
+    foreignKey: "venue_id",
+    otherKey: "budget_range_id",
+    as: "budgetRanges",
+  });
+  VenueBudgetRange.belongsToMany(Venue, {
+    through: VenueBudgetRangeMapping,
+    foreignKey: "budget_range_id",
+    otherKey: "venue_id",
+    as: "venues",
+  });
 
-// One-to-many
-Venue.hasMany(VenueImage, { foreignKey: "venue_id", as: "galleryImages" });
-VenueImage.belongsTo(Venue, { foreignKey: "venue_id" });
+  // One-to-many
+  Venue.hasMany(VenueImage, { foreignKey: "venue_id", as: "galleryImages" });
+  VenueImage.belongsTo(Venue, { foreignKey: "venue_id" });
 
-// Many-to-many with Location
-Venue.belongsToMany(Location, {
-  through: VenueLocationMapping,
-  foreignKey: "venue_id",
-  otherKey: "location_id",
-  as: "locations",
-});
-Location.belongsToMany(Venue, {
-  through: VenueLocationMapping,
-  foreignKey: "location_id",
-  otherKey: "venue_id",
-  as: "venues",
-});
+  // Many-to-many with Location
+  Venue.belongsToMany(Location, {
+    through: VenueLocationMapping,
+    foreignKey: "venue_id",
+    otherKey: "location_id",
+    as: "locations",
+  });
+  Location.belongsToMany(Venue, {
+    through: VenueLocationMapping,
+    foreignKey: "location_id",
+    otherKey: "venue_id",
+    as: "venues",
+  });
+
+  Venue.hasMany(VenueContentSection, {
+    foreignKey: "venue_id",
+    as: "contentSections",
+  });
+  VenueContentSection.belongsTo(Venue, { foreignKey: "venue_id" });
+
+  // ==================== BIRTHDAY BLOG Associations ====================
+  
+  const { BirthdayBlog, BirthdayBlogIconItem, BirthdayBlogVenueMapping } = db;
+  
+  BirthdayBlog.hasMany(BirthdayBlogIconItem, {
+    foreignKey: "blog_id",
+    as: "iconItems",
+  });
+  BirthdayBlogIconItem.belongsTo(BirthdayBlog, { foreignKey: "blog_id" });
+  
+  BirthdayBlog.belongsToMany(Venue, {
+    through: BirthdayBlogVenueMapping,
+    foreignKey: "blog_id",
+    otherKey: "venue_id",
+    as: "mappedVenues",
+  });
+  Venue.belongsToMany(BirthdayBlog, {
+    through: BirthdayBlogVenueMapping,
+    foreignKey: "venue_id",
+    otherKey: "blog_id",
+    as: "birthdayBlogs",
+  });
+
+  BirthdayBlog.hasMany(BirthdayBlogVenueMapping, {
+    foreignKey: "blog_id",
+    as: "venueMappings",
+  });
+  BirthdayBlogVenueMapping.belongsTo(BirthdayBlog, { foreignKey: "blog_id" });
+  BirthdayBlogVenueMapping.belongsTo(Venue, { foreignKey: "venue_id" });
+  
+  
+  
+  // ==================== BREAKOUT PARTY BLOG Associations ====================
+
+  const {
+    BreakoutPartyBlog,
+    BreakoutPartyBlogContentSection,
+    BreakoutPartyBlogContentImage,
+    BreakoutPartyBlogContentGalleryImage,
+  } = db;
+  
+  BreakoutPartyBlog.hasMany(BreakoutPartyBlogContentSection, { foreignKey: 'blog_id', as: 'contentSections' });
+  BreakoutPartyBlogContentSection.belongsTo(BreakoutPartyBlog, { foreignKey: 'blog_id' });
+  
+  BreakoutPartyBlogContentSection.hasMany(BreakoutPartyBlogContentImage, { foreignKey: 'content_section_id', as: 'contentImages' });
+  BreakoutPartyBlogContentImage.belongsTo(BreakoutPartyBlogContentSection, { foreignKey: 'content_section_id' });
+  
+  BreakoutPartyBlogContentSection.hasMany(BreakoutPartyBlogContentGalleryImage, { foreignKey: 'content_section_id', as: 'galleryImages' });
+  BreakoutPartyBlogContentGalleryImage.belongsTo(BreakoutPartyBlogContentSection, { foreignKey: 'content_section_id' });
+  
+  BreakoutPartyBlog.belongsTo(Video, { foreignKey: 'banner_video_id', as: 'bannerVideo' });
 
   console.log("✓ All model associations have been established successfully");
 };

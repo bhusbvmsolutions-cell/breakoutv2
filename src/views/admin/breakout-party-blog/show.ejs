@@ -1,0 +1,89 @@
+<%- contentFor('title') %> <%= blog.title %>
+<%- contentFor('head') %>
+<style>
+  .show-section { background: #fff; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+  .section-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 2px solid #fcad00; display: inline-block; }
+  .image-thumb { max-width: 200px; border-radius: 8px; }
+</style>
+
+<%- contentFor('body') %>
+<div class="container-fluid py-4">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4 class="card-title">Blog: <strong><%= blog.title %></strong></h4>
+            <div>
+              <a href="/admin/breakout-party-blog/edit/<%= blog.id %>" class="btn btn-warning btn-sm me-2"><i class="bx bx-edit"></i> Edit</a>
+              <a href="/admin/breakout-party-blog" class="btn btn-secondary btn-sm"><i class="bx bx-arrow-back"></i> Back</a>
+            </div>
+          </div>
+
+          <div class="show-section">
+            <h5 class="section-title">Basic Info</h5>
+            <div><strong>Title:</strong> <%= blog.title %></div>
+            <div><strong>Slug:</strong> <%= blog.slug %></div>
+            <div><strong>Status:</strong> <span class="badge <%= blog.isActive ? 'bg-success' : 'bg-secondary' %>"><%= blog.isActive ? 'Active' : 'Inactive' %></span></div>
+            <% if (blog.featured_image) { %><div class="mt-2"><strong>Featured Image:</strong><br><img src="<%= blog.featured_image %>" class="image-thumb"></div><% } %>
+          </div>
+
+          <div class="show-section">
+            <h5 class="section-title">Banner Section</h5>
+            <div><strong>Heading:</strong> <%= blog.banner_heading || '—' %></div>
+            <div><strong>Description:</strong> <%= blog.banner_description || '—' %></div>
+            <div><strong>Banner Video:</strong> <%= blog.bannerVideo?.title || blog.bannerVideo?.filename || '—' %></div>
+            <div><strong>Content:</strong> <%- blog.banner_content || '—' %></div>
+          </div>
+
+          <div class="show-section">
+            <h5 class="section-title">Content Sections</h5>
+            <% if (blog.contentSections && blog.contentSections.length) { %>
+              <% blog.contentSections.forEach((section, idx) => { %>
+                <div class="mb-4">
+                  <h6><%= section.heading || `Section ${idx+1}` %></h6>
+                  <div><%- section.description || '—' %></div>
+                  <div class="mt-1"><span class="badge <%= section.isActive ? 'bg-success' : 'bg-secondary' %>"><%= section.isActive ? 'Active' : 'Inactive' %></span></div>
+                  <% if (section.contentImages && section.contentImages.length) { %>
+                    <div class="mt-2"><strong>Content Images:</strong></div>
+                    <div class="row">
+                      <% section.contentImages.forEach(img => { %>
+                        <div class="col-md-3 mb-2">
+                          <% if (img.image) { %><img src="<%= img.image %>" class="img-thumbnail" style="max-width:100px;"><% } %>
+                          <div><%= img.title || '' %></div>
+                          <% if (img.link) { %><a href="<%= img.link %>" target="_blank">Link</a><% } %>
+                        </div>
+                      <% }) %>
+                    </div>
+                  <% } %>
+                  <% if (section.galleryImages && section.galleryImages.length) { %>
+                    <div class="mt-2"><strong>Gallery Images:</strong></div>
+                    <div class="row">
+                      <% section.galleryImages.forEach(gal => { %>
+                        <div class="col-md-2 mb-2">
+                          <% if (gal.image) { %><img src="<%= gal.image %>" class="img-thumbnail" style="max-width:80px;"><% } %>
+                        </div>
+                      <% }) %>
+                    </div>
+                  <% } %>
+                </div>
+                <% if (idx < blog.contentSections.length - 1) { %><hr><% } %>
+              <% }) %>
+            <% } else { %>
+              <span class="text-muted">No content sections</span>
+            <% } %>
+          </div>
+
+          <div class="show-section">
+            <h5 class="section-title">SEO</h5>
+            <div><strong>Meta Title:</strong> <%= blog.meta_title || '—' %></div>
+            <div><strong>Meta Description:</strong> <%= blog.meta_description || '—' %></div>
+            <div><strong>Meta Keywords:</strong> <%= blog.meta_keywords || '—' %></div>
+            <div><strong>OG Title:</strong> <%= blog.og_title || '—' %></div>
+            <div><strong>OG Description:</strong> <%= blog.og_description || '—' %></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

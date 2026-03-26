@@ -194,16 +194,20 @@ app.use((err, req, res, next) => {
 // Database connection and server start
 // const { autoCreatePermissions, assignAllPermissionsToSuperAdmin, assignDefaultPermissionsToAdmin } = require('./utils/permissionGenerator');
 
+
 db.sequelize.authenticate()
   .then(async () => {
     console.log('Database connected successfully');
-    
-    app.listen(PORT, () => {
-      console.log(`Server running on http://localhost:${PORT}`);
-      console.log(`Environment: ${process.env.NODE_ENV}`);
-      console.log(`API: http://localhost:${PORT}/api`);
-      console.log(`Admin Panel: http://localhost:${PORT}/admin`);
-    });
+
+    // ✅ Only start server if NOT running under Passenger
+    if (require.main === module) {
+      app.listen(PORT, '0.0.0.0', () => {
+        console.log(`Server running on http://localhost:${PORT}`);
+        console.log(`Environment: ${process.env.NODE_ENV}`);
+        console.log(`API: http://localhost:${PORT}/api`);
+        console.log(`Admin Panel: http://localhost:${PORT}/admin`);
+      });
+    }
   })
   .catch(err => {
     console.error('Unable to connect to database:', err);
