@@ -4,18 +4,20 @@ const db = require("../../models");
 const isAuthenticated = async (req, res, next) => {
   try {
     const userId = req.session?.user?.id;
-
-    if (!userId) {
-      return handleUnauthenticated(req, res);
-    }
+    if (!userId) return handleUnauthenticated(req, res);
 
     const user = await db.User.findByPk(userId, {
       include: [
         {
           model: db.Role,
           as: "roles",
-          attributes: ["id", "name", "level"],
-          through: { attributes: [] },
+          include: [
+            {
+              model: db.Permission,
+              as: "permissions",
+              through: { attributes: [] }, // do not include join table fields
+            },
+          ],
         },
       ],
     });
@@ -25,8 +27,25 @@ const isAuthenticated = async (req, res, next) => {
       return handleUnauthenticated(req, res);
     }
 
+    // Build a Set of permission strings in the format "module:action"
+    const permissionsSet = new Set();
+    if (user.roles && user.roles.length) {
+      user.roles.forEach((role) => {
+        if (role.permissions && role.permissions.length) {
+          role.permissions.forEach((perm) => {
+            permissionsSet.add(`${perm.module}:${perm.action}`);
+          });
+        }
+      });
+    }
+
+    // Attach both the full user object and the permissions Set to the request
     req.user = user;
+    req.user.permissions = permissionsSet;
+
+    // Also expose them to all views
     res.locals.user = user;
+    res.locals.permissions = permissionsSet;
 
     next();
   } catch (err) {

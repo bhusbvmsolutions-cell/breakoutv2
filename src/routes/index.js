@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-// Import route modules
+// Import admin route modules
 const adminAuthRoutes = require('./admin/auth.routes');
 const adminDashboardRoutes = require('./admin/dashboard.routes');
 const adminUserRoutes = require('./admin/users.routes');
@@ -43,12 +43,6 @@ const venueLookingForRoutes = require('./admin/venuelookingfor.routes');
 const venuePartyTypesRoutes = require('./admin/venuepartytypes.routes');
 const venueSuitableTimesRoutes = require('./admin/venuesuitabletimes.routes');
 const venueBudgetRangesRoutes = require('./admin/venuebudgetranges.routes');
-
-
-
-
-// import API routes modules
-const apiTestRoutes = require('./api/test.apiroutes');
 
 // Admin routes
 router.use('/admin', adminAuthRoutes);
@@ -95,8 +89,21 @@ router.use('/admin/venue-budget-ranges', venueBudgetRangesRoutes);
 
 
 
+
+
+
+// import API routes modules
+const apiTestRoutes = require('./api/test.apiroutes');
+const siteSettingsRoutes = require('./api/sitesettings.routes');
+const activityApiRoutes = require('./api/activity.routes');
+
+
+
 // API routes
 router.use('/api', apiTestRoutes);
+router.use('/api/sitesettings', siteSettingsRoutes);
+router.use('/api/activities', activityApiRoutes);
+
 
 // Home route
 router.get('/', (req, res) => {

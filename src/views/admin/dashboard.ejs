@@ -29,6 +29,7 @@
   
   <!-- Statistics Cards -->
   <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4">
+    <% if (can('users', 'create')) { %>
     <div class="col">
       <div class="card radius-10">
         <div class="card-body">
@@ -47,6 +48,7 @@
         </div>
       </div>
     </div>
+    <% } %>
   
     <div class="col">
       <div class="card radius-10">

@@ -1,174 +1,155 @@
 <!DOCTYPE html>
 <html lang="en" class="light-theme">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <script>
-      (function () {
-        var savedTheme = localStorage.getItem("theme") || "light";
-        document.documentElement.classList.remove("dark-theme", "light-theme");
-        document.documentElement.classList.add(savedTheme + "-theme");
-      })();
-    </script>
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <!-- loader-->
-    <link href="/assets/css/pace.min.css" rel="stylesheet" />
-    <script src="/assets/js/pace.min.js"></script>
+  <script>
+    (function() {
+      var savedTheme = localStorage.getItem("theme") || "light";
+      document.documentElement.classList.remove("dark-theme", "light-theme");
+      document.documentElement.classList.add(savedTheme + "-theme");
+    })();
+  </script>
 
-    <!-- theme toggler / Manager -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="/assets/js/bootstrap.bundle.min.js"></script>
-    <script>
-      $(document).ready(function () {
-        function applyTheme(theme) {
-          $("html")
-            .removeClass("dark-theme light-theme")
-            .addClass(theme + "-theme");
+  <!-- loader-->
+  <link href="/assets/css/pace.min.css" rel="stylesheet" />
+  <script src="/assets/js/pace.min.js"></script>
 
-          if (theme === "dark") {
-            $(".mode-icon ion-icon").attr("name", "sunny-outline");
-          } else {
-            $(".mode-icon ion-icon").attr("name", "moon-outline");
-          }
+  <!-- theme toggler / Manager -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="/assets/js/bootstrap.bundle.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      function applyTheme(theme) {
+        $("html")
+          .removeClass("dark-theme light-theme")
+          .addClass(theme + "-theme");
 
-          localStorage.setItem("theme", theme);
-        }
-
-        let savedTheme = localStorage.getItem("theme");
-
-        if (savedTheme) {
-          applyTheme(savedTheme);
+        if (theme === "dark") {
+          $(".mode-icon ion-icon").attr("name", "sunny-outline");
         } else {
-          applyTheme("light");
+          $(".mode-icon ion-icon").attr("name", "moon-outline");
         }
 
-        $(document).on("click", ".theme-toggle", function () {
-          let currentTheme = localStorage.getItem("theme") || "light";
-          let newTheme = currentTheme === "dark" ? "light" : "dark";
-          applyTheme(newTheme);
-        });
+        localStorage.setItem("theme", theme);
+      }
+
+      let savedTheme = localStorage.getItem("theme");
+
+      if (savedTheme) {
+        applyTheme(savedTheme);
+      } else {
+        applyTheme("light");
+      }
+
+      $(document).on("click", ".theme-toggle", function() {
+        let currentTheme = localStorage.getItem("theme") || "light";
+        let newTheme = currentTheme === "dark" ? "light" : "dark";
+        applyTheme(newTheme);
       });
-    </script>
+    });
+  </script>
 
-    <!--plugins-->
-    <link href="/assets/plugins/simplebar/css/simplebar.css" rel="stylesheet" />
-    <link
-      href="/assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css"
-      rel="stylesheet"
-    />
-    <link
-      href="/assets/plugins/metismenu/css/metisMenu.min.css"
-      rel="stylesheet"
-    />
+  <!--plugins-->
+  <link href="/assets/plugins/simplebar/css/simplebar.css" rel="stylesheet" />
+  <link href="/assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css" rel="stylesheet" />
+  <link href="/assets/plugins/metismenu/css/metisMenu.min.css" rel="stylesheet" />
 
-    <!--Google fonts for summernote-->
+  <!--Google fonts for summernote-->
 
-    <link href="https://fonts.googleapis.com/css2?family=Poppins&family=Roboto&family=Open+Sans&family=Lato&family=Montserrat&family=Raleway&family=Nunito&family=Ubuntu&family=Playfair+Display&family=Merriweather&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins&family=Roboto&family=Open+Sans&family=Lato&family=Montserrat&family=Raleway&family=Nunito&family=Ubuntu&family=Playfair+Display&family=Merriweather&display=swap" rel="stylesheet">
 
-    <!-- CSS Files -->
-    <link href="/assets/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="/assets/css/bootstrap-extended.css" rel="stylesheet" />
-    <link href="/assets/css/style.css" rel="stylesheet" />
-    <link href="/assets/css/icons.css" rel="stylesheet" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
-    />
-    <link
-      href="https://cdn.quilljs.com/1.3.6/quill.snow.css"
-      rel="stylesheet"
-    />
-    <!--Theme Styles-->
-    <link href="/assets/css/header-colors.css" rel="stylesheet" />
-    <link href="/assets/css/custom.css" rel="stylesheet" />
+  <!-- CSS Files -->
+  <link href="/assets/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="/assets/css/bootstrap-extended.css" rel="stylesheet" />
+  <link href="/assets/css/style.css" rel="stylesheet" />
+  <link href="/assets/css/icons.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" />
+  <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet" />
+  <!--Theme Styles-->
+  <link href="/assets/css/header-colors.css" rel="stylesheet" />
+  <link href="/assets/css/custom.css" rel="stylesheet" />
 
-    <link href="/assets/css/dark-theme.css" rel="stylesheet" />
-    <link href="/assets/css/semi-dark.css" rel="stylesheet" />
+  <link href="/assets/css/dark-theme.css" rel="stylesheet" />
+  <link href="/assets/css/semi-dark.css" rel="stylesheet" />
 
-    <!-- include summernote css/js-->
-    <!-- <link href="/assets/plugins/summernote/dist/summernote-bs5.css" rel="stylesheet">
+  <!-- include summernote css/js-->
+  <!-- <link href="/assets/plugins/summernote/dist/summernote-bs5.css" rel="stylesheet">
     <script src="/assets/plugins/summernote/dist/summernote-bs5.js"></script> -->
 
 
-    <link
-      rel="shortcut icon"
-      href="/assets/images/logo-icon-1.png"
-      type="image/x-icon"
-    />
-    
+  <link rel="shortcut icon" href="/assets/images/logo-icon-1.png" type="image/x-icon" />
 
-    <!-- Page specific head content -->
-    <%- style %>
-    <!-- for page CSS -->
 
-    <script>
-      // Auto-hide alerts after 5 seconds
-      setTimeout(function () {
-        $(".alert").fadeOut("slow");
-      }, 5000);
+  <!-- Page specific head content -->
+  <%- style %>
+  <!-- for page CSS -->
 
-      // Toggle sidebar on mobile
-      $(".toggle-icon").on("click", function () {
-        $(".wrapper").toggleClass("toggled");
-      });
-    </script>
+  <script>
+    // Auto-hide alerts after 5 seconds
+    setTimeout(function() {
+      $(".alert").fadeOut("slow");
+    }, 5000);
 
-    <title><%= title ? title + ' - ' : '' %>Breakout Admin</title>
-  </head>
+    // Toggle sidebar on mobile
+    $(".toggle-icon").on("click", function() {
+      $(".wrapper").toggleClass("toggled");
+    });
+  </script>
 
-  <body>
-    <!--start wrapper-->
+  <title><%= title ? title + ' - ' : '' %>Breakout Admin</title>
+</head>
 
-    <%- include('../admin/partials/toasts.ejs') %>
-    <div class="wrapper">
-      <!--start sidebar -->
-      <%- include('../admin/partials/sidebar') %>
-      <!--end sidebar -->
+<body>
+  <!--start wrapper-->
 
-      <!--start top header-->
-      <%- include('../admin/partials/header.ejs') %>
-      <!--end top header-->
+  <%- include('../admin/partials/toasts.ejs') %>
+  <div class="wrapper">
+    <!--start sidebar -->
+    <%- include('../admin/partials/sidebar') %>
+    <!--end sidebar -->
 
-      <!-- start page content wrapper-->
-      <div class="page-content-wrapper">
-        <!-- start page content-->
-        <div class="page-content">
-          <div class="card p-4"><%- defineContent('body') %></div>
-        </div>
+    <!--start top header-->
+    <%- include('../admin/partials/header.ejs') %>
+    <!--end top header-->
+
+    <!-- start page content wrapper-->
+    <div class="page-content-wrapper">
+      <!-- start page content-->
+      <div class="page-content">
+        <div class="card p-4"><%- defineContent('body') %></div>
       </div>
-      <!--end page content wrapper-->
     </div>
-    <!--end wrapper-->
+    <!--end page content wrapper-->
+  </div>
+  <!--end wrapper-->
 
-    <!--start overlay-->
-    <div class="overlay nav-toggle-icon"></div>
-    <!--end overlay-->
+  <!--start overlay-->
+  <div class="overlay nav-toggle-icon"></div>
+  <!--end overlay-->
 
-    <!-- JS Files-->
-    <script src="/assets/plugins/simplebar/js/simplebar.min.js"></script>
-    <script src="/assets/plugins/metismenu/js/metisMenu.min.js"></script>
-    
-    <script
-      type="module"
-      src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"
-    ></script>
+  <!-- JS Files-->
+  <script src="/assets/plugins/simplebar/js/simplebar.min.js"></script>
+  <script src="/assets/plugins/metismenu/js/metisMenu.min.js"></script>
 
-    <!--plugins-->
-    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+  <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
 
-    <script src="/assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
-    <script src="/assets/plugins/chartjs/chart.min.js"></script>
+  <!--plugins-->
+  <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 
-    <!-- Main JS-->
-    <script src="/assets/js/main.js"></script>
+  <script src="/assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+  <script src="/assets/plugins/chartjs/chart.min.js"></script>
 
-    <%- script %> 
-    <!-- for page JS -->
-  </body>
+  <!-- Main JS-->
+  <script src="/assets/js/main.js"></script>
+  
+
+  <%- script %>
+  <!-- for page JS -->
+</body>
+
 </html>

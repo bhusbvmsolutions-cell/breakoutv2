@@ -12,14 +12,6 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING(500),
         allowNull: false,
       },
-      minimum_price: {
-        type: DataTypes.STRING(500),
-        allowNull: false,
-      },
-      maximun_price: {
-        type: DataTypes.STRING(500),
-        allowNull: false,
-      },
       slug: {
         type: DataTypes.STRING(500),
         allowNull: false,

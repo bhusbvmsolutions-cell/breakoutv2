@@ -110,6 +110,37 @@ app.set('layout', 'layouts/admin');
 app.set('layout extractScripts', true);
 app.set('layout extractStyles', true);
 
+
+
+app.use((req, res, next) => {
+  // Helper for views: can(resource, action)
+  res.locals.can = (resource, action) => {
+    const user = res.locals.user;
+    const permissions = res.locals.permissions;
+
+    // Super admins bypass all checks
+    if (user) {
+      const isSuperAdmin =
+        user.role === 'super_admin' ||
+        (user.roles && user.roles.some(r => r.name === 'super_admin'));
+      if (isSuperAdmin) return true;
+    }
+
+    if (!permissions) return false;
+
+    // Direct permission check
+    if (permissions.has(`${resource}:${action}`)) return true;
+
+    // 'manage' action grants all actions on that resource
+    if (permissions.has(`${resource}:manage`)) return true;
+
+    return false;
+  };
+
+  next();
+});
+
+
 // Routes
 app.use('/', routes);
 
@@ -152,6 +183,10 @@ app.use((err, req, res, next) => {
     });
   }
 });
+
+
+
+
 
 
 

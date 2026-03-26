@@ -36,7 +36,7 @@ class VenueReferenceController {
     } catch (error) {
       console.error(error);
       req.flash('error', `Failed to load create form`);
-      res.redirect(`/admin/${this.viewPath}`);
+      res.redirect(`/${this.viewPath}`);
     }
   }
 
@@ -61,12 +61,12 @@ class VenueReferenceController {
 
       await transaction.commit();
       req.flash('success', `${this.title} created successfully`);
-      res.redirect(`/admin/${this.viewPath}`);
+      res.redirect(`/${this.viewPath}`);
     } catch (error) {
       await transaction.rollback();
       console.error(error);
       req.flash('error', error.message || `Failed to create ${this.title}`);
-      res.redirect(`/admin/${this.viewPath}/create`);
+      res.redirect(`/${this.viewPath}/create`);
     }
   }
 
@@ -75,7 +75,7 @@ class VenueReferenceController {
       const item = await db[this.modelName].findByPk(req.params.id);
       if (!item) {
         req.flash('error', `${this.title} not found`);
-        return res.redirect(`/admin/${this.viewPath}`);
+        return res.redirect(`/${this.viewPath}`);
       }
       res.render(`${this.viewPath}/edit`, { 
         title: `Edit ${this.title}`, 
@@ -85,7 +85,7 @@ class VenueReferenceController {
     } catch (error) {
       console.error(error);
       req.flash('error', `Failed to load edit form`);
-      res.redirect(`/admin/${this.viewPath}`);
+      res.redirect(`/${this.viewPath}`);
     }
   }
 
@@ -118,12 +118,12 @@ class VenueReferenceController {
 
       await transaction.commit();
       req.flash('success', `${this.title} updated successfully`);
-      res.redirect(`/admin/${this.viewPath}`);
+      res.redirect(`/${this.viewPath}`);
     } catch (error) {
       await transaction.rollback();
       console.error(error);
       req.flash('error', error.message || `Failed to update ${this.title}`);
-      res.redirect(`/admin/${this.viewPath}/edit/${req.params.id}`);
+      res.redirect(`/${this.viewPath}/edit/${req.params.id}`);
     }
   }
 

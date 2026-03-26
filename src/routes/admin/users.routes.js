@@ -9,7 +9,7 @@ router.use(isAuthenticated);
 
 // User management routes
 router.get('/', 
-  hasPermission('users', 'read'),
+  hasPermission('users', 'view'),
   userController.listUsers
 );
 

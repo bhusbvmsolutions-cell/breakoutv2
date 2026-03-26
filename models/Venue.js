@@ -18,10 +18,6 @@ module.exports = (sequelize, DataTypes) => {
       google_map: DataTypes.STRING,
       content_left: DataTypes.TEXT,
       content_right: DataTypes.TEXT,
-      location_id: {
-        type: DataTypes.INTEGER,
-        references: { model: 'locations', key: 'id' },
-      },
       isActive: { type: DataTypes.BOOLEAN, defaultValue: true },
     },
     {

@@ -61,11 +61,6 @@
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 1rem;
   }
-  .locations-grid-empty {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
-    gap: 1rem;
-  }
 
   .location-card {
     background: #fff;
@@ -193,62 +188,85 @@
 
   <div class="row mb-3 align-items-center">
     <div class="col-md-6">
-      <div class="search-box"><i class="bx bx-search"></i><input type="text" id="searchLocations" class="form-control" placeholder="Search by title or slug..."></div>
+      <div class="search-box">
+        <i class="bx bx-search"></i>
+        <input type="text" id="searchLocations" class="form-control" placeholder="Search by title or slug...">
+      </div>
     </div>
     <div class="col-md-6 text-md-end">
-      <div class="btn-group btn-group-sm">
+      <div class="btn-group btn-group-sm me-2">
         <button class="btn btn-outline-secondary filter-status active" data-status="all">All</button>
         <button class="btn btn-outline-secondary filter-status" data-status="active">Active</button>
         <button class="btn btn-outline-secondary filter-status" data-status="inactive">Inactive</button>
       </div>
+      <button id="clearFiltersBtn" class="btn btn-outline-secondary btn-sm"><i class="bx bx-eraser"></i> Clear Filters</button>
     </div>
   </div>
 
-  <% if (locations && locations.length) { %>
   <div id="locationsContainer" class="locations-grid">
-    <% locations.forEach(loc => { %>
-    <div class="location-card" data-title="<%= loc.title.toLowerCase() %>" data-slug="<%= loc.slug.toLowerCase() %>" data-status="<%= loc.isActive ? 'active' : 'inactive' %>">
-      <div class="location-card-image">
-        <% if (loc.banner_image) { %>
-        <img src="<%= loc.banner_image %>" alt="<%= loc.title %>">
-        <% } else { %>
-        <div class="d-flex flex-column align-items-center justify-content-center h-100 text-muted"><i class="bx bx-image-alt fs-3"></i><span class="small mt-1">No image</span></div>
-        <% } %>
-      </div>
-      <div class="location-card-content">
-        <h5 class="location-card-title"><%= loc.title %></h5>
-        <div class="location-card-slug"><i class="bx bx-link-alt me-1"></i> <%= loc.slug %></div>
-        <div class="location-card-meta">
-          <span class="location-card-status badge <%= loc.isActive ? 'bg-success' : 'bg-secondary' %>"><%= loc.isActive ? 'Active' : 'Inactive' %></span>
-          <span class="small"><i class="bx bx-calendar me-1"></i> <%= new Date(loc.createdAt).toLocaleDateString() %></span>
+    <% if (locations && locations.length) { %>
+      <% locations.forEach(loc => { %>
+      <div class="location-card" data-title="<%= loc.title.toLowerCase() %>" data-slug="<%= loc.slug.toLowerCase() %>" data-status="<%= loc.isActive ? 'active' : 'inactive' %>">
+        <div class="location-card-image">
+          <% if (loc.banner_image) { %>
+          <img src="<%= loc.banner_image %>" alt="<%= loc.title %>">
+          <% } else { %>
+          <div class="d-flex flex-column align-items-center justify-content-center h-100 text-muted"><i class="bx bx-image-alt fs-3"></i><span class="small mt-1">No image</span></div>
+          <% } %>
         </div>
-        <div class="location-card-actions">
-          <a href="/admin/location/view/<%= loc.id %>" class="btn btn-sm btn-info"><i class="bx bx-show"></i> View</a>
-          <a href="/admin/location/edit/<%= loc.id %>" class="btn btn-sm btn-warning"><i class="bx bx-edit"></i> Edit</a>
-          <button class="btn btn-sm btn-danger delete-location" data-id="<%= loc.id %>"><i class="bx bx-trash"></i> Delete</button>
+        <div class="location-card-content">
+          <h5 class="location-card-title"><%= loc.title %></h5>
+          <div class="location-card-slug"><i class="bx bx-link-alt me-1"></i> <%= loc.slug %></div>
+          <div class="location-card-meta">
+            <span class="location-card-status badge <%= loc.isActive ? 'bg-success' : 'bg-secondary' %>"><%= loc.isActive ? 'Active' : 'Inactive' %></span>
+            <span class="small"><i class="bx bx-calendar me-1"></i> <%= new Date(loc.createdAt).toLocaleDateString() %></span>
+          </div>
+          <div class="location-card-actions">
+            <a href="/admin/location/view/<%= loc.id %>" class="btn btn-sm btn-info"><i class="bx bx-show"></i> View</a>
+            <a href="/admin/location/edit/<%= loc.id %>" class="btn btn-sm btn-warning"><i class="bx bx-edit"></i> Edit</a>
+            <button class="btn btn-sm btn-danger delete-location" data-id="<%= loc.id %>"><i class="bx bx-trash"></i> Delete</button>
+          </div>
         </div>
       </div>
-    </div>
-    <% }); %>
+      <% }); %>
+    <% } else { %>
+      <div class="no-locations">
+        <i class="bx bx-ghost fs-2"></i>
+        <h5 class="mt-2">No locations found</h5>
+        <p class="small">Get started by creating your first location.</p>
+        <a href="/admin/location/create" class="btn btn-primary btn-sm mt-1">Add New Location</a>
+      </div>
+    <% } %>
   </div>
-  <% } else { %>
-    <div id="locationsContainer" class="locations-grid-empty">
-  <div class="no-locations"><i class="bx bx-ghost fs-2"></i>
-    <h5 class="mt-2">No locations found</h5>
-    <p class="small">Get started by creating your first location.</p><a href="/admin/location/create" class="btn btn-primary btn-sm mt-1">Add New Location</a>
-  </div>
-  </div>
-  <% } %>
-</div>
 </div>
 
 <%- contentFor('js') %>
 <script>
-  const locations = document.querySelectorAll('.location-card');
+  const locationsContainer = document.getElementById('locationsContainer');
+  let locationCards = document.querySelectorAll('.location-card');
+  let defaultEmptyDiv = document.querySelector('.no-locations');
+
+  // Create a "no results" div for filtering, if not already present
+  let noResultsDiv = document.getElementById('noFilterResults');
+  if (!noResultsDiv) {
+    noResultsDiv = document.createElement('div');
+    noResultsDiv.id = 'noFilterResults';
+    noResultsDiv.className = 'no-locations';
+    noResultsDiv.style.display = 'none';
+    noResultsDiv.innerHTML = `
+      <i class="bx bx-search-alt fs-2"></i>
+      <h5 class="mt-2">No matching locations</h5>
+      <p class="small">Try adjusting your search or filters.</p>
+      <button id="clearFiltersInline" class="btn btn-outline-secondary btn-sm mt-1"><i class="bx bx-eraser"></i> Clear Filters</button>
+    `;
+    locationsContainer.appendChild(noResultsDiv);
+    // Add event listener to the inline clear button
+    document.getElementById('clearFiltersInline')?.addEventListener('click', clearFilters);
+  }
 
   function updateStats() {
-    const total = locations.length;
-    const active = Array.from(locations).filter(l => l.dataset.status === 'active').length;
+    const total = locationCards.length;
+    const active = Array.from(locationCards).filter(c => c.dataset.status === 'active').length;
     document.getElementById('totalLocations').innerText = total;
     document.getElementById('activeLocations').innerText = active;
     document.getElementById('inactiveLocations').innerText = total - active;
@@ -257,29 +275,73 @@
   function filterLocations() {
     const term = document.getElementById('searchLocations').value.toLowerCase().trim();
     const status = document.querySelector('.filter-status.active').dataset.status;
-    locations.forEach(card => {
+
+    let visibleCount = 0;
+    locationCards.forEach(card => {
       const title = card.dataset.title,
-        slug = card.dataset.slug,
-        cardStatus = card.dataset.status;
+            slug = card.dataset.slug,
+            cardStatus = card.dataset.status;
       const match = (term === '' || title.includes(term) || slug.includes(term)) && (status === 'all' || cardStatus === status);
       card.style.display = match ? '' : 'none';
+      if (match) visibleCount++;
     });
+
+    // Handle empty states
+    if (locationCards.length === 0) {
+      // No locations exist at all
+      if (defaultEmptyDiv) defaultEmptyDiv.style.display = '';
+      noResultsDiv.style.display = 'none';
+    } else {
+      // Locations exist, check if any are visible
+      if (visibleCount === 0) {
+        // Hide all cards (already done), hide default empty div if present, show no results div
+        if (defaultEmptyDiv) defaultEmptyDiv.style.display = 'none';
+        noResultsDiv.style.display = '';
+      } else {
+        // Show cards, hide both empty messages
+        if (defaultEmptyDiv) defaultEmptyDiv.style.display = 'none';
+        noResultsDiv.style.display = 'none';
+      }
+    }
   }
-  document.getElementById('searchLocations').addEventListener('input', filterLocations);
-  document.querySelectorAll('.filter-status').forEach(btn => btn.addEventListener('click', () => {
-    document.querySelectorAll('.filter-status').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+
+  function clearFilters() {
+    // Clear search input
+    const searchInput = document.getElementById('searchLocations');
+    if (searchInput) searchInput.value = '';
+    // Reset status filter to "All"
+    const allBtn = document.querySelector('.filter-status[data-status="all"]');
+    if (allBtn) {
+      document.querySelectorAll('.filter-status').forEach(btn => btn.classList.remove('active'));
+      allBtn.classList.add('active');
+    }
+    // Re-apply filter to show all
     filterLocations();
-  }));
+  }
+
+  // Event listeners
+  document.getElementById('searchLocations')?.addEventListener('input', filterLocations);
+  document.querySelectorAll('.filter-status').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-status').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      filterLocations();
+    });
+  });
+  document.getElementById('clearFiltersBtn')?.addEventListener('click', clearFilters);
+
+  // Delete functionality
+  document.querySelectorAll('.delete-location').forEach(btn => {
+    btn.addEventListener('click', async e => {
+      if (!confirm('Delete this location?')) return;
+      const id = btn.dataset.id;
+      const res = await fetch(`/admin/location/delete/${id}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (data.success) location.reload();
+      else alert(data.message);
+    });
+  });
+
   updateStats();
-  document.querySelectorAll('.delete-location').forEach(btn => btn.addEventListener('click', async e => {
-    if (!confirm('Delete this location?')) return;
-    const id = btn.dataset.id,
-      res = await fetch(`/admin/location/delete/${id}`, {
-        method: 'DELETE'
-      });
-    const data = await res.json();
-    if (data.success) location.reload();
-    else alert(data.message);
-  }));
+  filterLocations(); // initial filter to set correct empty state visibility
 </script>

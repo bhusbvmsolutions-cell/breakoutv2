@@ -42,7 +42,43 @@
 
   $(document).ready(function() {
     $('.select2-multiple').select2({ theme: 'bootstrap-5', width: '100%', placeholder: 'Select videos...', allowClear: true });
-    $('.summernote').summernote({ height: 200 });
+    $('.summernote').summernote({
+        placeholder: 'Write your content here...',
+        tabsize: 2,
+        height: 300,
+        fontNames: [
+          'Arial', 'Arial Black', 'Comic Sans MS', 'Courier New',
+          'Georgia', 'Tahoma', 'Times New Roman', 'Verdana',
+
+          'Poppins', 'Roboto', 'Open Sans', 'Lato',
+          'Montserrat', 'Raleway', 'Nunito',
+          'Playfair Display', 'Merriweather'
+        ],
+        fontNamesIgnoreCheck: [
+          'Poppins', 'Roboto', 'Open Sans', 'Lato',
+          'Montserrat', 'Raleway', 'Nunito',
+          'Playfair Display', 'Merriweather'
+        ],
+        fontSizes: ['8', '10', '12', '14', '16', '18', '20', '24', '28', '32', '36', '48', '64'],
+        toolbar: [
+          ['style', ['style']],
+          ['font', ['bold', 'italic', 'underline', 'strikethrough', 'clear']],
+          ['fontname', ['fontname']],
+          ['fontsize', ['fontsize']],
+          ['color', ['forecolor', 'backcolor']],
+          ['para', ['ul', 'ol', 'paragraph', 'height']],
+          ['insert', ['link', 'picture', 'video', 'table']],
+          ['view', ['fullscreen', 'codeview']]
+        ],
+        lineHeights: ['0.8', '1.0', '1.2', '1.5', '2.0', '3.0'],
+        callbacks: {
+          onChange: function(contents) {
+            // Update the hidden textarea when content changes
+            const textarea = $(this).closest('.text-editor').find('.text-content');
+            textarea.val(contents);
+          }
+        }
+      });
 
     $('#title').on('blur', function() {
       if ($('#slug').val() === '') {

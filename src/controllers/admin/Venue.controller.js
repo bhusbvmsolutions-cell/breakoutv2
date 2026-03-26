@@ -2,7 +2,6 @@ const db = require("../../../models");
 const fs = require("fs");
 const path = require("path");
 const slugify = require("slugify");
-
 const { Op } = require("sequelize");
 
 function getImageAbsolutePath(storedPath) {
@@ -37,18 +36,9 @@ const VenueController = {
       const sort = req.query.sort || "latest";
 
       const where = {};
-
-      if (search) {
-        where.name = { [Op.like]: `%${search}%` };
-      }
-      if (status === "active") {
-        where.isActive = true;
-      } else if (status === "inactive") {
-        where.isActive = false;
-      }
-      if (locationId) {
-        where.location_id = locationId;
-      }
+      if (search) where.name = { [Op.like]: `%${search}%` };
+      if (status === "active") where.isActive = true;
+      else if (status === "inactive") where.isActive = false;
 
       let order = [["createdAt", "DESC"]];
       if (sort === "oldest") order = [["createdAt", "ASC"]];
@@ -56,24 +46,38 @@ const VenueController = {
       else if (sort === "name_desc") order = [["name", "DESC"]];
       else if (sort === "rating_desc") order = [["rating", "DESC"]];
 
+      // Build include array – always include all associations
+      const include = [
+        { model: db.Location, as: 'locations' }, // many-to-many
+        { model: db.VenueCategory, as: 'categories' },
+        { model: db.VenueExperienceType, as: 'experienceTypes' },
+        { model: db.VenueExperienceLookingFor, as: 'lookingFor' },
+        { model: db.VenuePartType, as: 'partyTypes' },
+        { model: db.VenueSuitableTime, as: 'suitableTimes' },
+        { model: db.VenueBudgetRange, as: 'budgetRanges' },
+        { model: db.VenueImage, as: 'galleryImages' },
+      ];
+
+      // If a specific location is requested, filter venues that have that location
+      if (locationId) {
+        include.push({
+          model: db.Location,
+          as: 'locations',
+          where: { id: locationId },
+          required: true, // only venues with that location
+        });
+      }
+
       const { count, rows: venues } = await db.Venue.findAndCountAll({
         where,
-        include: [
-          { model: db.Location, as: 'location' },
-          { model: db.VenueCategory, as: 'categories' },
-          { model: db.VenueExperienceType, as: 'experienceTypes' },
-          { model: db.VenueExperienceLookingFor, as: 'lookingFor' },
-          { model: db.VenuePartType, as: 'partyTypes' },
-          { model: db.VenueSuitableTime, as: 'suitableTimes' },
-          { model: db.VenueBudgetRange, as: 'budgetRanges' },
-          { model: db.VenueImage, as: 'galleryImages' },
-        ],
+        include,
         order,
         limit,
         offset,
         distinct: true,
       });
 
+      // Get all locations for the filter dropdown
       const locations = await db.Location.findAll({ where: { isActive: true }, order: [['title', 'ASC']] });
 
       const totalPages = Math.ceil(count / limit);
@@ -157,7 +161,6 @@ const VenueController = {
         google_map: body.google_map,
         content_left: body.content_left,
         content_right: body.content_right,
-        location_id: body.location_id || null,
         isActive: body.isActive === 'on',
       };
 
@@ -184,6 +187,12 @@ const VenueController = {
           const items = mapping.input.map(id => ({ venue_id: venue.id, [mapping.field]: id }));
           await mapping.model.bulkCreate(items, { transaction });
         }
+      }
+
+      // Locations (many-to-many)
+      if (body.locations && Array.isArray(body.locations)) {
+        const locationMappings = body.locations.map(locId => ({ venue_id: venue.id, location_id: locId }));
+        await db.VenueLocationMapping.bulkCreate(locationMappings, { transaction });
       }
 
       // Gallery images
@@ -222,7 +231,7 @@ const VenueController = {
     try {
       const venue = await db.Venue.findByPk(req.params.id, {
         include: [
-          { model: db.Location, as: 'location' },
+          { model: db.Location, as: 'locations' }, // many-to-many
           { model: db.VenueCategory, as: 'categories' },
           { model: db.VenueExperienceType, as: 'experienceTypes' },
           { model: db.VenueExperienceLookingFor, as: 'lookingFor' },
@@ -285,7 +294,6 @@ const VenueController = {
         google_map: body.google_map,
         content_left: body.content_left,
         content_right: body.content_right,
-        location_id: body.location_id || null,
         isActive: body.isActive === 'on',
       };
 
@@ -322,6 +330,13 @@ const VenueController = {
           const mapping = body[assoc.inputName].map(id => ({ venue_id: venue.id, [assoc.idField]: id }));
           await assoc.model.bulkCreate(mapping, { transaction });
         }
+      }
+
+      // Locations (many-to-many)
+      await db.VenueLocationMapping.destroy({ where: { venue_id: venue.id }, transaction });
+      if (body.locations && Array.isArray(body.locations)) {
+        const locationMappings = body.locations.map(locId => ({ venue_id: venue.id, location_id: locId }));
+        await db.VenueLocationMapping.bulkCreate(locationMappings, { transaction });
       }
 
       // Gallery images
