@@ -2,6 +2,7 @@
 const db = require("../../../models");
 const fs = require("fs");
 const path = require("path");
+const findOrCreatePage = require('../../utils/faqHelper');
 
 function getImageAbsolutePath(storedPath) {
   if (!storedPath) return null;
@@ -182,6 +183,8 @@ const CorporateLdArchiveController = {
           }, { transaction });
         }
       }
+
+      await findOrCreatePage(null, "Corporate L & D Archive", "corporate-ld", "archive");
 
       await transaction.commit();
       req.flash('success', 'Corporate L&D archive updated successfully');

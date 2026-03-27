@@ -141,6 +141,18 @@ app.use((req, res, next) => {
 });
 
 
+
+// show all archive pages in sidebar for faqs and google reviews
+db.sequelize.sync().then(async () => {
+  const pages = await db.Page.findAll({
+    where: { reference: 'archive' },
+    attributes: ['id', 'name', 'reference'],
+    order: [['name', 'ASC']],
+  });
+  app.locals.archivePages = pages;
+});
+
+
 // Routes
 app.use('/', routes);
 

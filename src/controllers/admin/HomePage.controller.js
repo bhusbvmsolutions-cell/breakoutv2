@@ -1,6 +1,7 @@
 const db = require("../../../models");
 const fs = require("fs");
 const path = require("path");
+const findOrCreatePage = require('../../utils/faqHelper');
 
 function getImageAbsolutePath(storedPath) {
   if (!storedPath) return null;
@@ -116,6 +117,8 @@ const HomePageController = {
           }, { transaction });
         }
       }
+
+      await findOrCreatePage(null, "Home Page", "home-page", "archive");
 
       await transaction.commit();
       req.flash('success', 'Home page updated successfully');

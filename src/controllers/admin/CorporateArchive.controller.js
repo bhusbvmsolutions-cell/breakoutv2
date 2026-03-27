@@ -2,6 +2,7 @@
 const db = require("../../../models");
 const fs = require("fs");
 const path = require("path");
+const findOrCreatePage = require('../../utils/faqHelper');
 
 function getImageAbsolutePath(storedPath) {
   if (!storedPath) return null;
@@ -112,14 +113,16 @@ const CorporateArchiveController = {
         }
       }
 
+      await findOrCreatePage(null, "Corporate Archive", "corporate", "archive");
+
       await transaction.commit();
       req.flash('success', 'Corporate archive updated successfully');
-      res.redirect('/admin/corporate-archive');
+      res.redirect('/admin/corporate/archive');
     } catch (error) {
       await transaction.rollback();
       console.error(error);
       req.flash('error', error.message || 'Failed to update archive');
-      res.redirect('/admin/corporate-archive');
+      res.redirect('/admin/corporate/archive');
     }
   },
 };

@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       sort_order: DataTypes.INTEGER,
       heading: DataTypes.STRING,
+      link: DataTypes.STRING,
       image: DataTypes.STRING(500),
     },
     { tableName: 'bachelor_farewell_image_cards', timestamps: true }

@@ -77,6 +77,11 @@
             <i class="bi bi-search"></i>SEO / Places Blogs
           </a>
         </li>
+        <li>
+          <a href="<%= baseUrl %>/admin/breakout-party-blog" class="flex gap-2">
+            <i class="bi bi-search"></i>Breakout Party Blogs
+          </a>
+        </li>
       </ul>
     </li>
     <li>
@@ -267,6 +272,31 @@
             <i class="bi bi-currency-rupee"></i>Venue Budget Ranges
           </a>
         </li>
+      </ul>
+    </li>
+    <li>
+      <a href="javascript:;" class="has-arrow">
+        <div class="parent-icon">
+          <i class="bi bi-building-gear"></i>
+        </div>
+        <div class="menu-title">FAQs For Archive</div>
+      </a>
+      <ul class="shadow-sm">
+        <% if (archivePages && archivePages.length) { %>
+          <% archivePages.forEach(page => { %>
+            <li>
+              <a href="<%= baseUrl %>/admin/faqs/<%= page.id %>" class="flex gap-2">
+                <i class="bi bi-file-text"></i> <%= page.name %>
+              </a>
+            </li>
+          <% }); %>
+        <% } else { %>
+          <li>
+            <a href="javascript:void(0);" class="text-muted flex gap-2" style="cursor: default; opacity: 0.7;">
+              <i class="bi bi-info-circle"></i> Update archive pages data first
+            </a>
+          </li>
+        <% } %>
       </ul>
     </li>
     <li>

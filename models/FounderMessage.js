@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: 'SET NULL',
       },
       message_title: DataTypes.STRING,
-      content: DataTypes.TEXT,
+      content: DataTypes.TEXT('long'),
       video: DataTypes.STRING(500),
       isActive: { type: DataTypes.BOOLEAN, defaultValue: true },
     },

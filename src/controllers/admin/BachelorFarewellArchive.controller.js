@@ -1,12 +1,13 @@
 const db = require("../../../models");
 const fs = require("fs");
 const path = require("path");
+const  findOrCreatePage  = require("../../utils/faqHelper");
 
 function getImageAbsolutePath(storedPath) {
   if (!storedPath) return null;
-  const projectRoot = path.join(__dirname, '../../../');
-  if (storedPath.startsWith('/')) {
-    return path.join(projectRoot, 'public', storedPath);
+  const projectRoot = path.join(__dirname, "../../../");
+  if (storedPath.startsWith("/")) {
+    return path.join(projectRoot, "public", storedPath);
   }
   return path.join(projectRoot, storedPath);
 }
@@ -14,7 +15,7 @@ function getImageAbsolutePath(storedPath) {
 function groupFilesByFieldname(files) {
   const grouped = {};
   if (files && files.length) {
-    files.forEach(file => {
+    files.forEach((file) => {
       if (!grouped[file.fieldname]) grouped[file.fieldname] = [];
       grouped[file.fieldname].push(file);
     });
@@ -28,21 +29,21 @@ const BachelorFarewellArchiveController = {
     if (!archive) {
       archive = await db.BachelorFarewellArchive.create({
         type,
-        banner_heading: '',
-        banner_description: '',
-        counters_heading: '',
-        counters_content: '',
+        banner_heading: "",
+        banner_description: "",
+        counters_heading: "",
+        counters_content: "",
         banner_video_id: null,
-        counters_note: '',
-        counters_counter_heading: '',
+        counters_note: "",
+        counters_counter_heading: "",
         counters_rating: null,
-        image_card_heading: '',
-        party_inclusions_heading: '',
-        party_inclusions_note: '',
-        slider_heading: '',
-        slider_description: '',
-        footer_heading: '',
-        footer_content: '',
+        image_card_heading: "",
+        party_inclusions_heading: "",
+        party_inclusions_note: "",
+        slider_heading: "",
+        slider_description: "",
+        footer_heading: "",
+        footer_content: "",
       });
     }
     return archive;
@@ -51,37 +52,80 @@ const BachelorFarewellArchiveController = {
   index: async (req, res) => {
     try {
       const type = req.params.type; // 'bachelor' or 'farewell'
-      const archive = await BachelorFarewellArchiveController.ensureArchive(type);
-      const fullArchive = await db.BachelorFarewellArchive.findByPk(archive.id, {
-        include: [
-          { model: db.BachelorFarewellCounterCard, as: 'counterCards', order: [['sort_order', 'ASC']] },
-          { model: db.BachelorFarewellImageCard, as: 'imageCards', order: [['sort_order', 'ASC']] },
-          { model: db.BachelorFarewellInclusionItem, as: 'inclusionItems', order: [['sort_order', 'ASC']] },
-          { model: db.BachelorFarewellSliderItem, as: 'sliderItems', order: [['sort_order', 'ASC']] },
-          { model: db.BachelorFarewellPackageColumn, as: 'packageColumns', order: [['sort_order', 'ASC']] },
-          { model: db.BachelorFarewellPackageRow, as: 'packageRows', order: [['sort_order', 'ASC']] },
-          { model: db.Video, as: 'videos', through: { attributes: ['custom_title'] }, order: [['sort_order', 'ASC']] },
-        ],
+      const archive = await BachelorFarewellArchiveController.ensureArchive(
+        type
+      );
+      const fullArchive = await db.BachelorFarewellArchive.findByPk(
+        archive.id,
+        {
+          include: [
+            {
+              model: db.BachelorFarewellCounterCard,
+              as: "counterCards",
+              order: [["sort_order", "ASC"]],
+            },
+            {
+              model: db.BachelorFarewellImageCard,
+              as: "imageCards",
+              order: [["sort_order", "ASC"]],
+            },
+            {
+              model: db.BachelorFarewellInclusionItem,
+              as: "inclusionItems",
+              order: [["sort_order", "ASC"]],
+            },
+            {
+              model: db.BachelorFarewellSliderItem,
+              as: "sliderItems",
+              order: [["sort_order", "ASC"]],
+            },
+            {
+              model: db.BachelorFarewellPackageColumn,
+              as: "packageColumns",
+              order: [["sort_order", "ASC"]],
+            },
+            {
+              model: db.BachelorFarewellPackageRow,
+              as: "packageRows",
+              order: [["sort_order", "ASC"]],
+            },
+            {
+              model: db.Video,
+              as: "videos",
+              through: { attributes: ["custom_title"] },
+              order: [["sort_order", "ASC"]],
+            },
+          ],
+        }
+      );
+      const videos = await db.Video.findAll({
+        where: { status: "active" },
+        order: [["title", "ASC"]],
       });
-      const videos = await db.Video.findAll({ where: { status: 'active' }, order: [['title', 'ASC']] });
-      res.render('admin/party/bachelorfarewell/index', {
-        title: type === 'bachelor' ? 'Bachelor Archive' : 'Farewell Archive',
+      res.render("admin/party/bachelorfarewell/index", {
+        title: type === "bachelor" ? "Bachelor Archive" : "Farewell Archive",
         archive: fullArchive,
         videos,
         type,
       });
     } catch (error) {
       console.error(error);
-      req.flash('error', 'Failed to load form');
-      res.redirect('/admin/dashboard');
+      req.flash("error", "Failed to load form");
+      res.redirect("/admin/dashboard");
     }
   },
 
   update: async (req, res) => {
     const transaction = await db.sequelize.transaction();
+    const type = req.params.type;
+    if (!type || (type !== "bachelor" && type !== "farewell")) {
+      req.flash("error", "Invalid archive type");
+      return res.redirect("/admin/party");
+    }
     try {
-      const type = req.params.type;
-      const archive = await BachelorFarewellArchiveController.ensureArchive(type);
+      const archive = await BachelorFarewellArchiveController.ensureArchive(
+        type
+      );
       const files = groupFilesByFieldname(req.files);
       const body = req.body;
 
@@ -101,18 +145,20 @@ const BachelorFarewellArchiveController = {
         slider_description: body.slider_description,
         footer_heading: body.footer_heading,
         footer_content: body.footer_content,
-        isActive: body.isActive === 'on',
+        isActive: body.isActive === "on",
       };
 
       // Images 1,2,3
-      const imageFields = ['image1', 'image2', 'image3'];
+      const imageFields = ["image1", "image2", "image3"];
       for (const field of imageFields) {
         if (files[field] && files[field][0]) {
           if (archive[field]) {
             const oldPath = getImageAbsolutePath(archive[field]);
             if (oldPath && fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
           }
-          updateData[field] = `/uploads/party/${type}/${files[field][0].filename}`;
+          updateData[
+            field
+          ] = `/uploads/party/${type}/${files[field][0].filename}`;
         } else if (body[field]) {
           updateData[field] = body[field];
         }
@@ -147,97 +193,130 @@ const BachelorFarewellArchiveController = {
       await replaceCollection(
         db.BachelorFarewellCounterCard,
         body.counter_cards,
-        { count: 'count', description: 'description' },
-        { prefix: 'counter_cards', field: 'image', dest: 'image' }
+        { count: "count", description: "description" },
+        { prefix: "counter_cards", field: "image", dest: "image" }
       );
 
       // Image cards (repeater)
       await replaceCollection(
         db.BachelorFarewellImageCard,
         body.image_cards,
-        { heading: 'heading' },
-        { prefix: 'image_cards', field: 'image', dest: 'image' }
+        { heading: "heading", link: "link" },
+        { prefix: "image_cards", field: "image", dest: "image" }
       );
 
       // Inclusion items (repeater)
       await replaceCollection(
         db.BachelorFarewellInclusionItem,
         body.inclusion_items,
-        { heading: 'heading', link: 'link' },
-        { prefix: 'inclusion_items', field: 'image', dest: 'image' }
+        { heading: "heading", link: "link" },
+        { prefix: "inclusion_items", field: "image", dest: "image" }
       );
 
       // Slider items (repeater)
       await replaceCollection(
         db.BachelorFarewellSliderItem,
         body.slider_items,
-        { heading: 'heading', description: 'description' },
-        { prefix: 'slider_items', field: 'image', dest: 'image' }
+        { heading: "heading", description: "description" },
+        { prefix: "slider_items", field: "image", dest: "image" }
       );
 
       // Pricing columns
-      await db.BachelorFarewellPackageColumn.destroy({ where: { archive_id: archive.id }, transaction });
+      await db.BachelorFarewellPackageColumn.destroy({
+        where: { archive_id: archive.id },
+        transaction,
+      });
       const createdColumns = [];
       if (body.package_columns && Array.isArray(body.package_columns)) {
         for (let i = 0; i < body.package_columns.length; i++) {
           const col = body.package_columns[i];
           const imageFile = files[`package_columns[${i}][image]`]?.[0];
-          const column = await db.BachelorFarewellPackageColumn.create({
-            archive_id: archive.id,
-            sort_order: i,
-            title: col.title,
-            duration: col.duration,
-            image: imageFile ? `/uploads/party/${type}/${imageFile.filename}` : (col.image || null),
-          }, { transaction });
+          const column = await db.BachelorFarewellPackageColumn.create(
+            {
+              archive_id: archive.id,
+              sort_order: i,
+              title: col.title,
+              duration: col.duration,
+              image: imageFile
+                ? `/uploads/party/${type}/${imageFile.filename}`
+                : col.image || null,
+            },
+            { transaction }
+          );
           createdColumns.push(column);
         }
       }
 
       // Pricing rows & cells
-      await db.BachelorFarewellPackageRow.destroy({ where: { archive_id: archive.id }, transaction });
+      await db.BachelorFarewellPackageRow.destroy({
+        where: { archive_id: archive.id },
+        transaction,
+      });
       if (body.package_rows && Array.isArray(body.package_rows)) {
         for (let i = 0; i < body.package_rows.length; i++) {
           const row = body.package_rows[i];
-          const dbRow = await db.BachelorFarewellPackageRow.create({
-            archive_id: archive.id,
-            sort_order: i,
-            feature: row.feature,
-          }, { transaction });
+          const dbRow = await db.BachelorFarewellPackageRow.create(
+            {
+              archive_id: archive.id,
+              sort_order: i,
+              feature: row.feature,
+            },
+            { transaction }
+          );
 
           for (let j = 0; j < createdColumns.length; j++) {
-            const cellValue = row[`col${j}`] || 'No';
-            await db.BachelorFarewellPackageCell.create({
-              row_id: dbRow.id,
-              column_id: createdColumns[j].id,
-              value: cellValue,
-            }, { transaction });
+            const cellValue = row[`col${j}`] || "No";
+            await db.BachelorFarewellPackageCell.create(
+              {
+                row_id: dbRow.id,
+                column_id: createdColumns[j].id,
+                value: cellValue,
+              },
+              { transaction }
+            );
           }
         }
       }
 
       // Video testimonials
-      await db.BachelorFarewellVideo.destroy({ where: { archive_id: archive.id }, transaction });
+      await db.BachelorFarewellVideo.destroy({
+        where: { archive_id: archive.id },
+        transaction,
+      });
       if (body.video_ids && Array.isArray(body.video_ids)) {
         for (let i = 0; i < body.video_ids.length; i++) {
           const videoId = body.video_ids[i];
-          const customTitle = body[`video_title_${videoId}`] || '';
-          await db.BachelorFarewellVideo.create({
-            archive_id: archive.id,
-            video_id: videoId,
-            custom_title: customTitle,
-            sort_order: i,
-          }, { transaction });
+          const customTitle = body[`video_title_${videoId}`] || "";
+          await db.BachelorFarewellVideo.create(
+            {
+              archive_id: archive.id,
+              video_id: videoId,
+              custom_title: customTitle,
+              sort_order: i,
+            },
+            { transaction }
+          );
         }
+      }
+      if (type === "bachelor") {
+        await findOrCreatePage(null, "Bachelor Archive", "bachelor", "archive");
+      } else if (type === "farewell") {
+        await findOrCreatePage(null, "Farewell Archive", "farewell", "archive");
       }
 
       await transaction.commit();
-      req.flash('success', `${type === 'bachelor' ? 'Bachelor' : 'Farewell'} archive updated successfully`);
-      res.redirect(`/admin/party/${type}/archive`);
+      req.flash(
+        "success",
+        `${
+          type === "bachelor" ? "Bachelor" : "Farewell"
+        } archive updated successfully`
+      );
+      res.redirect(`/admin/party/${req.params.type}/archive`);
     } catch (error) {
       await transaction.rollback();
       console.error(error);
-      req.flash('error', error.message || 'Failed to update archive');
-      res.redirect(`/admin/party/${type}/archive`);
+      req.flash("error", error.message || "Failed to update archive");
+      res.redirect(`/admin/party/${req.body.type}/archive`);
     }
   },
 };

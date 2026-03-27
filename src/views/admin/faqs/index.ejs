@@ -1,0 +1,363 @@
+<%- contentFor('title') %> <%= title %>
+<%- contentFor('head') %>
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<style>
+  body {
+    background: #f5f7fb;
+  }
+
+  .faq-container {
+    max-width: 100%;
+    margin: 0 auto;
+  }
+
+  .page-header {
+    background: linear-gradient(135deg, #fcad00 0%, #ffd966 100%);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    color: #2c3e50;
+  }
+
+  .faq-list {
+    margin-top: 1rem;
+  }
+
+  .faq-item {
+    background: #fff;
+    border-radius: 0.75rem;
+    margin-bottom: 0.75rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s;
+  }
+
+  .faq-item:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateX(2px);
+  }
+
+  .faq-header {
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+  }
+
+  .faq-drag-handle {
+    cursor: grab;
+    color: #6c757d;
+    font-size: 1.2rem;
+  }
+
+  .faq-drag-handle:active {
+    cursor: grabbing;
+  }
+
+  .faq-question {
+    flex: 1;
+    font-weight: 600;
+    color: #2c3e50;
+  }
+
+  .faq-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .faq-answer {
+    padding: 0 1rem 1rem 2.5rem;
+    font-size: 0.9rem;
+    color: #6c757d;
+    border-top: 1px solid #eef2f6;
+    display: none;
+  }
+
+  .faq-answer.show {
+    display: block;
+  }
+
+  .badge-sm {
+    font-size: 0.65rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 20px;
+    font-weight: 500;
+  }
+
+  .btn-sm {
+    padding: 0.2rem 0.5rem;
+    font-size: 0.7rem;
+  }
+
+  .sortable-ghost {
+    opacity: 0.4;
+    background: #f8f9fa;
+    border: 2px dashed #fcad00;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 3rem;
+    background: #fff;
+    border-radius: 1rem;
+    color: #6c757d;
+  }
+</style>
+
+<%- contentFor('body') %>
+<div class="container-fluid py-3">
+  <div class="faq-container">
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h4 class="mb-1 fw-bold"><%= title %></h4>
+          <p class="mb-0 small opacity-75">Manage frequently asked questions for this page</p>
+        </div>
+        <div>
+          <button type="button" class="btn btn-light btn-sm" id="addFaqBtn">
+            <i class="bx bx-plus-circle me-1"></i> Add FAQ
+          </button>
+          <a href="/admin/pages" class="btn btn-outline-light btn-sm ms-2">
+            <i class="bx bx-arrow-back me-1"></i> Back
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQ List -->
+    <div class="faq-list" id="faqList">
+      <% if (faqs && faqs.length) { %>
+      <% faqs.forEach((faq, index) => { %>
+      <div class="faq-item" data-id="<%= faq.id %>" data-sort="<%= faq.sort_order || index %>">
+        <div class="faq-header">
+          <div class="faq-drag-handle"><i class="bx bx-menu"></i></div>
+          <div class="faq-question"><%= faq.question %></div>
+          <div class="faq-actions">
+            <span class="badge-sm badge <%= faq.isActive ? 'bg-success' : 'bg-secondary' %> toggle-status" data-id="<%= faq.id %>" data-status="<%= faq.isActive %>">
+              <%= faq.isActive ? 'Active' : 'Inactive' %>
+            </span>
+            <button class="btn btn-sm btn-warning edit-faq" data-id="<%= faq.id %>" data-question="<%= faq.question.replace(/"/g, '&quot;') %>" data-answer="<%= faq.answer.replace(/"/g, '&quot;') %>" data-active="<%= faq.isActive %>">
+              <i class="bx bx-edit"></i>
+            </button>
+            <button class="btn btn-sm btn-danger delete-faq" data-id="<%= faq.id %>">
+              <i class="bx bx-trash"></i>
+            </button>
+          </div>
+        </div>
+        <div class="faq-answer">
+          <%- faq.answer %>
+        </div>
+      </div>
+      <% }); %>
+      <% } else { %>
+      <div class="empty-state">
+        <i class="bx bx-question-mark fs-1 text-muted"></i>
+        <h5 class="mt-3">No FAQs yet</h5>
+        <p class="small">Click "Add FAQ" to create your first frequently asked question.</p>
+        <button type="button" class="btn btn-primary btn-sm mt-2" id="emptyAddFaqBtn">
+          <i class="bx bx-plus-circle me-1"></i> Add FAQ
+        </button>
+      </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<!-- Add/Edit FAQ Modal -->
+<div class="modal fade" id="faqModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="faqModalLabel">Add FAQ</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="faqId">
+        <div class="mb-3">
+          <label class="form-label">Question</label>
+          <textarea class="form-control" id="faqQuestion" rows="2" placeholder="Enter the question here..." required></textarea>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Answer</label>
+          <textarea class="form-control summernote" id="faqAnswer" rows="5" placeholder="Enter the answer here..."></textarea>
+        </div>
+        <div class="mb-3 form-check">
+          <input type="checkbox" class="form-check-input" id="faqActive" checked>
+          <label class="form-check-label">Active</label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" id="saveFaqBtn">Save FAQ</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- contentFor('js') %>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+<script>
+  const pageId = <%= page?.id || 'null' %>;
+  let summernoteInitialized = false;
+
+  function initSummernote() {
+    if (!summernoteInitialized) {
+      $('#faqAnswer').summernote({
+        height: 200,
+        toolbar: [
+          ['style', ['bold', 'italic', 'underline', 'clear']],
+          ['font', ['strikethrough', 'superscript', 'subscript']],
+          ['color', ['color']],
+          ['para', ['ul', 'ol', 'paragraph']],
+          ['insert', ['link', 'picture', 'video']],
+          ['view', ['codeview']]
+        ]
+      });
+      summernoteInitialized = true;
+    }
+  }
+
+  $(document).ready(function() {
+    // Toggle FAQ answer visibility
+    $(document).on('click', '.faq-header', function(e) {
+      if (!$(e.target).closest('.faq-actions').length) {
+        $(this).siblings('.faq-answer').toggleClass('show');
+      }
+    });
+
+    // Sortable
+    if (document.getElementById('faqList') && document.querySelectorAll('.faq-item').length > 0) {
+        new Sortable(document.getElementById('faqList'), {
+          handle: '.faq-drag-handle',
+          animation: 150,
+          ghostClass: 'sortable-ghost',
+          onEnd: function() {
+            const order = Array.from(document.querySelectorAll('.faq-item')).map(el => el.dataset.id);
+            fetch('/admin/faqs/reorder', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+              },
+              body: JSON.stringify({ 
+                faqs: order,
+                page_id: pageId  // This ensures FAQs are only reordered within the same page
+              })
+            })
+            .then(res => res.json())
+            .then(data => { 
+              if (!data.success) {
+                console.error('Reorder failed:', data.message);
+                alert('Failed to reorder FAQs: ' + data.message);
+              }
+            })
+            .catch(err => {
+              console.error('Reorder error:', err);
+              alert('An error occurred while reordering');
+            });
+          }
+        });
+      }
+
+    // Add FAQ button
+    function showAddModal() {
+      $('#faqModalLabel').text('Add FAQ');
+      $('#faqId').val('');
+      $('#faqQuestion').val('');
+      if (summernoteInitialized) $('#faqAnswer').summernote('code', '');
+      else initSummernote();
+      $('#faqActive').prop('checked', true);
+      $('#faqModal').modal('show');
+    }
+
+    $('#addFaqBtn, #emptyAddFaqBtn').click(showAddModal);
+
+    // Edit FAQ
+    $(document).on('click', '.edit-faq', function() {
+      const id = $(this).data('id');
+      const question = $(this).data('question');
+      const answer = $(this).data('answer');
+      const active = $(this).data('active');
+      $('#faqModalLabel').text('Edit FAQ');
+      $('#faqId').val(id);
+      $('#faqQuestion').val(question);
+      if (summernoteInitialized) $('#faqAnswer').summernote('code', answer);
+      else initSummernote();
+      $('#faqActive').prop('checked', active === true);
+      $('#faqModal').modal('show');
+    });
+
+    // Save FAQ
+    $('#saveFaqBtn').click(async function() {
+      const id = $('#faqId').val();
+      const question = $('#faqQuestion').val().trim();
+      const answer = $('#faqAnswer').summernote('code');
+      const isActive = $('#faqActive').is(':checked');
+      if (!question || !answer) {
+        alert('Please fill in both question and answer');
+        return;
+      }
+      const url = id ? `/admin/faqs/update/${id}` : '/admin/faqs/store';
+      const data = {
+        page_id: pageId,
+        question,
+        answer,
+        isActive: isActive ? 'on' : ''
+      };
+      if (id) data.id = id;
+
+      try {
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + localStorage.getItem('token')
+          },
+          body: JSON.stringify(data)
+        });
+        const result = await res.json();
+        if (result.success) {
+          location.reload();
+        } else {
+          alert(result.message);
+        }
+      } catch (err) {
+        console.error(err);
+        alert('An error occurred');
+      }
+    });
+
+    // Delete FAQ
+    $(document).on('click', '.delete-faq', async function() {
+      if (!confirm('Delete this FAQ?')) return;
+      const id = $(this).data('id');
+      const res = await fetch(`/admin/faqs/delete/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': 'Bearer ' + localStorage.getItem('token')
+        }
+      });
+      const data = await res.json();
+      if (data.success) location.reload();
+      else alert(data.message);
+    });
+
+    // Toggle status
+    $(document).on('click', '.toggle-status', async function() {
+      const id = $(this).data('id');
+      const res = await fetch(`/admin/faqs/toggle-status/${id}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + localStorage.getItem('token')
+        }
+      });
+      const data = await res.json();
+      if (data.success) location.reload();
+      else alert(data.message);
+    });
+  });
+</script>

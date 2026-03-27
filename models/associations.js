@@ -1443,15 +1443,15 @@ module.exports = (db) => {
   VenueContentSection.belongsTo(Venue, { foreignKey: "venue_id" });
 
   // ==================== BIRTHDAY BLOG Associations ====================
-  
+
   const { BirthdayBlog, BirthdayBlogIconItem, BirthdayBlogVenueMapping } = db;
-  
+
   BirthdayBlog.hasMany(BirthdayBlogIconItem, {
     foreignKey: "blog_id",
     as: "iconItems",
   });
   BirthdayBlogIconItem.belongsTo(BirthdayBlog, { foreignKey: "blog_id" });
-  
+
   BirthdayBlog.belongsToMany(Venue, {
     through: BirthdayBlogVenueMapping,
     foreignKey: "blog_id",
@@ -1471,9 +1471,7 @@ module.exports = (db) => {
   });
   BirthdayBlogVenueMapping.belongsTo(BirthdayBlog, { foreignKey: "blog_id" });
   BirthdayBlogVenueMapping.belongsTo(Venue, { foreignKey: "venue_id" });
-  
-  
-  
+
   // ==================== BREAKOUT PARTY BLOG Associations ====================
 
   const {
@@ -1482,17 +1480,43 @@ module.exports = (db) => {
     BreakoutPartyBlogContentImage,
     BreakoutPartyBlogContentGalleryImage,
   } = db;
-  
-  BreakoutPartyBlog.hasMany(BreakoutPartyBlogContentSection, { foreignKey: 'blog_id', as: 'contentSections' });
-  BreakoutPartyBlogContentSection.belongsTo(BreakoutPartyBlog, { foreignKey: 'blog_id' });
-  
-  BreakoutPartyBlogContentSection.hasMany(BreakoutPartyBlogContentImage, { foreignKey: 'content_section_id', as: 'contentImages' });
-  BreakoutPartyBlogContentImage.belongsTo(BreakoutPartyBlogContentSection, { foreignKey: 'content_section_id' });
-  
-  BreakoutPartyBlogContentSection.hasMany(BreakoutPartyBlogContentGalleryImage, { foreignKey: 'content_section_id', as: 'galleryImages' });
-  BreakoutPartyBlogContentGalleryImage.belongsTo(BreakoutPartyBlogContentSection, { foreignKey: 'content_section_id' });
-  
-  BreakoutPartyBlog.belongsTo(Video, { foreignKey: 'banner_video_id', as: 'bannerVideo' });
+
+  BreakoutPartyBlog.hasMany(BreakoutPartyBlogContentSection, {
+    foreignKey: "blog_id",
+    as: "contentSections",
+  });
+  BreakoutPartyBlogContentSection.belongsTo(BreakoutPartyBlog, {
+    foreignKey: "blog_id",
+  });
+
+  BreakoutPartyBlogContentSection.hasMany(BreakoutPartyBlogContentImage, {
+    foreignKey: "content_section_id",
+    as: "contentImages",
+  });
+  BreakoutPartyBlogContentImage.belongsTo(BreakoutPartyBlogContentSection, {
+    foreignKey: "content_section_id",
+  });
+
+  BreakoutPartyBlogContentSection.hasMany(
+    BreakoutPartyBlogContentGalleryImage,
+    { foreignKey: "content_section_id", as: "galleryImages" }
+  );
+  BreakoutPartyBlogContentGalleryImage.belongsTo(
+    BreakoutPartyBlogContentSection,
+    { foreignKey: "content_section_id" }
+  );
+
+  BreakoutPartyBlog.belongsTo(Video, {
+    foreignKey: "banner_video_id",
+    as: "bannerVideo",
+  });
+
+  // ==================== FAQs Associations ====================
+
+  const { Page, Faq } = db;
+
+  Page.hasMany(Faq, { foreignKey: "page_id", as: "faqs" });
+  Faq.belongsTo(Page, { foreignKey: "page_id", as: "page" });
 
   console.log("✓ All model associations have been established successfully");
 };

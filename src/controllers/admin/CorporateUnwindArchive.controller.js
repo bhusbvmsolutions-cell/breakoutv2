@@ -2,6 +2,7 @@
 const db = require("../../../models");
 const fs = require("fs");
 const path = require("path");
+const findOrCreatePage = require('../../utils/faqHelper');
 
 function getImageAbsolutePath(storedPath) {
   if (!storedPath) return null;
@@ -248,6 +249,8 @@ const CorporateUnwindArchiveController = {
           }, { transaction });
         }
       }
+
+      await findOrCreatePage(null, "Corporate Unwind Archive", "corporate-unwind", "archive");
 
       await transaction.commit();
       req.flash('success', 'Corporate Unwind archive updated successfully');

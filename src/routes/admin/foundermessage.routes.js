@@ -19,14 +19,17 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {
-  const allowedTypes = /jpeg|jpg|png|gif|webp/;
+  const allowedTypes = /jpeg|jpg|png|gif|webp|bmp|tiff|tif|svg|ico|heif|heic|avif/;
   const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
   const mimetype = allowedTypes.test(file.mimetype);
   if (mimetype && extname) return cb(null, true);
   cb(new Error('Only image files are allowed'));
 };
 
-const upload = multer({ storage, limits: { fileSize: 50 * 1024 * 1024 }, fileFilter });
+const upload = multer({ storage, limits: { 
+  fileSize: 50 * 1024 * 1024,   // 50MB for files
+  fieldSize: 100 * 1024 * 1024   // 10MB for text fields
+}, fileFilter });
 const uploadAny = upload.any();
 
 router.use(isAuthenticated);

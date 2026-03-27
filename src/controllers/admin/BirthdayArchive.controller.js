@@ -2,6 +2,7 @@
 const db = require("../../../models");
 const fs = require("fs");
 const path = require("path");
+const findOrCreatePage = require("../../utils/faqHelper");
 
 function getImageAbsolutePath(storedPath) {
   if (!storedPath) return null;
@@ -98,6 +99,9 @@ const BirthdayArchiveController = {
       const files = groupFilesByFieldname(req.files);
       const body = req.body;
 
+
+      
+      
       const updateData = {
         banner_heading: body.banner_heading,
         banner_description: body.banner_description,
@@ -114,7 +118,6 @@ const BirthdayArchiveController = {
         footer_content: body.footer_content,
         isActive: body.isActive === "on",
       };
-
       // Images 1,2,3
       const imageFields = ["image1", "image2", "image3"];
       for (const field of imageFields) {
@@ -200,6 +203,8 @@ const BirthdayArchiveController = {
           );
         }
       }
+
+      await findOrCreatePage(id=null, 'Birthday Archive', 'birthday', 'archive');
 
       await transaction.commit();
       req.flash("success", "Birthday archive updated successfully");

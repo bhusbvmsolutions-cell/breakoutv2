@@ -71,6 +71,10 @@ const StaticPageController = {
   update: async (req, res) => {
     const transaction = await db.sequelize.transaction();
     try {
+      if (!req.body) {
+        req.flash('error', 'No data received');
+        return res.redirect(`/admin/static/page/${slug}`);
+      }
       const slug = req.params.slug;
       const body = req.body;
       let page = await db.StaticPage.findOne({ where: { slug }, transaction });
@@ -93,7 +97,7 @@ const StaticPageController = {
       await transaction.commit();
 
       req.flash('success', `${slug.replace(/-/g, ' ')} page updated successfully`);
-      res.redirect(`/admin/static/pages`);
+      res.redirect(`/admin/static/page`);
     } catch (error) {
       await transaction.rollback();
       console.error(error);
