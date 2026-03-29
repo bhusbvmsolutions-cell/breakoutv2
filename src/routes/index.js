@@ -102,6 +102,12 @@ router.use('/admin/googlereviews', adminGoogleReviewsRoutes);
 const apiTestRoutes = require('./api/test.apiroutes');
 const siteSettingsRoutes = require('./api/sitesettings.routes');
 const activityApiRoutes = require('./api/activity.routes');
+const homeApiRoutes = require('./api/homepage.routes');
+const EscapeRoomArchiveApiRoutes = require('./api/escapearchive.routes');
+const EscapeRoomLocationsApiRoutes = require('./api/escapelocations.routes');
+const EscapeRoomApiRoutes = require('./api/escaperoom.routes');
+const VirtualApiRoutes = require('./api/virtual.routes');
+const PartiesApiRoutes = require('./api/parties.routes');
 
 
 
@@ -109,6 +115,13 @@ const activityApiRoutes = require('./api/activity.routes');
 router.use('/api', apiTestRoutes);
 router.use('/api/sitesettings', siteSettingsRoutes);
 router.use('/api/activities', activityApiRoutes);
+router.use('/api/home', homeApiRoutes);
+router.use('/api/escaperoomarchive', EscapeRoomArchiveApiRoutes);
+router.use('/api/escaperoomlocations', EscapeRoomLocationsApiRoutes);
+router.use('/api/escaperooms', EscapeRoomApiRoutes);
+router.use('/api/virtual', VirtualApiRoutes);
+router.use('/api/parties', PartiesApiRoutes);
+
 
 
 // Home route
