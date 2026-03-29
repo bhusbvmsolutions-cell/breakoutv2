@@ -4,6 +4,7 @@ const { Op } = require('sequelize');
 const fs = require('fs').promises;
 const path = require('path');
 const slugify = require('slugify');
+const { DeleteFaqPage, findOrCreatePage} = require("../../utils/faqHelper");
 
 const escapeRoomController = {
 // List all rooms
@@ -267,6 +268,8 @@ create: async (req, res) => {
             }).filter(Boolean));
         }
 
+        await findOrCreatePage(room.id, room.title, room.slug, 'escaperoom');
+
         await transaction.commit();
 
         res.json({
@@ -394,6 +397,8 @@ update: async (req, res) => {
             }).filter(Boolean));
         }
 
+        await findOrCreatePage(room.id, room.title, room.slug, 'escaperoom');
+
         await transaction.commit();
 
         res.json({
@@ -438,9 +443,12 @@ delete: async (req, res) => {
         );
 
         // Soft delete room
-        await room.update({ isActive: false }, { transaction });
+        await room.destroy({ transaction });
+
+        await DeleteFaqPage(room.id, room.title, room.slug, 'escaperoom');
 
         await transaction.commit();
+
 
         res.json({
             success: true,

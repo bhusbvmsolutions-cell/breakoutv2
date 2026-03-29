@@ -45,6 +45,7 @@ const venueBudgetRangesRoutes = require('./admin/venuebudgetranges.routes');
 const adminBirthdayBlogRoutes = require('./admin/birthdayblog.routes');
 const adminBreakoutPartyBlogRoutes = require('./admin/breakoutpartyblog.routes');
 const adminFaqsRoutes = require('./admin/faqs.routes');
+const adminGoogleReviewsRoutes = require('./admin/googlereviews.routes');
 
 // Admin routes
 router.use('/admin', adminAuthRoutes);
@@ -90,6 +91,7 @@ router.use('/admin/venue-budget-ranges', venueBudgetRangesRoutes);
 router.use('/admin/birthday-blog', adminBirthdayBlogRoutes);
 router.use('/admin/breakout-party-blog', adminBreakoutPartyBlogRoutes);
 router.use('/admin/faqs', adminFaqsRoutes);
+router.use('/admin/googlereviews', adminGoogleReviewsRoutes);
 
 
 

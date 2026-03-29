@@ -1,18 +1,81 @@
 <%- contentFor('title') %> Breakout Party Blogs
 <%- contentFor('head') %>
 <style>
-  body { background: #f5f7fb; }
-  .blogs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
-  .blog-card { background: #fff; border-radius: 0.75rem; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05); transition: all 0.2s; }
-  .blog-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
-  .blog-card-image { height: 140px; overflow: hidden; }
-  .blog-card-image img { width: 100%; height: 100%; object-fit: cover; }
-  .blog-card-content { padding: 0.75rem; }
-  .blog-card-title { font-size: 1rem; font-weight: 600; margin-bottom: 0.25rem; }
-  .blog-card-slug { font-size: 0.7rem; color: #6c757d; margin-bottom: 0.5rem; word-break: break-all; }
-  .blog-card-status { font-size: 0.65rem; padding: 0.2rem 0.5rem; border-radius: 20px; font-weight: 500; }
-  .blog-card-actions { display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 0.5rem; }
-  .btn-sm { padding: 0.2rem 0.5rem; font-size: 0.7rem; }
+  body {
+    background: #f5f7fb;
+  }
+
+  .blogs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+
+  .blog-card {
+    background: #fff;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s;
+  }
+
+  .blog-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .blog-card-image {
+    height: 140px;
+    overflow: hidden;
+  }
+
+  .blog-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .blog-card-content {
+    padding: 0.75rem;
+  }
+
+  .blog-card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+
+  .blog-card-slug {
+    font-size: 0.7rem;
+    color: #6c757d;
+    margin-bottom: 0.5rem;
+    word-break: break-all;
+  }
+
+  .blog-card-status {
+    font-size: 0.65rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 20px;
+    font-weight: 500;
+  }
+
+  .blog-card-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+    margin-top: 0.5rem;
+  }
+  .blog-card-actions a{
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .btn-sm {
+    padding: 0.2rem 0.5rem;
+    font-size: 0.7rem;
+  }
 </style>
 
 <%- contentFor('body') %>
@@ -29,25 +92,31 @@
 
   <div class="blogs-grid">
     <% blogs.forEach(blog => { %>
-      <div class="blog-card">
-        <div class="blog-card-image">
-          <% if (blog.featured_image) { %>
-            <img src="<%= blog.featured_image %>" alt="<%= blog.title %>">
-          <% } else { %>
-            <div class="bg-light d-flex align-items-center justify-content-center h-100"><i class="bx bx-image-alt fs-1 text-muted"></i></div>
-          <% } %>
-        </div>
-        <div class="blog-card-content">
-          <h5 class="blog-card-title"><%= blog.title %></h5>
-          <div class="blog-card-slug"><i class="bx bx-link-alt me-1"></i> <%= blog.slug %></div>
-          <div class="mt-1"><span class="blog-card-status badge <%= blog.isActive ? 'bg-success' : 'bg-secondary' %>"><%= blog.isActive ? 'Active' : 'Inactive' %></span></div>
-          <div class="blog-card-actions">
-            <a href="/admin/breakout-party-blog/view/<%= blog.id %>" class="btn btn-sm btn-info"><i class="bx bx-show"></i> View</a>
-            <a href="/admin/breakout-party-blog/edit/<%= blog.id %>" class="btn btn-sm btn-warning"><i class="bx bx-edit"></i> Edit</a>
-            <button class="btn btn-sm btn-danger delete-blog" data-id="<%= blog.id %>"><i class="bx bx-trash"></i> Delete</button>
-          </div>
+    <div class="blog-card">
+      <div class="blog-card-image">
+        <% if (blog.featured_image) { %>
+        <img src="<%= blog.featured_image %>" alt="<%= blog.title %>">
+        <% } else { %>
+        <div class="bg-light d-flex align-items-center justify-content-center h-100"><i class="bx bx-image-alt fs-1 text-muted"></i></div>
+        <% } %>
+      </div>
+      <div class="blog-card-content">
+        <h5 class="blog-card-title"><%= blog.title %></h5>
+        <div class="blog-card-slug"><i class="bx bx-link-alt me-1"></i> <%= blog.slug %></div>
+        <div class="mt-1"><span class="blog-card-status badge <%= blog.isActive ? 'bg-success' : 'bg-secondary' %>"><%= blog.isActive ? 'Active' : 'Inactive' %></span></div>
+        <div class="blog-card-actions">
+          <a href="/admin/faqs/slug/<%= blog.slug %>" class="bg-primary py-1 px-2 text-white rounded" title="View FAQs" style="font-size: 14px;">
+            <i class="bi bi-patch-question"></i>
+          </a>
+          <a href="/admin/googlereviews/slug/<%= blog.slug %>" class="bg-secondary py-1 px-2 text-white rounded" title="View Google Reviews" style="font-size: 14px;">
+            <i class="bi bi-google"></i>
+          </a>
+          <a href="/admin/breakout-party-blog/view/<%= blog.id %>" class="btn btn-sm btn-info"><i class="bx bx-show"></i> </a>
+          <a href="/admin/breakout-party-blog/edit/<%= blog.id %>" class="btn btn-sm btn-warning"><i class="bx bx-edit"></i> </a>
+          <button class="btn btn-sm btn-danger delete-blog" data-id="<%= blog.id %>"><i class="bx bx-trash"></i> </button>
         </div>
       </div>
+    </div>
     <% }); %>
   </div>
 </div>
@@ -58,9 +127,12 @@
     btn.addEventListener('click', async e => {
       if (!confirm('Delete this blog?')) return;
       const id = btn.dataset.id;
-      const res = await fetch(`/admin/breakout-party-blog/delete/${id}`, { method: 'DELETE' });
+      const res = await fetch(`/admin/breakout-party-blog/delete/${id}`, {
+        method: 'DELETE'
+      });
       const data = await res.json();
-      if (data.success) location.reload(); else alert(data.message);
+      if (data.success) location.reload();
+      else alert(data.message);
     });
   });
 </script>

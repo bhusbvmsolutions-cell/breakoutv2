@@ -116,6 +116,12 @@
     justify-content: flex-end;
     margin-top: 0.5rem;
   }
+  .blog-card-actions a{
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    align-items: center;
+  }
 
   .btn-sm {
     padding: 0.2rem 0.5rem;
@@ -201,9 +207,15 @@
         <div class="blog-card-slug"><i class="bx bx-link-alt me-1"></i> <%= blog.slug %></div>
         <div class="mt-1"><span class="blog-card-status badge <%= blog.isActive ? 'bg-success' : 'bg-secondary' %>"><%= blog.isActive ? 'Active' : 'Inactive' %></span></div>
         <div class="blog-card-actions">
+          <a href="/admin/faqs/slug/seo:<%= blog.slug %>" class="bg-primary py-1 px-2 text-white rounded" title="View FAQs" style="font-size: 14px;">
+            <i class="bi bi-patch-question"></i>
+          </a>
+          <a href="/admin/googlereviews/slug/seo:<%= blog.slug %>" class="bg-secondary py-1 px-2 text-white rounded" title="View Google Reviews" style="font-size: 14px;">
+            <i class="bi bi-google"></i>
+          </a>
           <a href="/admin/birthday-blog/view/<%= blog.id %>" class="btn btn-sm btn-info"><i class="bx bx-show"></i> </a>
           <a href="/admin/birthday-blog/edit/<%= blog.id %>" class="btn btn-sm btn-warning"><i class="bx bx-edit"></i> </a>
-          <a href="/admin/birthday-blog/<%= blog.id %>/venue-mappings" class="btn btn-sm btn-primary"><i class="bx bx-map"></i> Venues</a>
+          <a href="/admin/birthday-blog/<%= blog.id %>/venue-mappings" class="btn btn-sm btn-primary"><i class="bx bx-map"></i> </a>
           <button class="btn btn-sm btn-danger delete-blog" data-id="<%= blog.id %>"><i class="bx bx-trash"></i> </button>
         </div>
       </div>

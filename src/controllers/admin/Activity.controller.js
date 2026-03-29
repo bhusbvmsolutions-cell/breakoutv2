@@ -2,6 +2,7 @@ const db = require("../../../models");
 const fs = require("fs");
 const path = require("path");
 const slugify = require("slugify");
+const { DeleteFaqPage, findOrCreatePage } = require("../../utils/faqHelper");
 
 function getImageAbsolutePath(storedPath) {
   if (!storedPath) return null;
@@ -157,6 +158,8 @@ const ActivityController = {
           }
         }
       }
+      let faqSlug = `act:${activity.slug}`;
+      await findOrCreatePage(activity.id, activity.title, faqSlug, "activity");
 
       await transaction.commit();
       req.flash('success', 'Activity created successfully');
@@ -309,6 +312,8 @@ const ActivityController = {
           }
         }
       }
+      let faqSlug = `act:${activity.slug}`;
+      await findOrCreatePage(activity.id, activity.title, faqSlug, "activity");
 
       await transaction.commit();
       req.flash('success', 'Activity updated successfully');
@@ -386,6 +391,8 @@ const ActivityController = {
       await db.ActivityImageCard.destroy({ where: { activity_id: activity.id }, transaction });
       await db.ActivityEscapeRoom.destroy({ where: { activity_id: activity.id }, transaction });
       await activity.destroy({ transaction });
+      let faqSlug = `act:${activity.slug}`;
+      await DeleteFaqPage(activity.id, activity.title, faqSlug, "activity");
 
       await transaction.commit();
 

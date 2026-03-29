@@ -13,7 +13,7 @@
   }
 
   .page-header {
-    background: linear-gradient(135deg, #fcad00 0%, #ffd966 100%);
+    background: linear-gradient(135deg, #ffd966 0%, #fcad00 100%);
     border-radius: 1rem;
     padding: 1.5rem;
     margin-bottom: 1.5rem;
@@ -107,7 +107,7 @@
 </style>
 
 <%- contentFor('body') %>
-<div class="container-fluid py-3">
+<div class="py-3">
   <div class="faq-container">
     <!-- Page Header -->
     <div class="page-header">
@@ -120,9 +120,9 @@
           <button type="button" class="btn btn-light btn-sm" id="addFaqBtn">
             <i class="bx bx-plus-circle me-1"></i> Add FAQ
           </button>
-          <a href="/admin/pages" class="btn btn-outline-light btn-sm ms-2">
+          <!-- <a href="/admin/pages" class="btn btn-outline-light btn-sm ms-2">
             <i class="bx bx-arrow-back me-1"></i> Back
-          </a>
+          </a> -->
         </div>
       </div>
     </div>
@@ -168,7 +168,7 @@
 
 <!-- Add/Edit FAQ Modal -->
 <div class="modal fade" id="faqModal" tabindex="-1">
-  <div class="modal-dialog modal-lg">
+  <div class="modal-dialog modal-xl">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="faqModalLabel">Add FAQ</h5>
@@ -207,15 +207,33 @@
   function initSummernote() {
     if (!summernoteInitialized) {
       $('#faqAnswer').summernote({
+        placeholder: 'Write your content here...',
+        tabsize: 2,
         height: 200,
+        fontNames: [
+          'Arial', 'Arial Black', 'Comic Sans MS', 'Courier New',
+          'Georgia', 'Tahoma', 'Times New Roman', 'Verdana',
+          'Poppins', 'Roboto', 'Open Sans', 'Lato',
+          'Montserrat', 'Raleway', 'Nunito',
+          'Playfair Display', 'Merriweather'
+        ],
+        fontNamesIgnoreCheck: [
+          'Poppins', 'Roboto', 'Open Sans', 'Lato',
+          'Montserrat', 'Raleway', 'Nunito',
+          'Playfair Display', 'Merriweather'
+        ],
+        fontSizes: ['8', '10', '12', '14', '16', '18', '20', '24', '28', '32', '36', '48', '64'],
         toolbar: [
-          ['style', ['bold', 'italic', 'underline', 'clear']],
-          ['font', ['strikethrough', 'superscript', 'subscript']],
-          ['color', ['color']],
-          ['para', ['ul', 'ol', 'paragraph']],
-          ['insert', ['link', 'picture', 'video']],
-          ['view', ['codeview']]
-        ]
+          ['style', ['style']],
+          ['font', ['bold', 'italic', 'underline', 'strikethrough', 'clear']],
+          ['fontname', ['fontname']],
+          ['fontsize', ['fontsize']],
+          ['color', ['forecolor', 'backcolor']],
+          ['para', ['ul', 'ol', 'paragraph', 'height']],
+          ['insert', ['link', 'picture', 'video', 'table']],
+          ['view', ['fullscreen', 'codeview']]
+        ],
+        lineHeights: ['0.8', '1.0', '1.2', '1.5', '2.0', '3.0']
       });
       summernoteInitialized = true;
     }
@@ -231,25 +249,25 @@
 
     // Sortable
     if (document.getElementById('faqList') && document.querySelectorAll('.faq-item').length > 0) {
-        new Sortable(document.getElementById('faqList'), {
-          handle: '.faq-drag-handle',
-          animation: 150,
-          ghostClass: 'sortable-ghost',
-          onEnd: function() {
-            const order = Array.from(document.querySelectorAll('.faq-item')).map(el => el.dataset.id);
-            fetch('/admin/faqs/reorder', {
+      new Sortable(document.getElementById('faqList'), {
+        handle: '.faq-drag-handle',
+        animation: 150,
+        ghostClass: 'sortable-ghost',
+        onEnd: function() {
+          const order = Array.from(document.querySelectorAll('.faq-item')).map(el => el.dataset.id);
+          fetch('/admin/faqs/reorder', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + localStorage.getItem('token')
               },
-              body: JSON.stringify({ 
+              body: JSON.stringify({
                 faqs: order,
-                page_id: pageId  // This ensures FAQs are only reordered within the same page
+                page_id: pageId // This ensures FAQs are only reordered within the same page
               })
             })
             .then(res => res.json())
-            .then(data => { 
+            .then(data => {
               if (!data.success) {
                 console.error('Reorder failed:', data.message);
                 alert('Failed to reorder FAQs: ' + data.message);
@@ -259,9 +277,9 @@
               console.error('Reorder error:', err);
               alert('An error occurred while reordering');
             });
-          }
-        });
-      }
+        }
+      });
+    }
 
     // Add FAQ button
     function showAddModal() {
@@ -283,10 +301,19 @@
       const answer = $(this).data('answer');
       const active = $(this).data('active');
       $('#faqModalLabel').text('Edit FAQ');
+      setTimeout(() => {
+        if (!summernoteInitialized) {
+          initSummernote();
+          // Wait a bit more for summernote to initialize, then set content
+          setTimeout(() => {
+            $('#faqAnswer').summernote('code', answer);
+          }, 100);
+        } else {
+          $('#faqAnswer').summernote('code', answer);
+        }
+      }, 200);
       $('#faqId').val(id);
       $('#faqQuestion').val(question);
-      if (summernoteInitialized) $('#faqAnswer').summernote('code', answer);
-      else initSummernote();
       $('#faqActive').prop('checked', active === true);
       $('#faqModal').modal('show');
     });

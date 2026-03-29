@@ -3,6 +3,7 @@ const fs = require("fs");
 const path = require("path");
 const slugify = require("slugify");
 const { Op } = require("sequelize");
+const { DeleteFaqPage, findOrCreatePage} = require("../../utils/faqHelper");
 
 function getImageAbsolutePath(storedPath) {
   if (!storedPath) return null;
@@ -292,6 +293,8 @@ const VenueController = {
         }
       }
 
+      await findOrCreatePage(venue.id, venue.name, venue.slug, 'venue');
+
       await transaction.commit();
       req.flash("success", "Venue created successfully");
       res.redirect("/admin/venues");
@@ -524,6 +527,8 @@ const VenueController = {
         }
       }
 
+      await findOrCreatePage(venue.id, venue.name, venue.slug, 'venue');
+
       await transaction.commit();
       req.flash("success", "Venue updated successfully");
       res.redirect("/admin/venues");
@@ -557,6 +562,9 @@ const VenueController = {
       }
 
       await venue.destroy({ transaction });
+
+      await DeleteFaqPage(venue.id, venue.name, venue.slug, 'venue');
+
       await transaction.commit();
       res.json({ success: true, message: "Venue deleted successfully" });
     } catch (error) {

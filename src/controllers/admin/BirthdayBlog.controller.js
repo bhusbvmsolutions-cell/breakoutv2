@@ -3,12 +3,13 @@ const fs = require("fs");
 const path = require("path");
 const slugify = require("slugify");
 const { Op } = require("sequelize");
+const { DeleteFaqPage, findOrCreatePage } = require("../../utils/faqHelper");
 
 function getImageAbsolutePath(storedPath) {
   if (!storedPath) return null;
-  const projectRoot = path.join(__dirname, '../../../');
-  if (storedPath.startsWith('/')) {
-    return path.join(projectRoot, 'public', storedPath);
+  const projectRoot = path.join(__dirname, "../../../");
+  if (storedPath.startsWith("/")) {
+    return path.join(projectRoot, "public", storedPath);
   }
   return path.join(projectRoot, storedPath);
 }
@@ -16,7 +17,7 @@ function getImageAbsolutePath(storedPath) {
 function groupFilesByFieldname(files) {
   const grouped = {};
   if (files && files.length) {
-    files.forEach(file => {
+    files.forEach((file) => {
       if (!grouped[file.fieldname]) grouped[file.fieldname] = [];
       grouped[file.fieldname].push(file);
     });
@@ -62,8 +63,8 @@ const BirthdayBlogController = {
 
       const totalPages = Math.ceil(count / limit);
 
-      res.render('admin/birthday-blog/index', {
-        title: 'Birthday Blogs',
+      res.render("admin/birthday-blog/index", {
+        title: "Birthday Blogs",
         blogs,
         pagination: {
           page,
@@ -72,23 +73,27 @@ const BirthdayBlogController = {
           totalCount: count,
         },
         filters: { search, status, sort },
-        success: req.flash('success'),
-        error: req.flash('error'),
+        success: req.flash("success"),
+        error: req.flash("error"),
       });
     } catch (error) {
       console.error(error);
-      req.flash('error', 'Failed to load blogs');
-      res.redirect('/admin/dashboard');
+      req.flash("error", "Failed to load blogs");
+      res.redirect("/admin/dashboard");
     }
   },
 
   create: async (req, res) => {
     try {
-      res.render('admin/birthday-blog/create', { title: 'Add Birthday Blog', blog: null, errors: {} });
+      res.render("admin/birthday-blog/create", {
+        title: "Add Birthday Blog",
+        blog: null,
+        errors: {},
+      });
     } catch (error) {
       console.error(error);
-      req.flash('error', 'Failed to load create form');
-      res.redirect('/admin/birthday-blog');
+      req.flash("error", "Failed to load create form");
+      res.redirect("/admin/birthday-blog");
     }
   },
 
@@ -98,10 +103,14 @@ const BirthdayBlogController = {
       const files = groupFilesByFieldname(req.files);
       const body = req.body;
 
-      if (!body.title) throw new Error('Title is required');
-      let slug = body.slug || slugify(body.title, { lower: true, strict: true });
-      const existingSlug = await db.BirthdayBlog.findOne({ where: { slug }, transaction });
-      if (existingSlug) throw new Error('Slug already exists');
+      if (!body.title) throw new Error("Title is required");
+      let slug =
+        body.slug || slugify(body.title, { lower: true, strict: true });
+      const existingSlug = await db.BirthdayBlog.findOne({
+        where: { slug },
+        transaction,
+      });
+      if (existingSlug) throw new Error("Slug already exists");
 
       const blogData = {
         title: body.title,
@@ -120,7 +129,7 @@ const BirthdayBlogController = {
         meta_keywords: body.meta_keywords,
         og_title: body.og_title,
         og_description: body.og_description,
-        isActive: body.isActive === 'on',
+        isActive: body.isActive === "on",
       };
 
       // Featured image
@@ -144,7 +153,7 @@ const BirthdayBlogController = {
         for (let i = 0; i < body.icon_items.length; i++) {
           const item = body.icon_items[i];
           const imageFile = files[`icon_items[${i}][image]`]?.[0];
-          let imagePath = item.image || '';
+          let imagePath = item.image || "";
           if (imageFile) {
             if (imagePath) {
               const oldPath = getImageAbsolutePath(imagePath);
@@ -152,49 +161,66 @@ const BirthdayBlogController = {
             }
             imagePath = `/uploads/birthday-blog/${imageFile.filename}`;
           }
-          await db.BirthdayBlogIconItem.create({
-            blog_id: blog.id,
-            sort_order: i,
-            heading: item.heading,
-            link: item.link,
-            image: imagePath,
-          }, { transaction });
+          await db.BirthdayBlogIconItem.create(
+            {
+              blog_id: blog.id,
+              sort_order: i,
+              heading: item.heading,
+              link: item.link,
+              image: imagePath,
+            },
+            { transaction },
+          );
         }
       }
+      let faqSlug = `seo:${blog.slug}`;
+      await findOrCreatePage(blog.id, blog.title, faqSlug, "seoblog");
 
       await transaction.commit();
-      req.flash('success', 'Blog created successfully');
-      res.redirect('/admin/birthday-blog');
+      req.flash("success", "Blog created successfully");
+      res.redirect("/admin/birthday-blog");
     } catch (error) {
       await transaction.rollback();
       console.error(error);
-      req.flash('error', error.message || 'Failed to create blog');
-      res.redirect('/admin/birthday-blog/create');
+      req.flash("error", error.message || "Failed to create blog");
+      res.redirect("/admin/birthday-blog/create");
     }
   },
 
   edit: async (req, res) => {
     try {
       const blog = await db.BirthdayBlog.findByPk(req.params.id, {
-        include: [{ model: db.BirthdayBlogIconItem, as: 'iconItems', order: [['sort_order', 'ASC']] }],
+        include: [
+          {
+            model: db.BirthdayBlogIconItem,
+            as: "iconItems",
+            order: [["sort_order", "ASC"]],
+          },
+        ],
       });
       if (!blog) {
-        req.flash('error', 'Blog not found');
-        return res.redirect('/admin/birthday-blog');
+        req.flash("error", "Blog not found");
+        return res.redirect("/admin/birthday-blog");
       }
-      res.render('admin/birthday-blog/edit', { title: 'Edit Birthday Blog', blog, errors: {} });
+      res.render("admin/birthday-blog/edit", {
+        title: "Edit Birthday Blog",
+        blog,
+        errors: {},
+      });
     } catch (error) {
       console.error(error);
-      req.flash('error', 'Failed to load edit form');
-      res.redirect('/admin/birthday-blog');
+      req.flash("error", "Failed to load edit form");
+      res.redirect("/admin/birthday-blog");
     }
   },
 
   update: async (req, res) => {
     const transaction = await db.sequelize.transaction();
     try {
-      const blog = await db.BirthdayBlog.findByPk(req.params.id, { transaction });
-      if (!blog) throw new Error('Blog not found');
+      const blog = await db.BirthdayBlog.findByPk(req.params.id, {
+        transaction,
+      });
+      if (!blog) throw new Error("Blog not found");
 
       const files = groupFilesByFieldname(req.files);
       const body = req.body;
@@ -216,7 +242,7 @@ const BirthdayBlogController = {
         meta_keywords: body.meta_keywords,
         og_title: body.og_title,
         og_description: body.og_description,
-        isActive: body.isActive === 'on',
+        isActive: body.isActive === "on",
       };
 
       // Featured image
@@ -242,19 +268,25 @@ const BirthdayBlogController = {
       }
 
       if (updateData.slug !== blog.slug) {
-        const existing = await db.BirthdayBlog.findOne({ where: { slug: updateData.slug, id: { [Op.ne]: blog.id } }, transaction });
-        if (existing) throw new Error('Slug already exists');
+        const existing = await db.BirthdayBlog.findOne({
+          where: { slug: updateData.slug, id: { [Op.ne]: blog.id } },
+          transaction,
+        });
+        if (existing) throw new Error("Slug already exists");
       }
 
       await blog.update(updateData, { transaction });
 
       // Update icon items
-      await db.BirthdayBlogIconItem.destroy({ where: { blog_id: blog.id }, transaction });
+      await db.BirthdayBlogIconItem.destroy({
+        where: { blog_id: blog.id },
+        transaction,
+      });
       if (body.icon_items && Array.isArray(body.icon_items)) {
         for (let i = 0; i < body.icon_items.length; i++) {
           const item = body.icon_items[i];
           const imageFile = files[`icon_items[${i}][image]`]?.[0];
-          let imagePath = item.image || '';
+          let imagePath = item.image || "";
           if (imageFile) {
             if (imagePath) {
               const oldPath = getImageAbsolutePath(imagePath);
@@ -262,23 +294,29 @@ const BirthdayBlogController = {
             }
             imagePath = `/uploads/birthday-blog/${imageFile.filename}`;
           }
-          await db.BirthdayBlogIconItem.create({
-            blog_id: blog.id,
-            sort_order: i,
-            heading: item.heading,
-            link: item.link,
-            image: imagePath,
-          }, { transaction });
+          await db.BirthdayBlogIconItem.create(
+            {
+              blog_id: blog.id,
+              sort_order: i,
+              heading: item.heading,
+              link: item.link,
+              image: imagePath,
+            },
+            { transaction },
+          );
         }
       }
 
+      let faqSlug = `seo:${blog.slug}`;
+      await findOrCreatePage(blog.id, blog.title, faqSlug, "seoblog");
+
       await transaction.commit();
-      req.flash('success', 'Blog updated successfully');
-      res.redirect('/admin/birthday-blog');
+      req.flash("success", "Blog updated successfully");
+      res.redirect("/admin/birthday-blog");
     } catch (error) {
       await transaction.rollback();
       console.error(error);
-      req.flash('error', error.message || 'Failed to update blog');
+      req.flash("error", error.message || "Failed to update blog");
       res.redirect(`/admin/birthday-blog/edit/${req.params.id}`);
     }
   },
@@ -286,36 +324,48 @@ const BirthdayBlogController = {
   view: async (req, res) => {
     try {
       const blog = await db.BirthdayBlog.findByPk(req.params.id, {
-        include: [{ model: db.BirthdayBlogIconItem, as: 'iconItems', order: [['sort_order', 'ASC']] }],
+        include: [
+          {
+            model: db.BirthdayBlogIconItem,
+            as: "iconItems",
+            order: [["sort_order", "ASC"]],
+          },
+        ],
       });
       if (!blog) {
-        req.flash('error', 'Blog not found');
-        return res.redirect('/admin/birthday-blog');
+        req.flash("error", "Blog not found");
+        return res.redirect("/admin/birthday-blog");
       }
-      res.render('admin/birthday-blog/show', { title: blog.title, blog });
+      res.render("admin/birthday-blog/show", { title: blog.title, blog });
     } catch (error) {
       console.error(error);
-      req.flash('error', 'Failed to load blog');
-      res.redirect('/admin/birthday-blog');
+      req.flash("error", "Failed to load blog");
+      res.redirect("/admin/birthday-blog");
     }
   },
 
   delete: async (req, res) => {
     const transaction = await db.sequelize.transaction();
     try {
-      const blog = await db.BirthdayBlog.findByPk(req.params.id, { transaction });
-      if (!blog) throw new Error('Blog not found');
+      const blog = await db.BirthdayBlog.findByPk(req.params.id, {
+        transaction,
+      });
+      if (!blog) throw new Error("Blog not found");
 
       if (blog.featured_image) {
         const featuredPath = getImageAbsolutePath(blog.featured_image);
-        if (featuredPath && fs.existsSync(featuredPath)) fs.unlinkSync(featuredPath);
+        if (featuredPath && fs.existsSync(featuredPath))
+          fs.unlinkSync(featuredPath);
       }
       if (blog.banner_image) {
         const bannerPath = getImageAbsolutePath(blog.banner_image);
         if (bannerPath && fs.existsSync(bannerPath)) fs.unlinkSync(bannerPath);
       }
 
-      const iconItems = await db.BirthdayBlogIconItem.findAll({ where: { blog_id: blog.id }, transaction });
+      const iconItems = await db.BirthdayBlogIconItem.findAll({
+        where: { blog_id: blog.id },
+        transaction,
+      });
       for (const item of iconItems) {
         if (item.image) {
           const imgPath = getImageAbsolutePath(item.image);
@@ -324,25 +374,39 @@ const BirthdayBlogController = {
       }
 
       await blog.destroy({ transaction });
+
+      let faqSlug = `seo:${blog.slug}`;
+      await DeleteFaqPage(blog.id, blog.title, faqSlug, "seoblog");
+
       await transaction.commit();
-      res.json({ success: true, message: 'Blog deleted successfully' });
+      res.json({ success: true, message: "Blog deleted successfully" });
     } catch (error) {
       await transaction.rollback();
       console.error(error);
-      res.status(500).json({ success: false, message: error.message || 'Failed to delete blog' });
+      res
+        .status(500)
+        .json({
+          success: false,
+          message: error.message || "Failed to delete blog",
+        });
     }
   },
 
   toggleStatus: async (req, res) => {
     try {
       const blog = await db.BirthdayBlog.findByPk(req.params.id);
-      if (!blog) return res.status(404).json({ success: false, message: 'Blog not found' });
+      if (!blog)
+        return res
+          .status(404)
+          .json({ success: false, message: "Blog not found" });
       blog.isActive = !blog.isActive;
       await blog.save();
       res.json({ success: true, isActive: blog.isActive });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ success: false, message: 'Failed to toggle status' });
+      res
+        .status(500)
+        .json({ success: false, message: "Failed to toggle status" });
     }
   },
 };

@@ -109,6 +109,12 @@
     justify-content: flex-end;
     margin-top: 0.5rem;
   }
+  .venue-card-actions a{
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    align-items: center;
+  }
 
   .btn-sm {
     padding: 0.2rem 0.5rem;
@@ -220,15 +226,15 @@
       <div class="venue-card-content">
         <h5 class="venue-card-title"><%= venue.name %></h5>
         <div class="venue-card-meta">
-          
+
           <% if(venue.locations && venue.locations.length) { %>
-            <% venue.locations.forEach(location => { %>
-              <div><i class="bx bx-map"></i> <%= location.title || 'No location' %></div>
-            <% }); %>
+          <% venue.locations.forEach(location => { %>
+          <div><i class="bx bx-map"></i> <%= location.title || 'No location' %></div>
+          <% }); %>
           <% } else { %>
-            <span class="text-muted">No locations</span>
+          <span class="text-muted">No locations</span>
           <% } %>
-            
+
           <div><i class="bx bx-star"></i> <%= venue.rating || '—' %> / 5</div>
           <div><i class="bx bx-group"></i> <%= venue.capacity || '—' %></div>
         </div>
@@ -239,8 +245,14 @@
           <% } %>
         </div>
         <div class="venue-card-actions">
-          <a href="/admin/venues/edit/<%= venue.id %>" class="btn btn-sm btn-warning"><i class="bx bx-edit"></i> Edit</a>
-          <button class="btn btn-sm btn-danger delete-venue" data-id="<%= venue.id %>"><i class="bx bx-trash"></i> Delete</button>
+          <a href="/admin/faqs/slug/<%= venue.slug %>" class="bg-primary py-1 px-2 text-white rounded" title="View FAQs" style="font-size: 14px;">
+            <i class="bi bi-patch-question"></i>
+          </a>
+          <a href="/admin/googlereviews/slug/<%= venue.slug %>" class="bg-secondary py-1 px-2 text-white rounded" title="View Google Reviews" style="font-size: 14px;">
+            <i class="bi bi-google"></i>
+          </a>
+          <a href="/admin/venues/edit/<%= venue.id %>" class="btn btn-sm btn-warning"><i class="bx bx-edit"></i> </a>
+          <button class="btn btn-sm btn-danger delete-venue" data-id="<%= venue.id %>"><i class="bx bx-trash"></i> </button>
         </div>
       </div>
     </div>

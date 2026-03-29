@@ -2,7 +2,7 @@
 const db = require("../../../models");
 const fs = require("fs");
 const path = require("path");
-const findOrCreatePage = require("../../utils/faqHelper");
+const {findOrCreatePage} = require("../../utils/faqHelper");
 
 // Helper: get absolute filesystem path from stored URL
 function getImageAbsolutePath(storedPath) {
@@ -98,7 +98,7 @@ const PartyArchiveController = {
             const oldPath = getImageAbsolutePath(archive[field]);
             if (oldPath && fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
           }
-          updateData[field] = `/uploads/party/${files[field][0].filename}`;
+          updateData[field] = `/uploads/party/archive/${files[field][0].filename}`;
         } else if (body[field]) {
           updateData[field] = body[field];
         }
@@ -117,7 +117,7 @@ const PartyArchiveController = {
             sort_order: i,
             count: card.count,
             description: card.description,
-            image: imageFile ? `/uploads/party/${imageFile.filename}` : (card.image || null),
+            image: imageFile ? `/uploads/party/archive${imageFile.filename}` : (card.image || null),
           }, { transaction });
         }
       }

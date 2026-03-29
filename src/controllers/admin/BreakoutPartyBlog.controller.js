@@ -3,6 +3,7 @@ const fs = require("fs");
 const path = require("path");
 const slugify = require("slugify");
 const { Op } = require("sequelize");
+const { DeleteFaqPage, findOrCreatePage} = require("../../utils/faqHelper");
 
 function getImageAbsolutePath(storedPath) {
   if (!storedPath) return null;
@@ -215,6 +216,9 @@ const BreakoutPartyBlogController = {
         }
       }
 
+
+      await findOrCreatePage(blog.id, blog.title, blog.slug, 'breakoutpartyblog');
+      
       await transaction.commit();
       req.flash('success', 'Blog created successfully');
       res.redirect('/admin/breakout-party-blog');
@@ -256,16 +260,16 @@ const BreakoutPartyBlogController = {
       res.redirect('/admin/breakout-party-blog');
     }
   },
-
+  
   update: async (req, res) => {
     const transaction = await db.sequelize.transaction();
     try {
       const blog = await db.BreakoutPartyBlog.findByPk(req.params.id, { transaction });
       if (!blog) throw new Error('Blog not found');
-
+      
       const files = groupFilesByFieldname(req.files);
       const body = req.body;
-
+      
       const updateData = {
         title: body.title,
         slug: body.slug || slugify(body.title, { lower: true, strict: true }),
@@ -280,7 +284,7 @@ const BreakoutPartyBlogController = {
         og_description: body.og_description,
         isActive: body.isActive === 'on',
       };
-
+      
       // Featured image
       if (files.featured_image && files.featured_image[0]) {
         if (blog.featured_image) {
@@ -291,21 +295,21 @@ const BreakoutPartyBlogController = {
       } else if (body.featured_image) {
         updateData.featured_image = body.featured_image;
       }
-
+      
       if (updateData.slug !== blog.slug) {
         const existing = await db.BreakoutPartyBlog.findOne({ where: { slug: updateData.slug, id: { [Op.ne]: blog.id } }, transaction });
         if (existing) throw new Error('Slug already exists');
       }
-
+      
       await blog.update(updateData, { transaction });
-
+      
       // Delete all existing content sections and their nested items
       await db.BreakoutPartyBlogContentSection.destroy({ where: { blog_id: blog.id }, transaction });
-
+      
       // Parse nested form data
       const parsed = parseNestedObject(body);
       const contentSections = parsed.content_sections || [];
-
+      
       for (let i = 0; i < contentSections.length; i++) {
         const section = contentSections[i];
         const sectionData = {
@@ -316,7 +320,7 @@ const BreakoutPartyBlogController = {
           isActive: section.isActive === 'on',
         };
         const createdSection = await db.BreakoutPartyBlogContentSection.create(sectionData, { transaction });
-
+        
         // Content images
         const contentImages = section.content_images || [];
         for (let j = 0; j < contentImages.length; j++) {
@@ -363,7 +367,9 @@ const BreakoutPartyBlogController = {
           }, { transaction });
         }
       }
-
+      
+      await findOrCreatePage(blog.id, blog.title, blog.slug, 'breakoutpartyblog');
+      
       await transaction.commit();
       req.flash('success', 'Blog updated successfully');
       res.redirect('/admin/breakout-party-blog');
@@ -429,6 +435,8 @@ const BreakoutPartyBlogController = {
           }
         }
       }
+
+      await DeleteFaqPage(blog.id, blog.title, blog.slug, 'breakoutpartyblog');
 
       await blog.destroy({ transaction });
       await transaction.commit();

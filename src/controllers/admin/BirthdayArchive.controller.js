@@ -2,7 +2,7 @@
 const db = require("../../../models");
 const fs = require("fs");
 const path = require("path");
-const findOrCreatePage = require("../../utils/faqHelper");
+const {findOrCreatePage} = require("../../utils/faqHelper");
 
 function getImageAbsolutePath(storedPath) {
   if (!storedPath) return null;

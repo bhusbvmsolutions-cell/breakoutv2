@@ -1499,11 +1499,11 @@ module.exports = (db) => {
 
   BreakoutPartyBlogContentSection.hasMany(
     BreakoutPartyBlogContentGalleryImage,
-    { foreignKey: "content_section_id", as: "galleryImages" }
+    { foreignKey: "content_section_id", as: "galleryImages" },
   );
   BreakoutPartyBlogContentGalleryImage.belongsTo(
     BreakoutPartyBlogContentSection,
-    { foreignKey: "content_section_id" }
+    { foreignKey: "content_section_id" },
   );
 
   BreakoutPartyBlog.belongsTo(Video, {
@@ -1511,12 +1511,21 @@ module.exports = (db) => {
     as: "bannerVideo",
   });
 
-  // ==================== FAQs Associations ====================
+  // ==================== FAQs And Google Reviews Associations ====================
 
-  const { Page, Faq } = db;
+  const { Page, Faq, GoogleReview } = db;
 
   Page.hasMany(Faq, { foreignKey: "page_id", as: "faqs" });
   Faq.belongsTo(Page, { foreignKey: "page_id", as: "page" });
+
+  Page.hasMany(GoogleReview, {
+    foreignKey: "page_id",
+    as: "googleReviews",
+  });
+
+  GoogleReview.belongsTo(Page, {
+    foreignKey: "page_id",
+  });
 
   console.log("✓ All model associations have been established successfully");
 };

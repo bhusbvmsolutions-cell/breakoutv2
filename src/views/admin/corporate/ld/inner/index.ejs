@@ -61,17 +61,19 @@
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 1rem;
   }
+
+  /* Empty state – no grid needed */
   .pages-grid-empty {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100%, 1fr)) !important;
-    gap: 1rem;
+    display: block;
+    /* or flex, but block is simplest */
+    width: 100%;
   }
 
   .page-card {
     background: #fff;
     border-radius: 0.75rem;
     overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     transition: all 0.2s ease;
   }
 
@@ -137,6 +139,12 @@
     gap: 0.5rem;
     justify-content: flex-end;
   }
+  .page-card-actions a{
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    align-items: center;
+  }
 
   .no-pages {
     text-align: center;
@@ -154,8 +162,11 @@
   @media (max-width: 768px) {
     .pages-grid {
       grid-template-columns: 1fr;
+      /* single column on small screens */
+      gap: 0.75rem;
     }
-    .pages-grid-empty{
+
+    .pages-grid-empty {
       grid-template-columns: 3fr;
 
     }
@@ -213,10 +224,11 @@
     </div>
   </div>
 
-  <% if (pages && pages.length) { %>
+  <% if (pages && pages.length > 0) { %>
   <div id="pagesContainer" class="pages-grid">
     <% pages.forEach(page => { %>
     <div class="page-card" data-title="<%= page.title.toLowerCase() %>" data-slug="<%= page.slug.toLowerCase() %>" data-status="<%= page.isActive ? 'active' : 'inactive' %>">
+
       <div class="page-card-image">
         <% if (page.banner_image) { %>
         <img src="<%= page.banner_image %>" alt="<%= page.title %>">
@@ -227,22 +239,35 @@
         </div>
         <% } %>
       </div>
+
       <div class="page-card-content">
         <h5 class="page-card-title"><%= page.title %></h5>
-        <div class="page-card-slug"><i class="bx bx-link-alt me-1"></i> <%= page.slug %></div>
-        <div class="page-card-meta">
-          <span class="page-card-status badge <%= page.isActive ? 'bg-success' : 'bg-secondary' %>"><%= page.isActive ? 'Active' : 'Inactive' %></span>
-          <span class="page-card-date small"><i class="bx bx-calendar me-1"></i> <%= new Date(page.createdAt).toLocaleDateString() %></span>
+        <div class="page-card-slug">
+          <i class="bx bx-link-alt me-1"></i> <%= page.slug %>
         </div>
+
+        <div class="page-card-meta">
+          <span class="page-card-status badge <%= page.isActive ? 'bg-success' : 'bg-secondary' %>">
+            <%= page.isActive ? 'Active' : 'Inactive' %>
+          </span>
+          <span class="page-card-date small">
+            <i class="bx bx-calendar me-1"></i>
+            <%= new Date(page.createdAt).toLocaleDateString() %>
+          </span>
+        </div>
+
         <div class="page-card-actions">
-          <a href="/admin/corporate/ld/inner/view/<%= page.id %>" class="btn btn-sm btn-info"><i class="bx bx-show"></i> View</a>
-          <a href="/admin/corporate/ld/inner/edit/<%= page.id %>" class="btn btn-sm btn-warning"><i class="bx bx-edit"></i> Edit</a>
-          <button class="btn btn-sm btn-danger delete-page" data-id="<%= page.id %>"><i class="bx bx-trash"></i> Delete</button>
+          <a href="/admin/faqs/slug/<%= page.slug %>" class="btn btn-sm btn-primary py-1 px-2"><i class="bi bi-patch-question"></i></a>
+          <a href="/admin/googlereviews/slug/<%= page.slug %>" class="btn btn-sm btn-secondary py-1 px-2"><i class="bi bi-google"></i></a>
+          <a href="/admin/faqs/slug/<%= page.id %>" class="btn btn-sm btn-info py-1 px-2"><i class="bx bx-show"></i></a>
+          <a href="/admin/corporate/ld/inner/edit/<%= page.id %>" class="btn btn-sm btn-warning py-1 px-2"><i class="bx bx-edit"></i></a>
+          <a href="javascript:;" class="bg-danger text-white delete-page p-2 rounded" data-id="<%= page.id %>"><i class="bx bx-trash"></i></a>
         </div>
       </div>
+
     </div>
+    <% }); %>
   </div>
-  <% }); %>
   <% } else { %>
   <div id="pagesContainer" class="pages-grid-empty">
     <div class="no-pages">
@@ -291,8 +316,9 @@
       res = await fetch(`/admin/corporate/ld/inner/delete/${id}`, {
         method: 'DELETE'
       });
-    const data = await res.json();
-    if (data.success) location.reload();
-    else alert(data.message);
+    setTimeout(() => {
+      location.reload();
+    }, 50);
+    
   }));
 </script>

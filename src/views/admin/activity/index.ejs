@@ -83,6 +83,11 @@
     gap: 0.5rem;
     justify-content: flex-end;
   }
+  .activity-card-actions a{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
   .no-activities {
     text-align: center;
     padding: 2rem;
@@ -177,9 +182,11 @@
               <span class="small"><i class="bx bx-calendar me-1"></i> <%= new Date(act.createdAt).toLocaleDateString() %></span>
             </div>
             <div class="activity-card-actions">
-              <a href="/admin/activity/view/<%= act.id %>" class="btn btn-sm btn-info"><i class="bx bx-show"></i> View</a>
-              <a href="/admin/activity/edit/<%= act.id %>" class="btn btn-sm btn-warning"><i class="bx bx-edit"></i> Edit</a>
-              <button class="btn btn-sm btn-danger delete-activity" data-id="<%= act.id %>"><i class="bx bx-trash"></i> Delete</button>
+              <a href="/admin/googlereviews/slug/act:<%= act.slug %>" class="btn btn-sm btn-secondary"><i class="bi bi-google fs-6"></i> </a>
+              <a href="/admin/faqs/slug/act:<%= act.slug %>" class="btn btn-sm btn-primary"><i class="bi bi-patch-question fs-6"></i> </a>
+              <a href="/admin/activity/view/<%= act.id %>" class="btn btn-sm btn-info"><i class="bx bx-show fs-6"></i> </a>
+              <a href="/admin/activity/edit/<%= act.id %>" class="btn btn-sm btn-warning"><i class="bx bx-edit fs-6"></i> </a>
+              <button class="btn btn-sm btn-danger delete-activity" data-id="<%= act.id %>"><i class="bx bx-trash"></i> </button>
             </div>
           </div>
         </div>
@@ -227,7 +234,8 @@
     if (!confirm('Delete this activity?')) return;
     const id = btn.dataset.id;
     const res = await fetch(`/admin/activity/delete/${id}`, { method: 'DELETE' });
-    const data = await res.json();
-    if (data.success) location.reload(); else alert(data.message);
+    setTimeout(() => {
+      location.reload();
+    },50)
   }));
 </script>

@@ -3,6 +3,7 @@ const db = require("../../../models");
 const fs = require("fs");
 const path = require("path");
 const slugify = require("slugify");
+const { DeleteFaqPage, findOrCreatePage} = require("../../utils/faqHelper");
 
 // Helper to get absolute filesystem path from stored path (handles both /uploads/... and public/uploads/...)
 function getImageAbsolutePath(storedPath) {
@@ -376,6 +377,9 @@ const LandingController = {
         }
       }
 
+
+      await findOrCreatePage(landing.id, landing.title, landing.slug, 'landing');
+
       await transaction.commit();
       req.flash("success", "Landing page created successfully");
       res.redirect("/admin/landing");
@@ -663,6 +667,10 @@ const LandingController = {
       // Update video mappings
       await updateVideoMappings(landing.id, body, transaction);
 
+
+
+      await findOrCreatePage(landing.id, landing.title, landing.slug, 'landing');
+
       await transaction.commit();
       req.flash("success", "Landing page updated successfully");
       res.redirect("/admin/landing");
@@ -813,6 +821,8 @@ const LandingController = {
       await db.LandingVideo.destroy({ where: { landing_id: landing.id }, transaction });
       await db.LandingLocationMapping.destroy({ where: { landing_id: landing.id }, transaction });
       await landing.destroy({ transaction });
+
+      await DeleteFaqPage(landing.id, landing.title, landing.slug, 'landing');
 
       await transaction.commit();
 

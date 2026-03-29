@@ -3,6 +3,7 @@ const db = require("../../../models");
 const fs = require("fs");
 const path = require("path");
 const slugify = require("slugify");
+const { DeleteFaqPage, findOrCreatePage} = require("../../utils/faqHelper");
 
 function getImageAbsolutePath(storedPath) {
   if (!storedPath) return null;
@@ -85,6 +86,9 @@ const VirtualGameController = {
 
       const game = await db.VirtualGame.create(gameData, { transaction });
 
+      let faqslug = `vg:${game.slug}`;
+      await findOrCreatePage(game.id, game.title, faqslug, 'virtualgame');
+
       await transaction.commit();
       req.flash('success', 'Game created successfully');
       res.redirect('/admin/virtual/game');
@@ -154,6 +158,11 @@ const VirtualGameController = {
       }
 
       await game.update(updateData, { transaction });
+
+      let faqslug = `vg:${game.slug}`;
+      await findOrCreatePage(game.id, game.title, faqslug, 'virtualgame');
+
+
       await transaction.commit();
       req.flash('success', 'Game updated successfully');
       res.redirect('/admin/virtual/game');
@@ -195,6 +204,10 @@ const VirtualGameController = {
       }
 
       await game.destroy({ transaction });
+
+      let faqslug = `vg:${game.slug}`;
+      await DeleteFaqPage(game.id, game.title, faqslug, 'virtualgame');
+
       await transaction.commit();
 
       if (req.xhr || req.headers.accept?.includes('json')) {

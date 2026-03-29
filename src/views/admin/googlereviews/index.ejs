@@ -1,0 +1,522 @@
+<%- contentFor('title') %> <%= title %>
+<%- contentFor('head') %>
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<style>
+  body {
+    background: #f5f7fb;
+  }
+
+  .review-container {
+    max-width: 100%;
+    margin: 0 auto;
+  }
+
+  .page-header {
+    background: linear-gradient(135deg, #ffd966 0%, #fcad00 100%);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    color: #000000;
+  }
+
+  .review-list {
+    margin-top: 1rem;
+  }
+
+  .review-item {
+    background: #fff;
+    border-radius: 0.75rem;
+    margin-bottom: 0.75rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s;
+  }
+
+  .review-item:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateX(2px);
+  }
+
+  .review-header {
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+  }
+
+  .review-drag-handle {
+    cursor: grab;
+    color: #6c757d;
+    font-size: 1.2rem;
+  }
+
+  .review-drag-handle:active {
+    cursor: grabbing;
+  }
+
+  .reviewer-image {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #eef2f6;
+  }
+
+  .review-content {
+    flex: 1;
+  }
+
+  .reviewer-name {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 0.25rem;
+  }
+
+  .review-rating {
+    display: inline-flex;
+    gap: 2px;
+    color: #ffc107;
+    font-size: 0.85rem;
+    margin-right: 0.5rem;
+  }
+
+  .review-date {
+    font-size: 0.7rem;
+    color: #6c757d;
+  }
+
+  .review-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .review-text {
+    padding: 0 1rem 1rem 4.5rem;
+    font-size: 0.9rem;
+    color: #6c757d;
+    border-top: 1px solid #eef2f6;
+    display: none;
+    line-height: 1.5;
+  }
+
+  .review-text.show {
+    display: block;
+  }
+
+  .badge-sm {
+    font-size: 0.65rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 20px;
+    font-weight: 500;
+  }
+
+  .btn-sm {
+    padding: 0.2rem 0.5rem;
+    font-size: 0.7rem;
+  }
+
+  .sortable-ghost {
+    opacity: 0.4;
+    background: #f8f9fa;
+    border: 2px dashed #34a853;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 3rem;
+    background: #fff;
+    border-radius: 1rem;
+    color: #6c757d;
+  }
+
+  .star-filled {
+    color: #ffc107;
+  }
+
+  .star-empty {
+    color: #e4e5e9;
+  }
+
+  .image-preview {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #dee2e6;
+    margin-top: 0.5rem;
+  }
+</style>
+
+<%- contentFor('body') %>
+<div class="container-fluid py-3">
+  <div class="review-container">
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <div class="d-flex align-items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="40" height="40" viewBox="0 0 48 48">
+              <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"></path>
+              <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"></path>
+              <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"></path>
+              <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"></path>
+            </svg>
+            <h4 class="mb-0 fw-bold"><%= title %></h4>
+          </div>
+          <p class="mb-0 small opacity-75 mt-1">Manage Google reviews for this page</p>
+        </div>
+        <div>
+          <button type="button" class="btn btn-light btn-sm" id="addReviewBtn">
+            <i class="bx bx-plus-circle me-1"></i> Add Review
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Review List -->
+    <div class="review-list" id="reviewList">
+      <% if (reviews && reviews.length) { %>
+      <% reviews.forEach((review, index) => { %>
+      <div class="review-item" data-id="<%= review.id %>" data-sort="<%= review.sort_order || index %>">
+        <div class="review-header">
+          <div class="review-drag-handle"><i class="bx bx-menu"></i></div>
+          <img src="<%= review.reviewer_image %>" alt="<%= review.reviewer_name %>" class="reviewer-image" onerror="this.src='https://ui-avatars.com/api/?background=random&name=<%= encodeURIComponent(review.reviewer_name) %>'">
+          <div class="review-content">
+            <div class="reviewer-name"><%= review.reviewer_name %></div>
+            <div>
+              <span class="review-rating">
+                <% for(let i = 1; i <= 5; i++) { %>
+                <% if(i <= review.rating) { %>
+                <i class="bx bxs-star"></i>
+                <% } else { %>
+                <i class="bx bx-star"></i>
+                <% } %>
+                <% } %>
+              </span>
+              <span class="review-date"><%= review.review_date ? new Date(review.review_date).toLocaleDateString() : '' %></span>
+            </div>
+          </div>
+          <div class="review-actions">
+            <span class="badge-sm badge <%= review.isActive ? 'bg-success' : 'bg-secondary' %> toggle-status" data-id="<%= review.id %>" data-status="<%= review.isActive %>">
+              <%= review.isActive ? 'Active' : 'Inactive' %>
+            </span>
+            <button class="btn btn-sm btn-warning edit-review" 
+              data-id="<%= review.id %>" 
+              data-name="<%= review.reviewer_name.replace(/"/g, '&quot;') %>" 
+              data-image="<%= review.reviewer_image.replace(/"/g, '&quot;') %>" 
+              data-rating="<%= review.rating %>" 
+              data-text="<%= review.review_text.replace(/"/g, '&quot;') %>" 
+              data-date="<%= review.review_date ? new Date(review.review_date).toISOString().split('T')[0] : '' %>" 
+              data-active="<%= review.isActive %>">
+              <i class="bx bx-edit"></i>
+            </button>
+            <button class="btn btn-sm btn-danger delete-review" data-id="<%= review.id %>">
+              <i class="bx bx-trash"></i>
+            </button>
+          </div>
+        </div>
+        <div class="review-text">
+          <%- review.review_text %>
+        </div>
+      </div>
+      <% }); %>
+      <% } else { %>
+      <div class="empty-state">
+        <i class="bx bx-star fs-1 text-muted"></i>
+        <h5 class="mt-3">No reviews yet</h5>
+        <p class="small">Click "Add Review" to create your first Google review.</p>
+        <button type="button" class="btn btn-primary btn-sm mt-2" id="emptyAddReviewBtn">
+          <i class="bx bx-plus-circle me-1"></i> Add Review
+        </button>
+      </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<!-- Add/Edit Review Modal -->
+<div class="modal fade" id="reviewModal" tabindex="-1">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="reviewModalLabel">Add Review</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="reviewId">
+        <div class="mb-3">
+          <label class="form-label">Reviewer Name *</label>
+          <input type="text" class="form-control" id="reviewerName" placeholder="Enter reviewer name" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Reviewer Image URL</label>
+          <input type="url" class="form-control" id="reviewerImage" placeholder="https://example.com/avatar.jpg">
+          <small class="text-muted">Leave empty to auto-generate an avatar</small>
+          <div id="imagePreviewContainer" style="display: none;">
+            <img id="imagePreview" class="image-preview" src="" alt="Preview">
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Rating * (1-5)</label>
+          <select class="form-select" id="rating" required>
+            <option value="5">★★★★★ (5)</option>
+            <option value="4">★★★★☆ (4)</option>
+            <option value="3">★★★☆☆ (3)</option>
+            <option value="2">★★☆☆☆ (2)</option>
+            <option value="1">★☆☆☆☆ (1)</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Review Date</label>
+          <input type="date" class="form-control" id="reviewDate">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Review Text *</label>
+          <textarea class="form-control summernote" id="reviewText" rows="4" placeholder="Enter the review text here..." required></textarea>
+        </div>
+        <div class="mb-3 form-check">
+          <input type="checkbox" class="form-check-input" id="reviewActive" checked>
+          <label class="form-check-label">Active</label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" id="saveReviewBtn">Save Review</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- contentFor('js') %>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+<script>
+  const pageId = <%= page?.id || 'null' %>;
+  let summernoteInitialized = false;
+
+  function initSummernote() {
+    if (!summernoteInitialized) {
+      $('#reviewText').summernote({
+        placeholder: 'Write your content here...',
+        tabsize: 2,
+        height: 200,
+        fontNames: [
+          'Arial', 'Arial Black', 'Comic Sans MS', 'Courier New',
+          'Georgia', 'Tahoma', 'Times New Roman', 'Verdana',
+          'Poppins', 'Roboto', 'Open Sans', 'Lato',
+          'Montserrat', 'Raleway', 'Nunito',
+          'Playfair Display', 'Merriweather'
+        ],
+        fontNamesIgnoreCheck: [
+          'Poppins', 'Roboto', 'Open Sans', 'Lato',
+          'Montserrat', 'Raleway', 'Nunito',
+          'Playfair Display', 'Merriweather'
+        ],
+        fontSizes: ['8', '10', '12', '14', '16', '18', '20', '24', '28', '32', '36', '48', '64'],
+        toolbar: [
+          ['style', ['style']],
+          ['font', ['bold', 'italic', 'underline', 'strikethrough', 'clear']],
+          ['fontname', ['fontname']],
+          ['fontsize', ['fontsize']],
+          ['color', ['forecolor', 'backcolor']],
+          ['para', ['ul', 'ol', 'paragraph', 'height']],
+          ['insert', ['link', 'picture', 'video', 'table']],
+          ['view', ['fullscreen', 'codeview']]
+        ],
+        lineHeights: ['0.8', '1.0', '1.2', '1.5', '2.0', '3.0']
+      });
+      summernoteInitialized = true;
+    }
+  }
+
+  $(document).ready(function() {
+    // Image preview
+    $('#reviewerImage').on('input', function() {
+      const url = $(this).val();
+      if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
+        $('#imagePreview').attr('src', url);
+        $('#imagePreviewContainer').show();
+      } else {
+        $('#imagePreviewContainer').hide();
+      }
+    });
+
+    // Toggle review text visibility
+    $(document).on('click', '.review-header', function(e) {
+      if (!$(e.target).closest('.review-actions').length) {
+        $(this).siblings('.review-text').toggleClass('show');
+      }
+    });
+
+    // Sortable
+    if (document.getElementById('reviewList') && document.querySelectorAll('.review-item').length > 0) {
+      new Sortable(document.getElementById('reviewList'), {
+        handle: '.review-drag-handle',
+        animation: 150,
+        ghostClass: 'sortable-ghost',
+        onEnd: function() {
+          const order = Array.from(document.querySelectorAll('.review-item')).map(el => el.dataset.id);
+          fetch('/admin/googlereviews/reorder', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+              },
+              body: JSON.stringify({
+                reviews: order,
+                page_id: pageId
+              })
+            })
+            .then(res => res.json())
+            .then(data => {
+              if (!data.success) {
+                console.error('Reorder failed:', data.message);
+                alert('Failed to reorder reviews: ' + data.message);
+              }
+            })
+            .catch(err => {
+              console.error('Reorder error:', err);
+              alert('An error occurred while reordering');
+            });
+        }
+      });
+    }
+
+    // Add Review button
+    function showAddModal() {
+      $('#reviewModalLabel').text('Add Review');
+      $('#reviewId').val('');
+      $('#reviewerName').val('');
+      $('#reviewerImage').val('');
+      $('#imagePreviewContainer').hide();
+      $('#rating').val('5');
+      $('#reviewDate').val(new Date().toISOString().split('T')[0]);
+      // Clear summernote content
+      if (summernoteInitialized) {
+        $('#reviewText').summernote('code', '');
+      } else {
+        initSummernote();
+      }
+      $('#reviewActive').prop('checked', true);
+      $('#reviewModal').modal('show');
+    }
+
+    $('#addReviewBtn, #emptyAddReviewBtn').click(showAddModal);
+
+    // Edit Review
+    $(document).on('click', '.edit-review', function() {
+      const id = $(this).data('id');
+      const name = $(this).data('name');
+      const image = $(this).data('image');
+      const rating = $(this).data('rating');
+      const text = $(this).data('text');
+      const date = $(this).data('date');
+      const active = $(this).data('active');
+
+      $('#reviewModalLabel').text('Edit Review');
+      $('#reviewId').val(id);
+      $('#reviewerName').val(name);
+      $('#reviewerImage').val(image);
+      if (image && (image.startsWith('http://') || image.startsWith('https://'))) {
+        $('#imagePreview').attr('src', image);
+        $('#imagePreviewContainer').show();
+      } else {
+        $('#imagePreviewContainer').hide();
+      }
+      $('#rating').val(rating);
+      $('#reviewDate').val(date);
+      
+      // Initialize summernote if not already, then set content
+      if (!summernoteInitialized) {
+        initSummernote();
+        setTimeout(() => {
+          $('#reviewText').summernote('code', text);
+        }, 100);
+      } else {
+        $('#reviewText').summernote('code', text);
+      }
+      
+      $('#reviewActive').prop('checked', active === true);
+      $('#reviewModal').modal('show');
+    });
+
+    // Save Review
+    $('#saveReviewBtn').click(async function() {
+      const id = $('#reviewId').val();
+      const reviewer_name = $('#reviewerName').val().trim();
+      const reviewer_image = $('#reviewerImage').val().trim();
+      const rating = $('#rating').val();
+      const review_text = $('#reviewText').summernote('code');
+      const review_date = $('#reviewDate').val();
+      const isActive = $('#reviewActive').is(':checked');
+
+      if (!reviewer_name || !review_text || review_text === '<p><br></p>' || review_text.trim() === '') {
+        alert('Please fill in reviewer name and review text');
+        return;
+      }
+
+      const url = id ? `/admin/googlereviews/update/${id}` : '/admin/googlereviews/store';
+      const data = {
+        page_id: pageId,
+        reviewer_name,
+        reviewer_image,
+        rating,
+        review_text,
+        review_date,
+        isActive: isActive ? 'on' : ''
+      };
+      if (id) data.id = id;
+
+      try {
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + localStorage.getItem('token')
+          },
+          body: JSON.stringify(data)
+        });
+        const result = await res.json();
+        if (result.success) {
+          location.reload();
+        } else {
+          alert(result.message);
+        }
+      } catch (err) {
+        console.error(err);
+        alert('An error occurred');
+      }
+    });
+
+    // Delete Review
+    $(document).on('click', '.delete-review', async function() {
+      if (!confirm('Delete this review?')) return;
+      const id = $(this).data('id');
+      const res = await fetch(`/admin/googlereviews/delete/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': 'Bearer ' + localStorage.getItem('token')
+        }
+      });
+      const data = await res.json();
+      if (data.success) location.reload();
+      else alert(data.message);
+    });
+
+    // Toggle status
+    $(document).on('click', '.toggle-status', async function() {
+      const id = $(this).data('id');
+      const res = await fetch(`/admin/googlereviews/toggle-status/${id}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + localStorage.getItem('token')
+        }
+      });
+      const data = await res.json();
+      if (data.success) location.reload();
+      else alert(data.message);
+    });
+  });
+</script>

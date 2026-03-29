@@ -7,6 +7,7 @@ router.use(isAuthenticated);
 
 // Routes
 router.get('/:pageid', FaqsController.index);
+router.get('/slug/:slug', FaqsController.slugindex);
 router.post('/store', FaqsController.store);
 router.post('/update/:id', FaqsController.update);
 router.delete('/delete/:id', FaqsController.delete);

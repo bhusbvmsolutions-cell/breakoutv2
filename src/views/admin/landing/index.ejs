@@ -8,737 +8,863 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
 
 <style>
-    /* ----- COMPACT UI OVERRIDES - SMALLER OVERALL LAYOUT ----- */
-    :root {
-        --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        --success-gradient: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
-        --danger-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-        --warning-gradient: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
-        --compact-spacing: 0.75rem;
-    }
+  /* ----- COMPACT UI OVERRIDES - SMALLER OVERALL LAYOUT ----- */
+  :root {
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --success-gradient: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+    --danger-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    --warning-gradient: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+    --compact-spacing: 0.75rem;
+  }
 
-    body {
-        font-size: 0.875rem;  /* slightly smaller base font */
-    }
+  body {
+    font-size: 0.875rem;
+    /* slightly smaller base font */
+  }
 
-    /* Stats Cards - COMPACT */
-    .stats-card {
-        background: white;
-        border-radius: 12px;
-        padding: 0.9rem 1rem;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-        position: relative;
-        overflow: hidden;
+  /* Stats Cards - COMPACT */
+  .stats-card {
+    background: white;
+    border-radius: 12px;
+    padding: 0.9rem 1rem;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stats-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .stats-icon {
+    width: 48px;
+    height: 48px;
+    background: var(--primary-gradient);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.6rem;
+  }
+
+  .stats-icon i {
+    font-size: 1.5rem;
+    color: white;
+  }
+
+  .stats-number {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 0.15rem;
+    line-height: 1.2;
+  }
+
+  .stats-label {
+    color: #5b6e8c;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+  }
+
+  /* Filter section - compact */
+  .filter-section {
+    background: white;
+    border-radius: 14px;
+    padding: 1rem 1.2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.04);
+  }
+
+  .filter-label {
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 0.3rem;
+    font-size: 0.75rem;
+    display: block;
+  }
+
+  .filter-select,
+  .filter-input {
+    border: 1.5px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.8rem;
+    transition: all 0.2s;
+  }
+
+  .filter-select:focus,
+  .filter-input:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+    outline: none;
+  }
+
+  .search-wrapper {
+    position: relative;
+  }
+
+  .search-wrapper i {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    font-size: 0.85rem;
+  }
+
+  .search-wrapper input {
+    padding-left: 2rem;
+  }
+
+  /* Table compact styles */
+  .landing-table {
+    background: white;
+    border-radius: 14px;
+    overflow-x: auto;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.04);
+  }
+
+  .landing-table thead th {
+    background: #f8fafc;
+    color: #1e293b;
+    font-weight: 600;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 0.75rem 0.9rem;
+  }
+
+  .landing-table tbody td {
+    padding: 0.7rem 0.9rem;
+    vertical-align: middle;
+    border-bottom: 1px solid #edf2f7;
+    font-size: 0.8rem;
+  }
+
+  .landing-table tbody tr:hover {
+    background: #fefce8;
+    transition: 0.15s;
+  }
+
+  /* Banner thumbnail */
+  .banner-thumb {
+    width: 50px;
+    height: 36px;
+    border-radius: 6px;
+    object-fit: cover;
+    border: 1px solid #e2e8f0;
+    transition: all 0.2s;
+  }
+
+  .banner-thumb:hover {
+    transform: scale(1.05);
+    border-color: #667eea;
+  }
+
+  /* Status badge */
+  .status-badge {
+    padding: 0.2rem 0.7rem;
+    border-radius: 40px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .status-badge.active {
+    background: #dcfce7;
+    color: #15803d;
+  }
+
+  .status-badge.inactive {
+    background: #fee2e2;
+    color: #b91c1c;
+  }
+
+  /* Location tags */
+  .location-tag {
+    display: inline-block;
+    background: #f1f5f9;
+    padding: 0.2rem 0.6rem;
+    border-radius: 30px;
+    font-size: 0.65rem;
+    font-weight: 500;
+    color: #334155;
+    margin: 0.1rem 0.2rem;
+    white-space: nowrap;
+  }
+
+  .location-tag i {
+    margin-right: 3px;
+    font-size: 0.6rem;
+    color: #4f46e5;
+  }
+
+  .more-locations {
+    background: #f1f5f9;
+    border: 1px dashed #cbd5e1;
+    cursor: help;
+  }
+
+  /* Action buttons - smaller */
+  .action-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 2px;
+    transition: all 0.2s ease;
+    border: none;
+    color: white;
+    font-size: 0.8rem;
+  }
+
+  .action-btn.view {
+    background: linear-gradient(135deg, #667eea 0%, #5a67d8 100%);
+  }
+
+  .action-btn.edit {
+    background: linear-gradient(135deg, #f6d365 0%, #f59e0b 100%);
+  }
+
+  .action-btn.delete {
+    background: linear-gradient(135deg, #f093fb 0%, #ef4444 100%);
+  }
+
+  .action-btn:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.05);
+  }
+
+  /* Toggle switch compact */
+  .toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 22px;
+  }
+
+  .toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    transition: 0.2s;
+    border-radius: 34px;
+  }
+
+  .toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    transition: 0.2s;
+    border-radius: 50%;
+  }
+
+  input:checked+.toggle-slider {
+    background: linear-gradient(135deg, #84fab0 0%, #2dd4bf 100%);
+  }
+
+  input:checked+.toggle-slider:before {
+    transform: translateX(22px);
+  }
+
+  /* Empty state */
+  .empty-state {
+    text-align: center;
+    padding: 2.5rem 1rem;
+  }
+
+  .empty-state i {
+    font-size: 2.5rem;
+    color: #cbd5e1;
+  }
+
+  .empty-state h4 {
+    font-size: 1rem;
+    margin: 0.5rem 0;
+  }
+
+  .empty-state p {
+    font-size: 0.75rem;
+  }
+
+  /* Pagination compact */
+  .pagination {
+    gap: 3px;
+  }
+
+  .page-link {
+    border: none;
+    padding: 0.35rem 0.7rem;
+    font-size: 0.75rem;
+    color: #334155;
+    border-radius: 8px !important;
+    font-weight: 500;
+  }
+
+  .page-link:hover {
+    background: var(--primary-gradient);
+    color: white;
+  }
+
+  .page-item.active .page-link {
+    background: var(--primary-gradient);
+    color: white;
+  }
+
+  /* Headers and breadcrumbs */
+  .page-header h1 {
+    font-size: 1.5rem;
+    margin-bottom: 0.2rem;
+  }
+
+  .breadcrumb {
+    font-size: 0.75rem;
+  }
+
+  .btn-primary {
+    padding: 0.4rem 1rem;
+    font-size: 0.8rem;
+    border-radius: 8px;
+  }
+
+  .btn-primary i {
+    font-size: 0.85rem;
+  }
+
+  .container-fluid {
+    padding: 1rem 1.2rem;
+  }
+
+  .mb-4 {
+    margin-bottom: 1rem !important;
+  }
+
+  .mt-4 {
+    margin-top: 1rem !important;
+  }
+
+  .gap-1 {
+    gap: 0.2rem !important;
+  }
+
+  .fw-bold {
+    font-size: 0.85rem;
+  }
+
+  small.text-muted {
+    font-size: 0.7rem;
+  }
+
+  .form-select-sm,
+  .form-select {
+    font-size: 0.75rem;
+  }
+
+  .loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.7);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    backdrop-filter: blur(3px);
+  }
+
+  .loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #e2e8f0;
+    border-top-color: #667eea;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
     }
-    .stats-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-    }
-    .stats-icon {
-        width: 48px;
-        height: 48px;
-        background: var(--primary-gradient);
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 0.6rem;
-    }
-    .stats-icon i {
-        font-size: 1.5rem;
-        color: white;
-    }
-    .stats-number {
-        font-size: 1.6rem;
-        font-weight: 700;
-        color: #1e293b;
-        margin-bottom: 0.15rem;
-        line-height: 1.2;
-    }
-    .stats-label {
-        color: #5b6e8c;
-        font-size: 0.7rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        font-weight: 600;
-    }
-    
-    /* Filter section - compact */
-    .filter-section {
-        background: white;
-        border-radius: 14px;
-        padding: 1rem 1.2rem;
-        margin-bottom: 1.5rem;
-        box-shadow: 0 3px 12px rgba(0,0,0,0.04);
-    }
-    .filter-label {
-        font-weight: 600;
-        color: #334155;
-        margin-bottom: 0.3rem;
-        font-size: 0.75rem;
-        display: block;
-    }
-    .filter-select, .filter-input {
-        border: 1.5px solid #e2e8f0;
-        border-radius: 8px;
-        padding: 0.4rem 0.75rem;
-        font-size: 0.8rem;
-        transition: all 0.2s;
-    }
-    .filter-select:focus, .filter-input:focus {
-        border-color: #667eea;
-        box-shadow: 0 0 0 2px rgba(102,126,234,0.2);
-        outline: none;
-    }
-    .search-wrapper {
-        position: relative;
-    }
-    .search-wrapper i {
-        position: absolute;
-        left: 12px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #94a3b8;
-        font-size: 0.85rem;
-    }
-    .search-wrapper input {
-        padding-left: 2rem;
-    }
-    
-    /* Table compact styles */
-    .landing-table {
-        background: white;
-        border-radius: 14px;
-        overflow-x: auto;
-        box-shadow: 0 3px 12px rgba(0,0,0,0.04);
-    }
-    .landing-table thead th {
-        background: #f8fafc;
-        color: #1e293b;
-        font-weight: 600;
-        font-size: 0.7rem;
-        text-transform: uppercase;
-        letter-spacing: 0.4px;
-        border-bottom: 1px solid #e2e8f0;
-        padding: 0.75rem 0.9rem;
-    }
-    .landing-table tbody td {
-        padding: 0.7rem 0.9rem;
-        vertical-align: middle;
-        border-bottom: 1px solid #edf2f7;
-        font-size: 0.8rem;
-    }
-    .landing-table tbody tr:hover {
-        background: #fefce8;
-        transition: 0.15s;
-    }
-    
-    /* Banner thumbnail */
-    .banner-thumb {
-        width: 50px;
-        height: 36px;
-        border-radius: 6px;
-        object-fit: cover;
-        border: 1px solid #e2e8f0;
-        transition: all 0.2s;
-    }
-    .banner-thumb:hover {
-        transform: scale(1.05);
-        border-color: #667eea;
-    }
-    
-    /* Status badge */
-    .status-badge {
-        padding: 0.2rem 0.7rem;
-        border-radius: 40px;
-        font-size: 0.65rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.3px;
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-    }
-    .status-badge.active {
-        background: #dcfce7;
-        color: #15803d;
-    }
-    .status-badge.inactive {
-        background: #fee2e2;
-        color: #b91c1c;
-    }
-    
-    /* Location tags */
-    .location-tag {
-        display: inline-block;
-        background: #f1f5f9;
-        padding: 0.2rem 0.6rem;
-        border-radius: 30px;
-        font-size: 0.65rem;
-        font-weight: 500;
-        color: #334155;
-        margin: 0.1rem 0.2rem;
-        white-space: nowrap;
-    }
-    .location-tag i {
-        margin-right: 3px;
-        font-size: 0.6rem;
-        color: #4f46e5;
-    }
-    .more-locations {
-        background: #f1f5f9;
-        border: 1px dashed #cbd5e1;
-        cursor: help;
-    }
-    
-    /* Action buttons - smaller */
-    .action-btn {
-        width: 30px;
-        height: 30px;
-        border-radius: 8px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 2px;
-        transition: all 0.2s ease;
-        border: none;
-        color: white;
-        font-size: 0.8rem;
-    }
-    .action-btn.view {
-        background: linear-gradient(135deg, #667eea 0%, #5a67d8 100%);
-    }
-    .action-btn.edit {
-        background: linear-gradient(135deg, #f6d365 0%, #f59e0b 100%);
-    }
-    .action-btn.delete {
-        background: linear-gradient(135deg, #f093fb 0%, #ef4444 100%);
-    }
-    .action-btn:hover {
-        transform: translateY(-2px);
-        filter: brightness(1.05);
-    }
-    
-    /* Toggle switch compact */
-    .toggle-switch {
-        position: relative;
-        display: inline-block;
-        width: 44px;
-        height: 22px;
-    }
-    .toggle-switch input {
-        opacity: 0;
-        width: 0;
-        height: 0;
-    }
-    .toggle-slider {
-        position: absolute;
-        cursor: pointer;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-        transition: 0.2s;
-        border-radius: 34px;
-    }
-    .toggle-slider:before {
-        position: absolute;
-        content: "";
-        height: 18px;
-        width: 18px;
-        left: 2px;
-        bottom: 2px;
-        background-color: white;
-        transition: 0.2s;
-        border-radius: 50%;
-    }
-    input:checked + .toggle-slider {
-        background: linear-gradient(135deg, #84fab0 0%, #2dd4bf 100%);
-    }
-    input:checked + .toggle-slider:before {
-        transform: translateX(22px);
-    }
-    
-    /* Empty state */
-    .empty-state {
-        text-align: center;
-        padding: 2.5rem 1rem;
-    }
-    .empty-state i {
-        font-size: 2.5rem;
-        color: #cbd5e1;
-    }
-    .empty-state h4 {
-        font-size: 1rem;
-        margin: 0.5rem 0;
-    }
-    .empty-state p {
-        font-size: 0.75rem;
-    }
-    
-    /* Pagination compact */
-    .pagination {
-        gap: 3px;
-    }
-    .page-link {
-        border: none;
-        padding: 0.35rem 0.7rem;
-        font-size: 0.75rem;
-        color: #334155;
-        border-radius: 8px !important;
-        font-weight: 500;
-    }
-    .page-link:hover {
-        background: var(--primary-gradient);
-        color: white;
-    }
-    .page-item.active .page-link {
-        background: var(--primary-gradient);
-        color: white;
-    }
-    
-    /* Headers and breadcrumbs */
-    .page-header h1 {
-        font-size: 1.5rem;
-        margin-bottom: 0.2rem;
-    }
-    .breadcrumb {
-        font-size: 0.75rem;
-    }
-    .btn-primary {
-        padding: 0.4rem 1rem;
-        font-size: 0.8rem;
-        border-radius: 8px;
-    }
-    .btn-primary i {
-        font-size: 0.85rem;
-    }
-    .container-fluid {
-        padding: 1rem 1.2rem;
-    }
-    .mb-4 {
-        margin-bottom: 1rem !important;
-    }
-    .mt-4 {
-        margin-top: 1rem !important;
-    }
-    .gap-1 {
-        gap: 0.2rem !important;
-    }
-    .fw-bold {
-        font-size: 0.85rem;
-    }
-    small.text-muted {
-        font-size: 0.7rem;
-    }
-    .form-select-sm, .form-select {
-        font-size: 0.75rem;
-    }
-    .loading-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(255,255,255,0.7);
-        display: none;
-        justify-content: center;
-        align-items: center;
-        z-index: 9999;
-        backdrop-filter: blur(3px);
-    }
-    .loading-spinner {
-        width: 40px;
-        height: 40px;
-        border: 3px solid #e2e8f0;
-        border-top-color: #667eea;
-        border-radius: 50%;
-        animation: spin 0.8s linear infinite;
-    }
-    @keyframes spin {
-        to { transform: rotate(360deg); }
-    }
+  }
 </style>
 
 <%- contentFor('body') %>
 <div class="container-fluid px-3">
-    <!-- Loading Overlay -->
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="loading-spinner"></div>
-    </div>
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+  </div>
 
-    <!-- Page Header Compact -->
-    <div class="d-flex justify-content-between align-items-center mb-3 animate__animated animate__fadeInDown">
-        <div class="page-header">
-            <h1 class="h4 mb-0 fw-bold">Landing Pages</h1>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mb-0">
-                    <li class="breadcrumb-item"><a href="/admin/dashboard" class="text-decoration-none">Dashboard</a></li>
-                    <li class="breadcrumb-item active">Landing Pages</li>
-                </ol>
-            </nav>
+  <!-- Page Header Compact -->
+  <div class="d-flex justify-content-between align-items-center mb-3 animate__animated animate__fadeInDown">
+    <div class="page-header">
+      <h1 class="h4 mb-0 fw-bold">Landing Pages</h1>
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mb-0">
+          <li class="breadcrumb-item"><a href="/admin/dashboard" class="text-decoration-none">Dashboard</a></li>
+          <li class="breadcrumb-item active">Landing Pages</li>
+        </ol>
+      </nav>
+    </div>
+    <a href="/admin/landing/create" class="btn btn-primary shadow-sm">
+      <i class="bi bi-plus-circle"></i> Create New
+    </a>
+  </div>
+
+  <!-- Stats Cards Compact -->
+  <div class="row g-3 mb-4 animate__animated animate__fadeInUp">
+    <div class="col-xl-4 col-md-4">
+      <div class="stats-card">
+        <div class="stats-icon">
+          <i class="bi bi-files"></i>
         </div>
-        <a href="/admin/landing/create" class="btn btn-primary shadow-sm">
-            <i class="bi bi-plus-circle"></i> Create New
-        </a>
+        <div class="stats-number" id="totalLandings">0</div>
+        <div class="stats-label">Total Pages</div>
+      </div>
     </div>
-
-    <!-- Stats Cards Compact -->
-    <div class="row g-3 mb-4 animate__animated animate__fadeInUp">
-        <div class="col-xl-4 col-md-4">
-            <div class="stats-card">
-                <div class="stats-icon">
-                    <i class="bi bi-files"></i>
-                </div>
-                <div class="stats-number" id="totalLandings">0</div>
-                <div class="stats-label">Total Pages</div>
-            </div>
+    <div class="col-xl-4 col-md-4">
+      <div class="stats-card">
+        <div class="stats-icon" style="background: var(--success-gradient);">
+          <i class="bi bi-check-circle"></i>
         </div>
-        <div class="col-xl-4 col-md-4">
-            <div class="stats-card">
-                <div class="stats-icon" style="background: var(--success-gradient);">
-                    <i class="bi bi-check-circle"></i>
-                </div>
-                <div class="stats-number" id="activeLandings">0</div>
-                <div class="stats-label">Active Pages</div>
-            </div>
+        <div class="stats-number" id="activeLandings">0</div>
+        <div class="stats-label">Active Pages</div>
+      </div>
+    </div>
+    <div class="col-xl-4 col-md-4">
+      <div class="stats-card">
+        <div class="stats-icon" style="background: var(--warning-gradient);">
+          <i class="bi bi-geo-alt"></i>
         </div>
-        <div class="col-xl-4 col-md-4">
-            <div class="stats-card">
-                <div class="stats-icon" style="background: var(--warning-gradient);">
-                    <i class="bi bi-geo-alt"></i>
-                </div>
-                <div class="stats-number" id="totalLocations">0</div>
-                <div class="stats-label">Total Locations</div>
-            </div>
+        <div class="stats-number" id="totalLocations">0</div>
+        <div class="stats-label">Total Locations</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter Section Compact -->
+  <div class="filter-section animate__animated animate__fadeInUp">
+    <form id="filterForm" method="GET" action="/admin/landing">
+      <div class="row g-2 align-items-end">
+        <div class="col-lg-4">
+          <label class="filter-label">Search</label>
+          <div class="search-wrapper">
+            <i class="bi bi-search"></i>
+            <input type="text" class="form-control filter-input" name="search" placeholder="Title, slug, meta..." value="<%= filters.search %>">
+          </div>
         </div>
-    </div>
-
-    <!-- Filter Section Compact -->
-    <div class="filter-section animate__animated animate__fadeInUp">
-        <form id="filterForm" method="GET" action="/admin/landing">
-            <div class="row g-2 align-items-end">
-                <div class="col-lg-4">
-                    <label class="filter-label">Search</label>
-                    <div class="search-wrapper">
-                        <i class="bi bi-search"></i>
-                        <input type="text" class="form-control filter-input" name="search" placeholder="Title, slug, meta..."
-                               value="<%= filters.search %>">
-                    </div>
-                </div>
-                <div class="col-lg-3">
-                    <label class="filter-label">Status</label>
-                    <select class="form-select filter-select" name="status">
-                        <option value="">All Status</option>
-                        <option value="active" <%= filters.status === 'active' ? 'selected' : '' %>>Active</option>
-                        <option value="inactive" <%= filters.status === 'inactive' ? 'selected' : '' %>>Inactive</option>
-                    </select>
-                </div>
-                <div class="col-lg-3">
-                    <label class="filter-label">Sort By</label>
-                    <select class="form-select filter-select" name="sort">
-                        <option value="latest" <%= filters.sort === 'latest' ? 'selected' : '' %>>Latest First</option>
-                        <option value="oldest" <%= filters.sort === 'oldest' ? 'selected' : '' %>>Oldest First</option>
-                        <option value="title_asc" <%= filters.sort === 'title_asc' ? 'selected' : '' %>>Title (A-Z)</option>
-                        <option value="title_desc" <%= filters.sort === 'title_desc' ? 'selected' : '' %>>Title (Z-A)</option>
-                    </select>
-                </div>
-                <div class="col-lg-2">
-                    <button type="submit" class="btn btn-primary w-100 py-1">
-                        <i class="bi bi-funnel"></i> Apply
-                    </button>
-                </div>
-            </div>
-        </form>
-    </div>
-
-    <!-- Quick Actions Bar Compact -->
-    <div class="d-flex justify-content-between align-items-center mb-2">
-        <div></div>
-        <div>
-            <span class="text-muted me-1 small">Show</span>
-            <select class="form-select form-select-sm d-inline-block w-auto" onchange="changeLimit(this.value)">
-                <option value="12" <%= pagination.limit === 12 ? 'selected' : '' %>>12</option>
-                <option value="24" <%= pagination.limit === 24 ? 'selected' : '' %>>24</option>
-                <option value="48" <%= pagination.limit === 48 ? 'selected' : '' %>>48</option>
-                <option value="100" <%= pagination.limit === 100 ? 'selected' : '' %>>100</option>
-            </select>
-            <span class="text-muted ms-1 small">entries</span>
+        <div class="col-lg-3">
+          <label class="filter-label">Status</label>
+          <select class="form-select filter-select" name="status">
+            <option value="">All Status</option>
+            <option value="active" <%= filters.status === 'active' ? 'selected' : '' %>>Active</option>
+            <option value="inactive" <%= filters.status === 'inactive' ? 'selected' : '' %>>Inactive</option>
+          </select>
         </div>
-    </div>
+        <div class="col-lg-3">
+          <label class="filter-label">Sort By</label>
+          <select class="form-select filter-select" name="sort">
+            <option value="latest" <%= filters.sort === 'latest' ? 'selected' : '' %>>Latest First</option>
+            <option value="oldest" <%= filters.sort === 'oldest' ? 'selected' : '' %>>Oldest First</option>
+            <option value="title_asc" <%= filters.sort === 'title_asc' ? 'selected' : '' %>>Title (A-Z)</option>
+            <option value="title_desc" <%= filters.sort === 'title_desc' ? 'selected' : '' %>>Title (Z-A)</option>
+          </select>
+        </div>
+        <div class="col-lg-2">
+          <button type="submit" class="btn btn-primary w-100 py-1">
+            <i class="bi bi-funnel"></i> Apply
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
 
-    <!-- Landing Pages Table Compact -->
-    <div class="landing-table animate__animated animate__fadeInUp">
-        <table class="table mb-0" id="landingTable">
-            <thead>
-                <tr>
-                    <th width="40">#</th>
-                    <th width="70">Banner</th>
-                    <th>Title & Slug</th>
-                    <th>Locations</th>
-                    <th>Created</th>
-                    <th>Status</th>
-                    <th width="100">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% if (landings && landings.length > 0) { %>
-                    <% landings.forEach((landing, index) => { %>
-                        <tr data-id="<%= landing.id %>" class="animate__animated animate__fadeIn" style="animation-delay: <%= index * 0.03 %>s">
-                            <td class="align-middle"><span class="fw-semibold text-secondary"><%= ((pagination.page - 1) * pagination.limit) + index + 1 %></span></td>
-                            <td class="align-middle">
-                                <% if (landing.banner_image) { %>
-                                    <img src="<%= landing.banner_image %>" class="banner-thumb" alt="banner" onclick="showImagePreview('<%= landing.banner_image %>')" style="cursor: pointer;">
-                                <% } else { %>
-                                    <div class="banner-thumb bg-light d-flex align-items-center justify-content-center">
-                                        <i class="bi bi-image text-muted fs-6"></i>
-                                    </div>
-                                <% } %>
-                            </td>
-                            <td>
-                                <div class="fw-semibold"><%= landing.title %></div>
-                                <div class="small text-secondary"><i class="bi bi-link-45deg"></i> /<%= landing.slug %></div>
-                                <% if (landing.meta_title) { %>
-                                    <div class="small text-secondary mt-1"><i class="bi bi-tag"></i> <%= landing.meta_title.substring(0, 45) %><%= landing.meta_title.length > 45 ? '...' : '' %></div>
-                                <% } %>
-                            </td>
-                            <td>
-                                <% if (landing.locations && landing.locations.length > 0) { %>
-                                    <div class="d-flex flex-wrap gap-1">
-                                        <% landing.locations.slice(0, 3).forEach(location => { %>
-                                            <span class="location-tag"><i class="bi bi-pin-map-fill"></i> <%= location.name %></span>
-                                        <% }) %>
-                                        <% if (landing.locations.length > 3) { %>
-                                            <span class="location-tag more-locations" data-bs-toggle="tooltip" title="<%= landing.locations.slice(3).map(l => l.name).join(', ') %>">
-                                                +<%= landing.locations.length - 3 %>
-                                            </span>
-                                        <% } %>
-                                    </div>
-                                <% } else { %>
-                                    <span class="text-muted fst-italic">No locations</span>
-                                <% } %>
-                            </td>
-                            <td class="small">
-                                <div><i class="bi bi-calendar3"></i> <%= new Date(landing.createdAt).toLocaleDateString() %></div>
-                                <div class="text-muted"><i class="bi bi-clock"></i> <%= new Date(landing.createdAt).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) %></div>
-                            </td>
-                            <td>
-                                <label class="toggle-switch mb-1">
-                                    <input type="checkbox" class="toggle-status" data-id="<%= landing.id %>" <%= landing.isActive ? 'checked' : '' %>>
-                                    <span class="toggle-slider"></span>
-                                </label>
-                                <span class="status-badge <%= landing.isActive ? 'active' : 'inactive' %> ms-1">
-                                    <i class="bi <%= landing.isActive ? 'bi-check-circle-fill' : 'bi-x-circle-fill' %>"></i> <%= landing.isActive ? 'Active' : 'Inactive' %>
-                                </span>
-                            </td>
-                            <td>
-                                <div class="d-flex">
-                                    <a href="/admin/landing/view/<%= landing.id %>" class="action-btn view" data-bs-toggle="tooltip" title="View"><i class="bi bi-eye"></i></a>
-                                    <a href="/admin/landing/edit/<%= landing.id %>" class="action-btn edit" data-bs-toggle="tooltip" title="Edit"><i class="bi bi-pencil"></i></a>
-                                    <button type="button" class="action-btn delete" onclick="confirmDelete(<%= landing.id %>, '<%= landing.title.replace(/'/g, "\\'") %>')" data-bs-toggle="tooltip" title="Delete"><i class="bi bi-trash"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                    <% }); %>
-                <% } else { %>
-                    <tr>
-                        <td colspan="7">
-                            <div class="empty-state">
-                                <i class="bi bi-files"></i>
-                                <h4>No landing pages found</h4>
-                                <p>Create your first landing page to start.</p>
-                                <a href="/admin/landing/create" class="btn btn-sm btn-primary">+ Create New</a>
-                            </div>
-                        </td>
-                    </tr>
-                <% } %>
-            </tbody>
-        </table>
+  <!-- Quick Actions Bar Compact -->
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <div></div>
+    <div>
+      <span class="text-muted me-1 small">Show</span>
+      <select class="form-select form-select-sm d-inline-block w-auto" onchange="changeLimit(this.value)">
+        <option value="12" <%= pagination.limit === 12 ? 'selected' : '' %>>12</option>
+        <option value="24" <%= pagination.limit === 24 ? 'selected' : '' %>>24</option>
+        <option value="48" <%= pagination.limit === 48 ? 'selected' : '' %>>48</option>
+        <option value="100" <%= pagination.limit === 100 ? 'selected' : '' %>>100</option>
+      </select>
+      <span class="text-muted ms-1 small">entries</span>
     </div>
+  </div>
 
-    <!-- Pagination Compact -->
-    <% if (pagination.totalPages > 1) { %>
-        <div class="d-flex justify-content-between align-items-center mt-3">
-            <div class="text-muted small">
-                Showing <%= ((pagination.page - 1) * pagination.limit) + 1 %> - 
-                <%= Math.min(pagination.page * pagination.limit, pagination.totalCount) %> 
-                of <%= pagination.totalCount %> entries
+  <!-- Landing Pages Table Compact -->
+  <div class="landing-table animate__animated animate__fadeInUp">
+    <table class="table mb-0" id="landingTable">
+      <thead>
+        <tr>
+          <th width="40">#</th>
+          <th width="70">Banner</th>
+          <th>Title & Slug</th>
+          <th>Locations</th>
+          <th>Created</th>
+          <th>Status</th>
+          <th>FAQs</th>
+          <th>Google Reviews</th>
+          <th width="100">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (landings && landings.length > 0) { %>
+        <% landings.forEach((landing, index) => { %>
+        <tr data-id="<%= landing.id %>" class="animate__animated animate__fadeIn" style="animation-delay: <%= index * 0.03 %>s">
+          <td class="align-middle"><span class="fw-semibold text-secondary"><%= ((pagination.page - 1) * pagination.limit) + index + 1 %></span></td>
+          <td class="align-middle">
+            <% if (landing.banner_image) { %>
+            <img src="<%= landing.banner_image %>" class="banner-thumb" alt="banner" onclick="showImagePreview('<%= landing.banner_image %>')" style="cursor: pointer;">
+            <% } else { %>
+            <div class="banner-thumb bg-light d-flex align-items-center justify-content-center">
+              <i class="bi bi-image text-muted fs-6"></i>
             </div>
-            <nav>
-                <ul class="pagination mb-0">
-                    <li class="page-item <%= pagination.page === 1 ? 'disabled' : '' %>">
-                        <a class="page-link" href="?page=<%= pagination.page - 1 %>&limit=<%= pagination.limit %>&search=<%= filters.search %>&status=<%= filters.status %>&sort=<%= filters.sort %>"><i class="bi bi-chevron-left"></i></a>
-                    </li>
-                    <% 
+            <% } %>
+          </td>
+          <td>
+            <div class="fw-semibold"><%= landing.title %></div>
+            <div class="small text-secondary"><i class="bi bi-link-45deg"></i> /<%= landing.slug %></div>
+            <% if (landing.meta_title) { %>
+            <div class="small text-secondary mt-1"><i class="bi bi-tag"></i> <%= landing.meta_title.substring(0, 45) %><%= landing.meta_title.length > 45 ? '...' : '' %></div>
+            <% } %>
+          </td>
+          <td>
+            <% if (landing.locations && landing.locations.length > 0) { %>
+            <div class="d-flex flex-wrap gap-1">
+              <% landing.locations.slice(0, 3).forEach(location => { %>
+              <span class="location-tag"><i class="bi bi-pin-map-fill"></i> <%= location.name %></span>
+              <% }) %>
+              <% if (landing.locations.length > 3) { %>
+              <span class="location-tag more-locations" data-bs-toggle="tooltip" title="<%= landing.locations.slice(3).map(l => l.name).join(', ') %>">
+                +<%= landing.locations.length - 3 %>
+              </span>
+              <% } %>
+            </div>
+            <% } else { %>
+            <span class="text-muted fst-italic">No locations</span>
+            <% } %>
+          </td>
+          <td class="small">
+            <div><i class="bi bi-calendar3"></i> <%= new Date(landing.createdAt).toLocaleDateString() %></div>
+            <div class="text-muted"><i class="bi bi-clock"></i> <%= new Date(landing.createdAt).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) %></div>
+          </td>
+          <td>
+            <label class="toggle-switch mb-1">
+              <input type="checkbox" class="toggle-status" data-id="<%= landing.id %>" <%= landing.isActive ? 'checked' : '' %>>
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="status-badge <%= landing.isActive ? 'active' : 'inactive' %> ms-1">
+              <i class="bi <%= landing.isActive ? 'bi-check-circle-fill' : 'bi-x-circle-fill' %>"></i> <%= landing.isActive ? 'Active' : 'Inactive' %>
+            </span>
+          </td>
+          <td class="text-center">
+            <a href="/admin/faqs/slug/<%= landing.slug %>" class="bg-primary p-2 text-white rounded" title="View FAQs" style="font-size: 14px;">
+              <i class="bi bi-patch-question"></i>
+            </a>
+          </td>
+          <td class="text-center">
+            <a href="/admin/googlereviews/slug/<%= landing.slug %>" class="bg-secondary p-2 text-white rounded" title="View Google Reviews" style="font-size: 14px;">
+              <i class="bi bi-google"></i>
+            </a>
+          </td>
+          <td>
+            <div class="d-flex">
+              <a href="/admin/landing/view/<%= landing.id %>" class="action-btn view" data-bs-toggle="tooltip" title="View"><i class="bi bi-eye"></i></a>
+              <a href="/admin/landing/edit/<%= landing.id %>" class="action-btn edit" data-bs-toggle="tooltip" title="Edit"><i class="bi bi-pencil"></i></a>
+              <button type="button" class="action-btn delete" onclick="confirmDelete(<%= landing.id %>, '<%= landing.title.replace(/'/g, "\\'") %>')" data-bs-toggle="tooltip" title="Delete"><i class="bi bi-trash"></i></button>
+            </div>
+          </td>
+        </tr>
+        <% }); %>
+        <% } else { %>
+        <tr>
+          <td colspan="7">
+            <div class="empty-state">
+              <i class="bi bi-files"></i>
+              <h4>No landing pages found</h4>
+              <p>Create your first landing page to start.</p>
+              <a href="/admin/landing/create" class="btn btn-sm btn-primary">+ Create New</a>
+            </div>
+          </td>
+        </tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination Compact -->
+  <% if (pagination.totalPages > 1) { %>
+  <div class="d-flex justify-content-between align-items-center mt-3">
+    <div class="text-muted small">
+      Showing <%= ((pagination.page - 1) * pagination.limit) + 1 %> -
+      <%= Math.min(pagination.page * pagination.limit, pagination.totalCount) %>
+      of <%= pagination.totalCount %> entries
+    </div>
+    <nav>
+      <ul class="pagination mb-0">
+        <li class="page-item <%= pagination.page === 1 ? 'disabled' : '' %>">
+          <a class="page-link" href="?page=<%= pagination.page - 1 %>&limit=<%= pagination.limit %>&search=<%= filters.search %>&status=<%= filters.status %>&sort=<%= filters.sort %>"><i class="bi bi-chevron-left"></i></a>
+        </li>
+        <% 
                         let startPage = Math.max(1, pagination.page - 2);
                         let endPage = Math.min(pagination.totalPages, startPage + 4);
                         if (endPage - startPage < 4) startPage = Math.max(1, endPage - 4);
                         if (startPage > 1) { %>
-                            <li class="page-item"><a class="page-link" href="?page=1&limit=<%= pagination.limit %>&search=<%= filters.search %>&status=<%= filters.status %>&sort=<%= filters.sort %>">1</a></li>
-                            <% if (startPage > 2) { %><li class="page-item disabled"><span class="page-link">...</span></li><% } %>
-                    <% } %>
-                    <% for (let i = startPage; i <= endPage; i++) { %>
-                        <li class="page-item <%= i === pagination.page ? 'active' : '' %>">
-                            <a class="page-link" href="?page=<%= i %>&limit=<%= pagination.limit %>&search=<%= filters.search %>&status=<%= filters.status %>&sort=<%= filters.sort %>"><%= i %></a>
-                        </li>
-                    <% } %>
-                    <% if (endPage < pagination.totalPages) { %>
-                        <% if (endPage < pagination.totalPages - 1) { %><li class="page-item disabled"><span class="page-link">...</span></li><% } %>
-                        <li class="page-item"><a class="page-link" href="?page=<%= pagination.totalPages %>&limit=<%= pagination.limit %>&search=<%= filters.search %>&status=<%= filters.status %>&sort=<%= filters.sort %>"><%= pagination.totalPages %></a></li>
-                    <% } %>
-                    <li class="page-item <%= pagination.page === pagination.totalPages ? 'disabled' : '' %>">
-                        <a class="page-link" href="?page=<%= pagination.page + 1 %>&limit=<%= pagination.limit %>&search=<%= filters.search %>&status=<%= filters.status %>&sort=<%= filters.sort %>"><i class="bi bi-chevron-right"></i></a>
-                    </li>
-                </ul>
-            </nav>
-        </div>
-    <% } %>
+        <li class="page-item"><a class="page-link" href="?page=1&limit=<%= pagination.limit %>&search=<%= filters.search %>&status=<%= filters.status %>&sort=<%= filters.sort %>">1</a></li>
+        <% if (startPage > 2) { %><li class="page-item disabled"><span class="page-link">...</span></li><% } %>
+        <% } %>
+        <% for (let i = startPage; i <= endPage; i++) { %>
+        <li class="page-item <%= i === pagination.page ? 'active' : '' %>">
+          <a class="page-link" href="?page=<%= i %>&limit=<%= pagination.limit %>&search=<%= filters.search %>&status=<%= filters.status %>&sort=<%= filters.sort %>"><%= i %></a>
+        </li>
+        <% } %>
+        <% if (endPage < pagination.totalPages) { %>
+        <% if (endPage < pagination.totalPages - 1) { %><li class="page-item disabled"><span class="page-link">...</span></li><% } %>
+        <li class="page-item"><a class="page-link" href="?page=<%= pagination.totalPages %>&limit=<%= pagination.limit %>&search=<%= filters.search %>&status=<%= filters.status %>&sort=<%= filters.sort %>"><%= pagination.totalPages %></a></li>
+        <% } %>
+        <li class="page-item <%= pagination.page === pagination.totalPages ? 'disabled' : '' %>">
+          <a class="page-link" href="?page=<%= pagination.page + 1 %>&limit=<%= pagination.limit %>&search=<%= filters.search %>&status=<%= filters.status %>&sort=<%= filters.sort %>"><i class="bi bi-chevron-right"></i></a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+  <% } %>
 </div>
 
 <!-- Modals -->
 <div class="modal fade" id="imagePreviewModal" tabindex="-1">
-    <div class="modal-dialog modal-sm modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header py-2">
-                <h6 class="modal-title">Banner Preview</h6>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body text-center p-2">
-                <img src="" id="previewImage" class="img-fluid rounded" alt="Preview">
-            </div>
-        </div>
+  <div class="modal-dialog modal-sm modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header py-2">
+        <h6 class="modal-title">Banner Preview</h6>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body text-center p-2">
+        <img src="" id="previewImage" class="img-fluid rounded" alt="Preview">
+      </div>
     </div>
+  </div>
 
-<%- contentFor('js') %>
-<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <%- contentFor('js') %>
+  <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<script>
+  <script>
     $(document).ready(function() {
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        tooltipTriggerList.map(function (el) { return new bootstrap.Tooltip(el); });
-        
-        // small DataTable just for ordering (if multiple rows)
-        if ($('#landingTable tbody tr').length > 1) {
-            $('#landingTable').DataTable({
-                paging: false,
-                searching: false,
-                info: false,
-                ordering: true,
-                columnDefs: [{ orderable: false, targets: [0,1,6] }]
-            });
-        }
-        updateStats();
+      var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+      tooltipTriggerList.map(function(el) {
+        return new bootstrap.Tooltip(el);
+      });
+
+      // small DataTable just for ordering (if multiple rows)
+      if ($('#landingTable tbody tr').length > 1) {
+        $('#landingTable').DataTable({
+          paging: false,
+          searching: false,
+          info: false,
+          ordering: true,
+          columnDefs: [{
+            orderable: false,
+            targets: [0, 1, 6]
+          }]
+        });
+      }
+      updateStats();
     });
 
     function updateStats() {
-        const total = <%= pagination.totalCount %>;
-        const activeCount = <%= landings.filter(l => l.isActive).length %>;
-        const locationsTotal = <%= landings.reduce((acc, l) => acc + (l.locations ? l.locations.length : 0), 0) %>;
-        document.getElementById('totalLandings').innerText = total;
-        document.getElementById('activeLandings').innerText = activeCount;
-        document.getElementById('totalLocations').innerText = locationsTotal;
+      const total = <%= pagination.totalCount %>;
+      const activeCount = <%= landings.filter(l => l.isActive).length %>;
+      const locationsTotal = <%= landings.reduce((acc, l) => acc + (l.locations ? l.locations.length : 0), 0) %>;
+      document.getElementById('totalLandings').innerText = total;
+      document.getElementById('activeLandings').innerText = activeCount;
+      document.getElementById('totalLocations').innerText = locationsTotal;
     }
 
     // Toggle status with SweetAlert
     document.querySelectorAll('.toggle-status').forEach(checkbox => {
-        checkbox.addEventListener('change', function(e) {
-            const id = this.dataset.id;
-            const isActive = this.checked;
-            const action = isActive ? 'activate' : 'deactivate';
-            Swal.fire({
-                title: `Confirm ${action}`,
-                text: `Do you want to ${action} this landing page?`,
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: isActive ? '#2b9348' : '#d00000',
-                confirmButtonText: `Yes, ${action}`,
-                cancelButtonText: 'Cancel'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    showLoading();
-                    fetch(`/admin/landing/toggle-status/${id}`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' }
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        hideLoading();
-                        if (data.success) {
-                            Swal.fire({ icon: 'success', title: 'Updated', text: data.message, timer: 1500, showConfirmButton: false });
-                            const row = document.querySelector(`tr[data-id="${id}"]`);
-                            const badge = row.querySelector('.status-badge');
-                            badge.className = `status-badge ${isActive ? 'active' : 'inactive'} ms-1`;
-                            badge.innerHTML = `<i class="bi ${isActive ? 'bi-check-circle-fill' : 'bi-x-circle-fill'}"></i> ${isActive ? 'Active' : 'Inactive'}`;
-                            updateStats();
-                        } else {
-                            this.checked = !isActive;
-                            Swal.fire({ icon: 'error', title: 'Error', text: data.message || 'Status update failed' });
-                        }
-                    }).catch(() => {
-                        hideLoading();
-                        this.checked = !isActive;
-                        Swal.fire({ icon: 'error', title: 'Error', text: 'Server error' });
-                    });
-                } else {
-                    this.checked = !isActive;
+      checkbox.addEventListener('change', function(e) {
+        const id = this.dataset.id;
+        const isActive = this.checked;
+        const action = isActive ? 'activate' : 'deactivate';
+        Swal.fire({
+          title: `Confirm ${action}`,
+          text: `Do you want to ${action} this landing page?`,
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonColor: isActive ? '#2b9348' : '#d00000',
+          confirmButtonText: `Yes, ${action}`,
+          cancelButtonText: 'Cancel'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            showLoading();
+            fetch(`/admin/landing/toggle-status/${id}`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
                 }
-            });
+              })
+              .then(res => res.json())
+              .then(data => {
+                hideLoading();
+                if (data.success) {
+                  Swal.fire({
+                    icon: 'success',
+                    title: 'Updated',
+                    text: data.message,
+                    timer: 1500,
+                    showConfirmButton: false
+                  });
+                  const row = document.querySelector(`tr[data-id="${id}"]`);
+                  const badge = row.querySelector('.status-badge');
+                  badge.className = `status-badge ${isActive ? 'active' : 'inactive'} ms-1`;
+                  badge.innerHTML = `<i class="bi ${isActive ? 'bi-check-circle-fill' : 'bi-x-circle-fill'}"></i> ${isActive ? 'Active' : 'Inactive'}`;
+                  updateStats();
+                } else {
+                  this.checked = !isActive;
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: data.message || 'Status update failed'
+                  });
+                }
+              }).catch(() => {
+                hideLoading();
+                this.checked = !isActive;
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error',
+                  text: 'Server error'
+                });
+              });
+          } else {
+            this.checked = !isActive;
+          }
         });
+      });
     });
 
     window.confirmDelete = function(id, title) {
-        Swal.fire({
-            title: 'Permanently delete?',
-            html: `You are about to delete "<strong>${escapeHtml(title)}</strong>".<br><span class="text-danger">All data will be removed.</span>`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#dc3545',
-            confirmButtonText: 'Yes, delete',
-            cancelButtonText: 'Cancel'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                showLoading();
-                fetch(`/admin/landing/delete/${id}`, { method: 'DELETE', headers: { 'Content-Type': 'application/json' } })
-                .then(res => res.json())
-                .then(data => {
-                    hideLoading();
-                    if (data.success) {
-                        Swal.fire({ icon: 'success', title: 'Deleted', text: data.message, timer: 1600, showConfirmButton: false });
-                        const row = document.querySelector(`tr[data-id="${id}"]`);
-                        if (row) {
-                            row.classList.add('animate__fadeOut');
-                            setTimeout(() => { row.remove(); updateStats(); if(document.querySelectorAll('#landingTable tbody tr').length === 0) location.reload(); }, 300);
-                        } else { location.reload(); }
-                    } else {
-                        Swal.fire({ icon: 'error', title: 'Error', text: data.message });
-                    }
-                }).catch(() => { hideLoading(); Swal.fire('Error', 'Could not delete', 'error'); });
-            }
-        });
+      Swal.fire({
+        title: 'Permanently delete?',
+        html: `You are about to delete "<strong>${escapeHtml(title)}</strong>".<br><span class="text-danger">All data will be removed.</span>`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#dc3545',
+        confirmButtonText: 'Yes, delete',
+        cancelButtonText: 'Cancel'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          showLoading();
+          fetch(`/admin/landing/delete/${id}`, {
+              method: 'DELETE',
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            })
+            .then(res => res.json())
+            .then(data => {
+              hideLoading();
+              if (data.success) {
+                location.reload();
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Deleted',
+                  text: data.message,
+                  timer: 1600,
+                  showConfirmButton: false
+                });
+                const row = document.querySelector(`tr[data-id="${id}"]`);
+                if (row) {
+                  row.classList.add('animate__fadeOut');
+                  setTimeout(() => {
+                    row.remove();
+                    updateStats();
+                    if (document.querySelectorAll('#landingTable tbody tr').length === 0) location.reload();
+                  }, 300);
+                } else {
+                  location.reload();
+                }
+              } else {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error',
+                  text: data.message
+                });
+              }
+            }).catch(() => {
+                location.reload();
+              hideLoading();
+              Swal.fire('Error', 'Could not delete', 'error');
+            });
+        }
+      });
     };
 
     window.showImagePreview = (url) => {
-        document.getElementById('previewImage').src = url;
-        new bootstrap.Modal(document.getElementById('imagePreviewModal')).show();
+      document.getElementById('previewImage').src = url;
+      new bootstrap.Modal(document.getElementById('imagePreviewModal')).show();
     };
     window.changeLimit = (limit) => {
-        const url = new URL(window.location.href);
-        url.searchParams.set('limit', limit);
-        url.searchParams.set('page', 1);
-        window.location.href = url.toString();
+      const url = new URL(window.location.href);
+      url.searchParams.set('limit', limit);
+      url.searchParams.set('page', 1);
+      window.location.href = url.toString();
     };
-    function showLoading() { document.getElementById('loadingOverlay').classList.add('show'); }
-    function hideLoading() { document.getElementById('loadingOverlay').classList.remove('show'); }
-    function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, function(m){ if(m === '&') return '&amp;'; if(m === '<') return '&lt;'; if(m === '>') return '&gt;'; return m;}); }
-    
+
+    function showLoading() {
+      document.getElementById('loadingOverlay').classList.add('show');
+    }
+
+    function hideLoading() {
+      document.getElementById('loadingOverlay').classList.remove('show');
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+      });
+    }
+
     // Auto submit filters on select change (except search handled with debounce)
     document.querySelectorAll('.filter-select').forEach(sel => sel.addEventListener('change', () => document.getElementById('filterForm').submit()));
     let searchTimeout;
     document.querySelector('input[name="search"]').addEventListener('input', function() {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => document.getElementById('filterForm').submit(), 500);
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => document.getElementById('filterForm').submit(), 500);
     });
-</script>
+  </script>

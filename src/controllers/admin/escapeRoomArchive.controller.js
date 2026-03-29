@@ -1,7 +1,7 @@
 const db = require("../../../models");
 const path = require("path");
 const fs = require("fs");
-const findOrCreatePage = require('../../utils/faqHelper');
+const {findOrCreatePage} = require('../../utils/faqHelper');
 
 const escapeRoomArchiveController = {
   // GET /admin/escape/archive

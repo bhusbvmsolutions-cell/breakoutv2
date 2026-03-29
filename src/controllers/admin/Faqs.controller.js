@@ -211,6 +211,52 @@ const FaqsController = {
       });
     }
   },
+
+
+
+  slugindex: async (req, res) => {
+    try {
+      const pageSlug = req.params.slug;
+
+      if (!pageSlug) {
+        req.flash("error", "No page found for FAQs");
+        return res.redirect("/admin/dashboard");
+      }
+
+      const page = await db.Page.findOne({
+        where: { slug: pageSlug },
+        include: [
+          {
+            model: db.Faq,
+            as: "faqs",
+            required: false,
+          },
+        ],
+      });
+      
+      // Sort FAQs manually after fetching
+      if (page && page.faqs) {
+        page.faqs.sort((a, b) => a.sort_order - b.sort_order);
+      }
+
+      if (!page) {
+        req.flash("error", "Page not found");
+        return res.redirect("/admin/dashboard");
+      }
+
+      res.render("admin/faqs/index", {
+        title: `FAQs - ${page.name}`,
+        page: page,
+        faqs: page.faqs || [],
+        success: req.flash("success"),
+        error: req.flash("error"),
+      });
+    } catch (error) {
+      console.error(error);
+      req.flash("error", "Failed to load FAQs");
+      res.redirect("/admin/dashboard");
+    }
+  },
 };
 
 module.exports = FaqsController;

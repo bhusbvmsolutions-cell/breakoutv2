@@ -2,6 +2,7 @@ const db = require("../../../models");
 const path = require("path");
 const fs = require("fs");
 const slugify = require("slugify");
+const { DeleteFaqPage, findOrCreatePage} = require("../../utils/faqHelper");;
 
 const {
   EscapeRoomLocation,
@@ -324,6 +325,7 @@ const escapeRoomLocationController = {
           });
         }
       }
+      await findOrCreatePage(location.id, location.title, slug, 'escapeLocation');
 
       req.flash("success", "Location created successfully!");
       res.redirect("/admin/escape/locations");
@@ -583,6 +585,8 @@ const escapeRoomLocationController = {
         }
       }
 
+      await findOrCreatePage(location.id, location.title, slug, 'escapeLocation');
+
       req.flash("success", "Location updated successfully!");
       res.redirect("/admin/escape/locations");
     } catch (error) {
@@ -618,6 +622,9 @@ const escapeRoomLocationController = {
       }
 
       await location.destroy();
+
+
+      await DeleteFaqPage(location.id, location.title, location.slug, 'escapeLocation');
 
       res.json({
         success: true,

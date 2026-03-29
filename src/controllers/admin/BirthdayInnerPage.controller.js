@@ -4,6 +4,8 @@ const fs = require("fs");
 const path = require("path");
 const slugify = require("slugify");
 
+const { DeleteFaqPage, findOrCreatePage} = require("../../utils/faqHelper");
+
 function getImageAbsolutePath(storedPath) {
   if (!storedPath) return null;
   const projectRoot = path.join(__dirname, '../../../');
@@ -218,6 +220,8 @@ const BirthdayInnerPageController = {
         }
       }
 
+      await findOrCreatePage(page.id, page.title, page.slug, 'birthdayinner');
+
       await transaction.commit();
       req.flash('success', 'Birthday inner page created successfully');
       res.redirect('/admin/party/birthday');
@@ -427,6 +431,8 @@ const BirthdayInnerPageController = {
         }
       }
 
+      await findOrCreatePage(page.id, page.title, page.slug, 'birthdayinner');
+
       await transaction.commit();
       req.flash('success', 'Birthday inner page updated successfully');
       res.redirect('/admin/party/birthday');
@@ -505,6 +511,10 @@ const BirthdayInnerPageController = {
       }
 
       await page.destroy({ transaction });
+
+
+      await DeleteFaqPage(page.id, page.title, page.slug, 'birthdayinner');
+
       await transaction.commit();
 
       if (req.xhr || req.headers.accept?.includes('json')) {

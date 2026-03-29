@@ -1,6 +1,7 @@
 <%- contentFor('title') %><%= title %>
 
 <%- contentFor('head') %> 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 <style>
     :root {
         --primary: #fcad00;
@@ -312,6 +313,8 @@
                                     <th>#</th>
                                     <th>Location</th>
                                     <th>Slug</th>
+                                    <th>FAQs</th>
+                                    <th>Google Reviews</th>
                                     <th>Status</th>
                                     <th>Created</th>
                                     <th>Actions</th>
@@ -344,6 +347,14 @@
                                             </div>
                                         </td>
                                         <td><code class="bg-secondary p-1 text-white rounded wrap-text"><%= location.slug %></code></td>
+                                        <td>
+                                            <a href="/admin/faqs/slug/<%= location.slug %>" class="bg-primary p-1 text-white rounded" title="View FAQs" style="font-size: 14px;">
+                                                <i class="bi bi-patch-question"></i>
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <a href="/admin/googlereviews/slug/<%= location.slug %>" class="bg-secondary p-1 text-white rounded" title="View Google Reviews" style="font-size: 14px;"><i class="bi bi-google"></i> </a>
+                                        </td>
                                         <td>
                                             <% if (location.isActive) { %>
                                                 <span class="badge badge-success">Active</span>
@@ -395,6 +406,7 @@
 </div>
 
 <%- contentFor('js') %> 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 <script>
 function deleteLocation(id) {
     if (confirm('Delete this location?')) {
