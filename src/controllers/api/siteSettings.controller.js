@@ -22,11 +22,11 @@ exports.getSettings = async (req, res) => {
 
     // Append full URL to siteLogo
     if (data.siteLogo) {
-      data.siteLogo = `${baseUrl}/${data.siteLogo}`;
+      data.siteLogo = `${baseUrl}${data.siteLogo}`;
     }
     
     if (data.siteFavicon) {
-      data.siteFavicon = `${baseUrl}/${data.siteFavicon}`;
+      data.siteFavicon = `${baseUrl}${data.siteFavicon}`;
     }
 
     return res.status(200).json({

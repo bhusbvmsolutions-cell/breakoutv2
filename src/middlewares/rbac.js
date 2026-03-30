@@ -57,7 +57,8 @@ const hasPermission = (resource, action) => {
       if (allowed) {
         return next();
       }
-
+      req.flash('warning','Page Not accesable');
+      return res.redirect('/admin/dashboard');
       return res.status(403).render("error", {
         title: "Access Denied",
         message: `You don't have permission to ${action} ${resource}`,

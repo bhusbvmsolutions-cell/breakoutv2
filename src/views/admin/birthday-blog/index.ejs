@@ -213,9 +213,11 @@
           <a href="/admin/googlereviews/slug/seo:<%= blog.slug %>" class="bg-secondary py-1 px-2 text-white rounded" title="View Google Reviews" style="font-size: 14px;">
             <i class="bi bi-google"></i>
           </a>
+          <a href="/admin/birthday-blog/<%= blog.id %>/venue-mappings" class="btn btn-sm btn-primary" title="View Selected Venues"><i class="bx bx-map"></i> </a>
+          </div>
+        <div class="blog-card-actions">
           <a href="/admin/birthday-blog/view/<%= blog.id %>" class="btn btn-sm btn-info"><i class="bx bx-show"></i> </a>
           <a href="/admin/birthday-blog/edit/<%= blog.id %>" class="btn btn-sm btn-warning"><i class="bx bx-edit"></i> </a>
-          <a href="/admin/birthday-blog/<%= blog.id %>/venue-mappings" class="btn btn-sm btn-primary"><i class="bx bx-map"></i> </a>
           <button class="btn btn-sm btn-danger delete-blog" data-id="<%= blog.id %>"><i class="bx bx-trash"></i> </button>
         </div>
       </div>

@@ -7,40 +7,22 @@ const { hasPermission } = require('../../middlewares/rbac');
 
 router.use(isAuthenticated);
 
-router.get(
-  '/',
-  hasPermission('roles','read'),
-  roleController.listRoles
-);
+// List roles
+router.get('/', hasPermission('roles', 'read'), roleController.listRoles);
 
-router.get(
-  '/create',
-  hasPermission('roles','create'),
-  roleController.createRoleForm
-);
+// Create role
+router.get('/create', hasPermission('roles', 'create'), roleController.createRoleForm);
+router.post('/', hasPermission('roles', 'create'), roleController.createRole);
 
-router.post(
-  '/',
-  hasPermission('roles','create'),
-  roleController.createRole
-);
+// Permissions for a role (must come before /:id/edit to avoid conflict, but it's fine)
+router.get('/:id/permissions', hasPermission('roles', 'read'), roleController.getRolePermissions);
+router.post('/:id/permissions', hasPermission('roles', 'update'), roleController.updateRolePermissions);
 
-router.get(
-  '/:id/edit',
-  hasPermission('roles','update'),
-  roleController.editRoleForm
-);
+// Edit role
+router.get('/:id/edit', hasPermission('roles', 'update'), roleController.editRoleForm);
+router.post('/:id', hasPermission('roles', 'update'), roleController.updateRole);
 
-router.post(
-  '/:id',
-  hasPermission('roles','update'),
-  roleController.updateRole
-);
-
-router.delete(
-  '/:id',
-  hasPermission('roles','delete'),
-  roleController.deleteRole
-);
+// Delete role
+router.delete('/:id', hasPermission('roles', 'delete'), roleController.deleteRole);
 
 module.exports = router;

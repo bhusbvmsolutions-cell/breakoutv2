@@ -1,89 +1,303 @@
 <%- contentFor('title') %> <%= blog.title %>
 <%- contentFor('head') %>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css" />
 <style>
-  .show-section { background: #fff; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-  .section-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 2px solid #fcad00; display: inline-block; }
-  .image-thumb { max-width: 200px; border-radius: 8px; }
+  body {
+    background: #f8f9fc;
+  }
+  .blog-header {
+    background: linear-gradient(135deg, #fcad00 0%, #ffd966 100%);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    color: #2c3e50;
+    position: relative;
+    overflow: hidden;
+  }
+  .blog-header h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+  .blog-header p {
+    margin-bottom: 0;
+    opacity: 0.9;
+  }
+  .blog-header .badge {
+    background: rgba(0,0,0,0.1);
+    color: #2c3e50;
+  }
+  .nav-tabs {
+    border-bottom: 2px solid #e9ecef;
+    margin-bottom: 1.5rem;
+  }
+  .nav-tabs .nav-link {
+    border: none;
+    color: #6c757d;
+    font-weight: 500;
+    padding: 0.75rem 1rem;
+  }
+  .nav-tabs .nav-link.active {
+    color: #fcad00;
+    border-bottom: 2px solid #fcad00;
+    background: transparent;
+  }
+  .info-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    transition: all 0.2s;
+  }
+  .info-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  }
+  .info-card h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #fcad00;
+    display: inline-block;
+  }
+  .meta-label {
+    font-weight: 600;
+    color: #495057;
+    width: 140px;
+    display: inline-block;
+  }
+  .image-preview {
+    max-width: 100%;
+    border-radius: 0.5rem;
+    margin-top: 0.5rem;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  .image-preview:hover {
+    transform: scale(1.02);
+  }
+  .section-item {
+    background: #f8f9fa;
+    border-radius: 0.75rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+  .section-item h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    color: #fcad00;
+  }
+  .badge-status {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 2rem;
+  }
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+  }
+  .gallery-thumb {
+    border-radius: 0.5rem;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  .gallery-thumb img {
+    width: 100%;
+    height: 80px;
+    object-fit: cover;
+    transition: transform 0.2s;
+  }
+  .gallery-thumb:hover {
+    transform: scale(1.05);
+  }
+  .btn-edit {
+    background: white;
+    border: 1px solid #fcad00;
+    color: #fcad00;
+    transition: all 0.2s;
+  }
+  .btn-edit:hover {
+    background: #fcad00;
+    color: white;
+  }
+  .btn-back {
+    background: #6c757d;
+    border: none;
+    color: white;
+  }
+  .btn-back:hover {
+    background: #5a6268;
+  }
+  @media (max-width: 768px) {
+    .meta-label {
+      width: auto;
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+    .info-card {
+      padding: 1rem;
+    }
+  }
 </style>
 
 <%- contentFor('body') %>
 <div class="container-fluid py-4">
-  <div class="row">
-    <div class="col-12">
-      <div class="card">
-        <div class="card-body">
-          <div class="d-flex justify-content-between align-items-center mb-4">
-            <h4 class="card-title">Blog: <strong><%= blog.title %></strong></h4>
-            <div>
-              <a href="/admin/breakout-party-blog/edit/<%= blog.id %>" class="btn btn-warning btn-sm me-2"><i class="bx bx-edit"></i> Edit</a>
-              <a href="/admin/breakout-party-blog" class="btn btn-secondary btn-sm"><i class="bx bx-arrow-back"></i> Back</a>
-            </div>
-          </div>
-
-          <div class="show-section">
-            <h5 class="section-title">Basic Info</h5>
-            <div><strong>Title:</strong> <%= blog.title %></div>
-            <div><strong>Slug:</strong> <%= blog.slug %></div>
-            <div><strong>Status:</strong> <span class="badge <%= blog.isActive ? 'bg-success' : 'bg-secondary' %>"><%= blog.isActive ? 'Active' : 'Inactive' %></span></div>
-            <% if (blog.featured_image) { %><div class="mt-2"><strong>Featured Image:</strong><br><img src="<%= blog.featured_image %>" class="image-thumb"></div><% } %>
-          </div>
-
-          <div class="show-section">
-            <h5 class="section-title">Banner Section</h5>
-            <div><strong>Heading:</strong> <%= blog.banner_heading || '—' %></div>
-            <div><strong>Description:</strong> <%= blog.banner_description || '—' %></div>
-            <div><strong>Banner Video:</strong> <%= blog.bannerVideo?.title || blog.bannerVideo?.filename || '—' %></div>
-            <div><strong>Content:</strong> <%- blog.banner_content || '—' %></div>
-          </div>
-
-          <div class="show-section">
-            <h5 class="section-title">Content Sections</h5>
-            <% if (blog.contentSections && blog.contentSections.length) { %>
-              <% blog.contentSections.forEach((section, idx) => { %>
-                <div class="mb-4">
-                  <h6><%= section.heading || `Section ${idx+1}` %></h6>
-                  <div><%- section.description || '—' %></div>
-                  <div class="mt-1"><span class="badge <%= section.isActive ? 'bg-success' : 'bg-secondary' %>"><%= section.isActive ? 'Active' : 'Inactive' %></span></div>
-                  <% if (section.contentImages && section.contentImages.length) { %>
-                    <div class="mt-2"><strong>Content Images:</strong></div>
-                    <div class="row">
-                      <% section.contentImages.forEach(img => { %>
-                        <div class="col-md-3 mb-2">
-                          <% if (img.image) { %><img src="<%= img.image %>" class="img-thumbnail" style="max-width:100px;"><% } %>
-                          <div><%= img.title || '' %></div>
-                          <% if (img.link) { %><a href="<%= img.link %>" target="_blank">Link</a><% } %>
-                        </div>
-                      <% }) %>
-                    </div>
-                  <% } %>
-                  <% if (section.galleryImages && section.galleryImages.length) { %>
-                    <div class="mt-2"><strong>Gallery Images:</strong></div>
-                    <div class="row">
-                      <% section.galleryImages.forEach(gal => { %>
-                        <div class="col-md-2 mb-2">
-                          <% if (gal.image) { %><img src="<%= gal.image %>" class="img-thumbnail" style="max-width:80px;"><% } %>
-                        </div>
-                      <% }) %>
-                    </div>
-                  <% } %>
-                </div>
-                <% if (idx < blog.contentSections.length - 1) { %><hr><% } %>
-              <% }) %>
-            <% } else { %>
-              <span class="text-muted">No content sections</span>
-            <% } %>
-          </div>
-
-          <div class="show-section">
-            <h5 class="section-title">SEO</h5>
-            <div><strong>Meta Title:</strong> <%= blog.meta_title || '—' %></div>
-            <div><strong>Meta Description:</strong> <%= blog.meta_description || '—' %></div>
-            <div><strong>Meta Keywords:</strong> <%= blog.meta_keywords || '—' %></div>
-            <div><strong>OG Title:</strong> <%= blog.og_title || '—' %></div>
-            <div><strong>OG Description:</strong> <%= blog.og_description || '—' %></div>
-          </div>
+  <div class="blog-header animate__animated animate__fadeIn">
+    <div class="d-flex justify-content-between align-items-start">
+      <div>
+        <h1><%= blog.title %></h1>
+        <div class="mt-2">
+          <span class="badge badge-status bg-light text-dark me-2">Slug: <%= blog.slug %></span>
+          <span class="badge <%= blog.isActive ? 'bg-success' : 'bg-secondary' %>"><%= blog.isActive ? 'Active' : 'Inactive' %></span>
         </div>
+      </div>
+      <div>
+        <a href="/admin/breakout-party-blog/edit/<%= blog.id %>" class="btn btn-edit btn-sm me-2"><i class="bx bx-edit"></i> Edit</a>
+        <a href="/admin/breakout-party-blog" class="btn btn-back btn-sm"><i class="bx bx-arrow-back"></i> Back</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <ul class="nav nav-tabs" id="blogTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="basic-tab" data-bs-toggle="tab" data-bs-target="#basic" type="button" role="tab">Basic Info</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="banner-tab" data-bs-toggle="tab" data-bs-target="#banner" type="button" role="tab">Banner</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="content-tab" data-bs-toggle="tab" data-bs-target="#content" type="button" role="tab">Content Sections</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="seo-tab" data-bs-toggle="tab" data-bs-target="#seo" type="button" role="tab">SEO</button>
+    </li>
+  </ul>
+
+  <div class="tab-content mt-3">
+    <!-- Basic Info Tab -->
+    <div class="tab-pane fade show active" id="basic" role="tabpanel">
+      <div class="info-card">
+        <h3><i class="bx bx-info-circle me-2"></i>Basic Information</h3>
+        <div class="row">
+          <div class="col-md-6">
+            <div><span class="meta-label">Title:</span> <%= blog.title %></div>
+            <div><span class="meta-label">Slug:</span> <%= blog.slug %></div>
+            <div><span class="meta-label">Status:</span> <span class="badge <%= blog.isActive ? 'bg-success' : 'bg-secondary' %>"><%= blog.isActive ? 'Active' : 'Inactive' %></span></div>
+            <div><span class="meta-label">Created:</span> <%= new Date(blog.createdAt).toLocaleString() %></div>
+            <div><span class="meta-label">Updated:</span> <%= new Date(blog.updatedAt).toLocaleString() %></div>
+          </div>
+          <% if (blog.featured_image) { %>
+          <div class="col-md-6 text-center">
+            <div><span class="meta-label">Featured Image:</span></div>
+            <a href="<%= blog.featured_image %>" data-lightbox="featured" data-title="Featured Image">
+              <img src="<%= blog.featured_image %>" class="image-preview" style="max-width: 200px; max-height: 150px; object-fit: cover;">
+            </a>
+          </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Banner Tab -->
+    <div class="tab-pane fade" id="banner" role="tabpanel">
+      <div class="info-card">
+        <h3><i class="bx bx-image-alt me-2"></i>Banner Section</h3>
+        <div><span class="meta-label">Heading:</span> <%= blog.banner_heading || '—' %></div>
+        <div><span class="meta-label">Description:</span> <%= blog.banner_description || '—' %></div>
+        <div><span class="meta-label">Banner Video:</span> <%= blog.bannerVideo?.title || blog.bannerVideo?.filename || '—' %></div>
+        <div class="mt-2"><span class="meta-label">Content:</span> <%- blog.banner_content || '—' %></div>
+        <% if (blog.banner_image) { %>
+        <div class="mt-2">
+          <span class="meta-label">Banner Image:</span>
+          <a href="<%= blog.banner_image %>" data-lightbox="banner" data-title="Banner Image">
+            <img src="<%= blog.banner_image %>" class="image-preview" style="max-width: 300px; border-radius: 8px;">
+          </a>
+        </div>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Content Sections Tab -->
+    <div class="tab-pane fade" id="content" role="tabpanel">
+      <div class="info-card">
+        <h3><i class="bx bx-layout me-2"></i>Content Sections</h3>
+        <% if (blog.contentSections && blog.contentSections.length) { %>
+          <% blog.contentSections.forEach((section, idx) => { %>
+            <div class="section-item">
+              <h4><%= section.heading || `Section ${idx+1}` %> <span class="badge <%= section.isActive ? 'bg-success' : 'bg-secondary' %> badge-status"><%= section.isActive ? 'Active' : 'Inactive' %></span></h4>
+              <div><%- section.description || '—' %></div>
+              <% if (section.contentImages && section.contentImages.length) { %>
+                <div class="mt-2"><strong>Content Images:</strong></div>
+                <div class="gallery-grid">
+                  <% section.contentImages.forEach(img => { %>
+                    <% if (img.image) { %>
+                      <a href="<%= img.image %>" data-lightbox="content-<%= idx %>" data-title="<%= img.title || '' %>">
+                        <div class="gallery-thumb">
+                          <img src="<%= img.image %>" alt="<%= img.title || '' %>">
+                        </div>
+                      </a>
+                    <% } %>
+                  <% }) %>
+                </div>
+              <% } %>
+              <% if (section.galleryImages && section.galleryImages.length) { %>
+                <div class="mt-2"><strong>Gallery Images:</strong></div>
+                <div class="gallery-grid">
+                  <% section.galleryImages.forEach(gal => { %>
+                    <% if (gal.image) { %>
+                      <a href="<%= gal.image %>" data-lightbox="gallery-<%= idx %>" data-title="Gallery Image">
+                        <div class="gallery-thumb">
+                          <img src="<%= gal.image %>" alt="Gallery">
+                        </div>
+                      </a>
+                    <% } %>
+                  <% }) %>
+                </div>
+              <% } %>
+            </div>
+          <% }) %>
+        <% } else { %>
+          <div class="text-muted text-center py-4">No content sections defined.</div>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- SEO Tab -->
+    <div class="tab-pane fade" id="seo" role="tabpanel">
+      <div class="info-card">
+        <h3><i class="bx bx-search-alt me-2"></i>SEO & Metadata</h3>
+        <div><span class="meta-label">Meta Title:</span> <%= blog.meta_title || '—' %></div>
+        <div><span class="meta-label">Meta Description:</span> <%= blog.meta_description || '—' %></div>
+        <div><span class="meta-label">Meta Keywords:</span> <%= blog.meta_keywords || '—' %></div>
+        <div class="mt-3"><span class="meta-label">OG Title:</span> <%= blog.og_title || '—' %></div>
+        <div><span class="meta-label">OG Description:</span> <%= blog.og_description || '—' %></div>
+        <% if (blog.og_image) { %>
+        <div class="mt-2">
+          <span class="meta-label">OG Image:</span>
+          <a href="<%= blog.og_image %>" data-lightbox="og-image" data-title="OG Image">
+            <img src="<%= blog.og_image %>" class="image-preview" style="max-width: 200px;">
+          </a>
+        </div>
+        <% } %>
       </div>
     </div>
   </div>
 </div>
+
+<%- contentFor('js') %>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js"></script>
+<script>
+  // Initialize lightbox
+  lightbox.option({
+    'resizeDuration': 200,
+    'wrapAround': true,
+    'albumLabel': 'Image %1 of %2'
+  });
+</script>

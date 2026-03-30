@@ -54,7 +54,7 @@ module.exports = (sequelize, DataTypes) => {
   
     // Helper to get full image URL (image is guaranteed to exist)
     Logo.prototype.getImageUrl = function() {
-      return '/uploads/logos/' + this.image;
+      return this.image;
     };
   
     return Logo;

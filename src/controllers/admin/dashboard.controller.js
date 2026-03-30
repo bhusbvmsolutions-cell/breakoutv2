@@ -1,3 +1,4 @@
+const { where } = require('sequelize');
 const db = require('../../../models');
 
 const dashboardController = {
@@ -13,34 +14,24 @@ const dashboardController = {
 
       // Dashboard stats
       const stats = {
-        totalUsers: await db.User.count(),
         totalVideos: await db.Video.count(),
+        activeVideos: await db.Video.count({where:{status:true}}),
         totalImages: await db.Image.count(),
+        totalLogos: await db.Logo.count(),
+        // blog section
+        TotalSEOBlogs: await db.BirthdayBlog.count(),
+        TotalBreakoutBlogs: await db.BreakoutPartyBlog.count(),
+        // escape section
+        totalEscapeRoomLocation: await db.EscapeRoomLocation.count(),
         totalEscapeRooms: await db.EscapeRoom.count(),
-        totalRoles: await db.Role.count(),
-        totalPermissions: await db.Permission.count(),
-
-        recentUsers: await db.User.findAll({
-          limit: 5,
-          order: [['createdAt', 'DESC']],
-          attributes: ['id', 'firstName', 'lastName', 'email', 'createdAt']
-        })
+        totalVirtualRooms: await db.VirtualGame.count(),
       };
 
-      // Get logged in user with roles
-      const userWithRoles = await db.User.findByPk(userId, {
-        include: [{
-          model: db.Role,
-          as: 'roles',
-          attributes: ['id', 'name', 'displayName', 'level'],
-          through: { attributes: [] }
-        }]
-      });
+      
 
       res.render('admin/dashboard', {
         title: 'Dashboard',
         stats,
-        userRoles: userWithRoles?.roles || [],
         layout: 'layouts/admin'
       });
 

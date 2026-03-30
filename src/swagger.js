@@ -1,4 +1,8 @@
+const path = require("path");
 const swaggerJsdoc = require("swagger-jsdoc");
+
+const PORT = process.env.PORT || 3000;
+const APP_URL = process.env.APP_URL || `http://localhost:${PORT}`;
 
 const options = {
   definition: {
@@ -7,12 +11,8 @@ const options = {
       title: "My API",
       version: "1.0.0",
     },
-    operationsSorter: "method",   // 👈 GET, POST, PUT, DELETE order
-      tagsSorter: "alpha", 
     servers: [
-      {
-        url: process.env.APP_URL || `http://localhost:${process.env.PORT}`,
-      },
+      { url: APP_URL },
     ],
     components: {
       securitySchemes: {
@@ -25,10 +25,9 @@ const options = {
     },
   },
 
-  // 👇 VERY IMPORTANT (correct path)
-  apis: ["./src/routes/api/*.js"],
+  // ✅ Use absolute path + support subfolders
+  apis: [path.join(__dirname, "./routes/api/**/*.js")],
 };
 
 const swaggerSpec = swaggerJsdoc(options);
-
 module.exports = swaggerSpec;

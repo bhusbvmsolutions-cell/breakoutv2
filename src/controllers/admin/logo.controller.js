@@ -141,7 +141,7 @@ const logoController = {
 
         await db.Logo.create({
           type,
-          image: req.file.filename,
+          image: `/uploads/logos/${req.file.filename}`,
           link: link,
           title: title || null,
           order: parseInt(order) || 0,

@@ -46,6 +46,7 @@ const adminBirthdayBlogRoutes = require('./admin/birthdayblog.routes');
 const adminBreakoutPartyBlogRoutes = require('./admin/breakoutpartyblog.routes');
 const adminFaqsRoutes = require('./admin/faqs.routes');
 const adminGoogleReviewsRoutes = require('./admin/googlereviews.routes');
+const adminVenueFinderQuizRoutes = require('./admin/venuefinderquiz.routes')
 
 // Admin routes
 router.use('/admin', adminAuthRoutes);
@@ -92,6 +93,7 @@ router.use('/admin/birthday-blog', adminBirthdayBlogRoutes);
 router.use('/admin/breakout-party-blog', adminBreakoutPartyBlogRoutes);
 router.use('/admin/faqs', adminFaqsRoutes);
 router.use('/admin/googlereviews', adminGoogleReviewsRoutes);
+router.use('/admin/quizzes', adminVenueFinderQuizRoutes);;
 
 
 

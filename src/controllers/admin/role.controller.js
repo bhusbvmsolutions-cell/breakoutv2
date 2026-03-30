@@ -520,7 +520,103 @@ const roleController = {
       console.error('Error in deleteRole:', err);
       res.json({ success: false, message: err.message });
     }
-  }
+  },
+
+  getRolePermissions: async (req, res) => {
+    try {
+      const roleId = req.params.id;
+      const role = await db.Role.findByPk(roleId, {
+        include: [
+          {
+            model: db.Permission,
+            as: 'permissions',
+            through: { attributes: [] },
+            attributes: ['id', 'name', 'module', 'action', 'description'],
+          },
+        ],
+      });
+  
+      if (!role) {
+        return res.status(404).json({ success: false, error: 'Role not found' });
+      }
+  
+      // Format permissions for frontend (use module as resource)
+      const permissions = role.permissions.map(perm => ({
+        id: perm.id,
+        resource: perm.module,      // frontend expects 'resource' for grouping
+        action: perm.action,
+        name: perm.name,
+        description: perm.description,
+      }));
+  
+      res.json({ success: true, permissions });
+    } catch (error) {
+      console.error('Error fetching role permissions:', error);
+      res.status(500).json({ success: false, error: 'Failed to load permissions' });
+    }
+  },
+  
+  /**
+   * POST /admin/roles/:id/permissions
+   * Updates the permissions for a role.
+   * Expects { permissionIds: [...] } in body.
+   */
+  updateRolePermissions: async (req, res) => {
+    const transaction = await db.sequelize.transaction();
+    try {
+      const roleId = req.params.id;
+      const { permissionIds } = req.body;
+      const normalizedIds = normalizeIdArray(permissionIds);
+  
+      const role = await db.Role.findByPk(roleId);
+      if (!role) {
+        await transaction.rollback();
+        return res.status(404).json({ success: false, error: 'Role not found' });
+      }
+  
+      // Check if role is system and prevent modification? (optional)
+      if (role.isSystem) {
+        await transaction.rollback();
+        return res.status(403).json({ success: false, error: 'System role permissions cannot be modified' });
+      }
+  
+      // Optional: Permission check to ensure current user can manage this role
+      // (similar to editRoleForm logic)
+      const currentUser = await db.User.findByPk(req.session.user.id, {
+        include: [{ model: db.Role, as: 'roles' }],
+      });
+      const isSuper = isSuperAdmin(req.session.user, currentUser);
+      const currentLevel = getHighestRoleLevel(currentUser?.roles || []);
+  
+      if (!isSuper && currentLevel <= role.level) {
+        await transaction.rollback();
+        return res.status(403).json({ success: false, error: 'You cannot manage this role' });
+      }
+  
+      // Delete existing permissions
+      await db.RolePermission.destroy({
+        where: { roleId },
+        transaction,
+      });
+  
+      // Insert new ones
+      if (normalizedIds.length) {
+        const rows = normalizedIds.map(permId => ({
+          roleId,
+          permissionId: permId,
+          grantedBy: req.session.user.id,
+        }));
+        await db.RolePermission.bulkCreate(rows, { transaction });
+      }
+  
+      await transaction.commit();
+      res.json({ success: true, message: 'Permissions updated successfully' });
+    } catch (error) {
+      await transaction.rollback();
+      console.error('Error updating role permissions:', error);
+      res.status(500).json({ success: false, error: 'Failed to update permissions' });
+    }
+  },
 };
 
 module.exports = roleController;

@@ -24,7 +24,8 @@ const routes = require('./routes');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.set("trust proxy", 1);
+
 
 // Session store using Sequelize
 const sessionStore = new SequelizeStore({
@@ -162,6 +163,18 @@ app.use(async (req, res, next) => {
 
 // Routes
 app.use('/', routes);
+
+
+
+app.use("/api/docs", swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec, {
+    explorer: false,
+    swaggerOptions: {
+      operationsSorter: "method", // ✅ GET, POST, PUT, DELETE order
+      tagsSorter: "alpha",        // ✅ alphabetical tags
+    },
+  })
+);
 
 
 // 404 handler

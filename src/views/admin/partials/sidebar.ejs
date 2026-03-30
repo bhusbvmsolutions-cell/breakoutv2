@@ -14,7 +14,9 @@
         <div class="menu-title">Dashboard</div>
       </a>
     </li>
-    <!-- <li>
+    
+    <% if (can('users', 'create')) { %>
+    <li>
       <a href="javascript:;" class="has-arrow">
         <div class="parent-icon">
           <i class="bi bi-people"></i>
@@ -38,7 +40,8 @@
           </a>
         </li>
       </ul>
-    </li> -->
+    </li>
+    <% } %>
     <li>
       <a href="javascript:;" class="has-arrow">
         <div class="parent-icon">
@@ -274,6 +277,22 @@
         </li>
       </ul>
     </li>
+
+    <!-- <li>
+      <a href="javascript:;" class="has-arrow">
+        <div class="parent-icon">
+          <i class="bi bi-newspaper"></i>
+        </div>
+        <div class="menu-title">Quiz Management</div>
+      </a>
+      <ul class="shadow-sm">
+        <li>
+          <a href="<%= baseUrl %>/admin/quizzes" class="flex gap-2">
+            <i class="bi bi-binoculars"></i>Venue Finder Quiz
+          </a>
+        </li>
+      </ul>
+    </li> -->
     <li>
       <a href="javascript:;" class="has-arrow">
         <div class="parent-icon">
