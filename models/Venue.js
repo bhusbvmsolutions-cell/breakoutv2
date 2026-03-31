@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
       capacity: DataTypes.STRING,
       cover_image: DataTypes.STRING(500),
       is_featured: { type: DataTypes.BOOLEAN, defaultValue: false },
+      is_breakout: { type: DataTypes.BOOLEAN, defaultValue: false },
       time: DataTypes.STRING,
       phone: DataTypes.STRING,
       website: DataTypes.STRING,
