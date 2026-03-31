@@ -117,12 +117,9 @@ const StaticAndTncController = {
 
       // Auto-create if missing
       if (!page) {
-        page = await db.TncPage.create({
-          reference,
-          title:
-            reference.charAt(0).toUpperCase() + reference.slice(1),
-          content: "",
-          isActive: true,
+        return res.status(404).json({
+          success: false,
+          message: "Page not found",
         });
       }
 
@@ -169,7 +166,7 @@ const StaticAndTncController = {
 
       const pages = await db.TncPage.findAll({
         where: { isActive: true },
-        attributes: ["title", "reference"],
+        attributes: ["title", "reference", "content"],
         order: [["reference", "ASC"]],
       });
 

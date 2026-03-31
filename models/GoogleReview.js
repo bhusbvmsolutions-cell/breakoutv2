@@ -30,6 +30,10 @@ module.exports = (sequelize, DataTypes) => {
           max: 5,
         },
       },
+      review_heading: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
       review_text: {
         type: DataTypes.TEXT,
         allowNull: false,

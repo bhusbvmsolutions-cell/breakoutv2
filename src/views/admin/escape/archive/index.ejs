@@ -1,6 +1,6 @@
 <%- contentFor('title') %><%= title %>
 
-<%- contentFor('head') %> 
+<%- contentFor('head') %>
 <!-- CSS -->
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -18,7 +18,7 @@
     --dark-color: #343a40;
     --light-color: #f8f9fa;
     --border-radius: 10px;
-    --box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     --transition: all 0.2s ease;
     --font-size-sm: 0.85rem;
     --font-size-base: 0.9rem;
@@ -47,8 +47,8 @@
   }
 
   .page-title-box .btn-secondary {
-    background: rgba(255,255,255,0.2);
-    border: 1px solid rgba(255,255,255,0.5);
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.5);
     color: white;
     padding: 6px 16px;
     border-radius: 30px;
@@ -102,7 +102,8 @@
     letter-spacing: 0.3px;
   }
 
-  .form-control, .form-select {
+  .form-control,
+  .form-select {
     border: 1px solid #e9ecef;
     border-radius: 8px;
     padding: 8px 12px;
@@ -112,7 +113,8 @@
     min-height: 38px;
   }
 
-  .form-control:focus, .form-select:focus {
+  .form-control:focus,
+  .form-select:focus {
     border-color: var(--primary-color);
     box-shadow: 0 0 0 0.2rem rgba(252, 173, 0, 0.15);
     outline: none;
@@ -137,7 +139,7 @@
     max-height: 70px;
     border-radius: 6px;
     border: 2px solid white;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   }
 
   /* Upload Area - Medium */
@@ -183,7 +185,7 @@
     border-radius: 8px;
     border-left: 4px solid var(--primary-color);
     position: relative;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
   }
 
   .repeater-item:hover {
@@ -245,7 +247,7 @@
   }
 
   .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
-    background: rgba(255,255,255,0.2);
+    background: rgba(255, 255, 255, 0.2);
     color: white;
   }
 
@@ -276,7 +278,7 @@
     object-fit: cover;
     border-radius: 6px;
     border: 2px solid white;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   }
 
   /* Submit Button - Medium */
@@ -318,8 +320,9 @@
     margin-right: -10px;
     margin-left: -10px;
   }
-  
-  .col, [class*="col-"] {
+
+  .col,
+  [class*="col-"] {
     padding-right: 10px;
     padding-left: 10px;
   }
@@ -383,7 +386,7 @@
       gap: 10px;
       text-align: center;
     }
-    
+
     .repeater-item .delete-btn {
       opacity: 1;
       transform: scale(1);
@@ -391,7 +394,7 @@
   }
 </style>
 
-<%- contentFor('body') %> 
+<%- contentFor('body') %>
 <div class="container-fluid">
   <div class="row">
     <div class="col-12">
@@ -417,23 +420,19 @@
         <div class="row">
           <div class="col-md-6 mb-3">
             <label class="form-label">Heading</label>
-            <input type="text" class="form-control" name="banner_heading" 
-                   value="<%= archive.banner_heading || '' %>" placeholder="Enter banner heading">
+            <input type="text" class="form-control" name="banner_heading" value="<%= archive.banner_heading || '' %>" placeholder="Enter banner heading">
           </div>
           <div class="col-md-6 mb-3">
-            <label class="form-label">Banner Image</label>
-            <div class="upload-area" onclick="document.getElementById('bannerImage').click()">
-              <i class="fas fa-cloud-upload-alt"></i>
-              <h5>Click to upload banner image</h5>
-              <p>PNG, JPG, GIF (Max 5MB)</p>
-              <input type="file" id="bannerImage" name="banner_image" accept="image/*" style="display: none;">
-            </div>
-            <% if (archive.banner_image) { %>
-              <div class="image-preview-container text-center">
-                <img src="<%= archive.banner_image %>" class="image-preview" alt="Banner">
-                <small class="d-block text-muted mt-1">Current image</small>
-              </div>
-            <% } %>
+            <label class="form-label">Banner video</label>
+            <select class="form-control" name="banner_video_id" id="banner_video_select">
+              <option value="">Select Video</option>
+
+              <% allVideos.forEach(video => { %>
+              <option value="<%= video.id %>" <%= archive.banner_video_id == video.id ? 'selected' : '' %>>
+                <%= video.title %>  <%= video.filename %>
+              </option>
+              <% }) %>
+            </select>
           </div>
           <div class="col-12 mb-3">
             <label class="form-label">Description</label>
@@ -441,23 +440,19 @@
           </div>
           <div class="col-md-3 mb-3">
             <label class="form-label">CTA Label 1</label>
-            <input type="text" class="form-control" name="banner_cta_label1" 
-                   value="<%= archive.banner_cta_label1 || '' %>" placeholder="e.g., Learn More">
+            <input type="text" class="form-control" name="banner_cta_label1" value="<%= archive.banner_cta_label1 || '' %>" placeholder="e.g., Learn More">
           </div>
           <div class="col-md-3 mb-3">
             <label class="form-label">CTA Link 1</label>
-            <input type="text" class="form-control" name="banner_cta_link1" 
-                   value="<%= archive.banner_cta_link1 || '' %>" placeholder="https://example.com">
+            <input type="text" class="form-control" name="banner_cta_link1" value="<%= archive.banner_cta_link1 || '' %>" placeholder="https://example.com">
           </div>
           <div class="col-md-3 mb-3">
             <label class="form-label">CTA Label 2</label>
-            <input type="text" class="form-control" name="banner_cta_label2" 
-                   value="<%= archive.banner_cta_label2 || '' %>" placeholder="e.g., Get Started">
+            <input type="text" class="form-control" name="banner_cta_label2" value="<%= archive.banner_cta_label2 || '' %>" placeholder="e.g., Get Started">
           </div>
           <div class="col-md-3 mb-3">
             <label class="form-label">CTA Link 2</label>
-            <input type="text" class="form-control" name="banner_cta_link2" 
-                   value="<%= archive.banner_cta_link2 || '' %>" placeholder="https://example.com">
+            <input type="text" class="form-control" name="banner_cta_link2" value="<%= archive.banner_cta_link2 || '' %>" placeholder="https://example.com">
           </div>
         </div>
       </div>
@@ -473,8 +468,7 @@
         <div class="row">
           <div class="col-md-6 mb-3">
             <label class="form-label">Section Heading</label>
-            <input type="text" class="form-control" name="icon_heading" 
-                   value="<%= archive.icon_heading || '' %>" placeholder="Enter section heading">
+            <input type="text" class="form-control" name="icon_heading" value="<%= archive.icon_heading || '' %>" placeholder="Enter section heading">
           </div>
           <div class="col-md-6 mb-3">
             <label class="form-label">Section Description</label>
@@ -488,53 +482,49 @@
         <div id="iconRepeater">
           <% if (icons && icons.length > 0) { 
             icons.forEach((icon, index) => { %>
-            <div class="repeater-item" data-id="<%= icon.id %>">
-              <div class="row align-items-center">
-                <div class="col-md-5">
-                  <label class="form-label">Heading</label>
-                  <input type="text" class="form-control" name="icon_headings[]" 
-                         value="<%= icon.heading || '' %>" placeholder="Enter icon heading">
-                </div>
-                <div class="col-md-5">
-                  <label class="form-label">Icon Image</label>
-                  <input type="file" class="form-control" name="icon_images" accept="image/*" 
-                         onchange="previewImage(this, 'iconPreview_<%= index %>')">
-                  <% if (icon.image) { %>
-                    <input type="hidden" name="icon_existing_image_<%= index %>" value="<%= icon.image %>">
-                    <div class="mt-1" id="iconPreview_<%= index %>">
-                      <img src="<%= icon.image %>" style="max-height: 35px; border-radius: 4px;" alt="Icon">
-                      <button type="button" class="btn btn-sm btn-link text-danger p-0 ms-2" 
-                              onclick="deleteIcon(<%= icon.id %>, this)">
-                        <small><i class="fas fa-trash"></i> Remove</small>
-                      </button>
-                    </div>
-                  <% } else { %>
-                    <div class="mt-1" id="iconPreview_<%= index %>"></div>
-                  <% } %>
-                </div>
+          <div class="repeater-item" data-id="<%= icon.id %>">
+            <div class="row align-items-center">
+              <div class="col-md-5">
+                <label class="form-label">Heading</label>
+                <input type="text" class="form-control" name="icon_headings[]" value="<%= icon.heading || '' %>" placeholder="Enter icon heading">
               </div>
-              <button type="button" class="delete-btn" onclick="removeRepeaterItem(this)">
-                <i class="fas fa-times"></i>
-              </button>
+              <div class="col-md-5">
+                <label class="form-label">Icon Image</label>
+                <input type="file" class="form-control" name="icon_images" accept="image/*" onchange="previewImage(this, 'iconPreview_<%= index %>')">
+                <% if (icon.image) { %>
+                <input type="hidden" name="icon_existing_image_<%= index %>" value="<%= icon.image %>">
+                <div class="mt-1" id="iconPreview_<%= index %>">
+                  <img src="<%= icon.image %>" style="max-height: 35px; border-radius: 4px;" alt="Icon">
+                  <button type="button" class="btn btn-sm btn-link text-danger p-0 ms-2" onclick="deleteIcon(<%= icon.id %>, this)">
+                    <small><i class="fas fa-trash"></i> Remove</small>
+                  </button>
+                </div>
+                <% } else { %>
+                <div class="mt-1" id="iconPreview_<%= index %>"></div>
+                <% } %>
+              </div>
             </div>
+            <button type="button" class="delete-btn" onclick="removeRepeaterItem(this)">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
           <% }); } else { %>
-            <div class="repeater-item">
-              <div class="row align-items-center">
-                <div class="col-md-5">
-                  <label class="form-label">Heading</label>
-                  <input type="text" class="form-control" name="icon_headings[]" placeholder="Enter icon heading">
-                </div>
-                <div class="col-md-5">
-                  <label class="form-label">Icon Image</label>
-                  <input type="file" class="form-control" name="icon_images" accept="image/*"
-                         onchange="previewImage(this, 'iconPreview_0')">
-                  <div class="mt-1" id="iconPreview_0"></div>
-                </div>
+          <div class="repeater-item">
+            <div class="row align-items-center">
+              <div class="col-md-5">
+                <label class="form-label">Heading</label>
+                <input type="text" class="form-control" name="icon_headings[]" placeholder="Enter icon heading">
               </div>
-              <button type="button" class="delete-btn" onclick="removeRepeaterItem(this)">
-                <i class="fas fa-times"></i>
-              </button>
+              <div class="col-md-5">
+                <label class="form-label">Icon Image</label>
+                <input type="file" class="form-control" name="icon_images" accept="image/*" onchange="previewImage(this, 'iconPreview_0')">
+                <div class="mt-1" id="iconPreview_0"></div>
+              </div>
             </div>
+            <button type="button" class="delete-btn" onclick="removeRepeaterItem(this)">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
           <% } %>
         </div>
         <button type="button" class="btn btn-add mt-2" onclick="addIconItem()">
@@ -553,13 +543,11 @@
         <div class="row">
           <div class="col-md-6 mb-3">
             <label class="form-label">Counter Heading</label>
-            <input type="text" class="form-control" name="counter_heading" 
-                   value="<%= archive.counter_heading || '' %>" placeholder="Enter counter heading">
+            <input type="text" class="form-control" name="counter_heading" value="<%= archive.counter_heading || '' %>" placeholder="Enter counter heading">
           </div>
           <div class="col-md-6 mb-3">
             <label class="form-label">Rating (0-5)</label>
-            <input type="number" class="form-control" name="counter_rating" step="0.1" min="0" max="5"
-                   value="<%= archive.counter_rating || '' %>" placeholder="4.5">
+            <input type="number" class="form-control" name="counter_rating" step="0.1" min="0" max="5" value="<%= archive.counter_rating || '' %>" placeholder="4.5">
           </div>
         </div>
 
@@ -569,62 +557,57 @@
         <div id="counterRepeater">
           <% if (counters && counters.length > 0) { 
             counters.forEach((counter, index) => { %>
-            <div class="repeater-item" data-id="<%= counter.id %>">
-              <div class="row align-items-center">
-                <div class="col-md-3">
-                  <label class="form-label">Image</label>
-                  <input type="file" class="form-control" name="counter_images" accept="image/*"
-                         onchange="previewImage(this, 'counterPreview_<%= index %>')">
-                  <% if (counter.image) { %>
-                    <input type="hidden" name="counter_existing_image_<%= index %>" value="<%= counter.image %>">
-                    <div class="mt-1" id="counterPreview_<%= index %>">
-                      <img src="<%= counter.image %>" style="max-height: 35px; border-radius: 4px;" alt="Counter">
-                      <button type="button" class="btn btn-sm btn-link text-danger p-0 ms-2" 
-                              onclick="deleteCounter(<%= counter.id %>, this)">
-                        <small><i class="fas fa-trash"></i> Remove</small>
-                      </button>
-                    </div>
-                  <% } else { %>
-                    <div class="mt-1" id="counterPreview_<%= index %>"></div>
-                  <% } %>
+          <div class="repeater-item" data-id="<%= counter.id %>">
+            <div class="row align-items-center">
+              <div class="col-md-3">
+                <label class="form-label">Image</label>
+                <input type="file" class="form-control" name="counter_images" accept="image/*" onchange="previewImage(this, 'counterPreview_<%= index %>')">
+                <% if (counter.image) { %>
+                <input type="hidden" name="counter_existing_image_<%= index %>" value="<%= counter.image %>">
+                <div class="mt-1" id="counterPreview_<%= index %>">
+                  <img src="<%= counter.image %>" style="max-height: 35px; border-radius: 4px;" alt="Counter">
+                  <button type="button" class="btn btn-sm btn-link text-danger p-0 ms-2" onclick="deleteCounter(<%= counter.id %>, this)">
+                    <small><i class="fas fa-trash"></i> Remove</small>
+                  </button>
                 </div>
-                <div class="col-md-3">
-                  <label class="form-label">Count</label>
-                  <input type="text" class="form-control" name="counter_counts[]" 
-                         value="<%= counter.count || '' %>" placeholder="e.g., 500+">
-                </div>
-                <div class="col-md-4">
-                  <label class="form-label">Description</label>
-                  <input type="text" class="form-control" name="counter_descriptions[]" 
-                         value="<%= counter.description || '' %>" placeholder="Enter description">
-                </div>
+                <% } else { %>
+                <div class="mt-1" id="counterPreview_<%= index %>"></div>
+                <% } %>
               </div>
-              <button type="button" class="delete-btn" onclick="removeRepeaterItem(this)">
-                <i class="fas fa-times"></i>
-              </button>
+              <div class="col-md-3">
+                <label class="form-label">Count</label>
+                <input type="text" class="form-control" name="counter_counts[]" value="<%= counter.count || '' %>" placeholder="e.g., 500+">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Description</label>
+                <input type="text" class="form-control" name="counter_descriptions[]" value="<%= counter.description || '' %>" placeholder="Enter description">
+              </div>
             </div>
+            <button type="button" class="delete-btn" onclick="removeRepeaterItem(this)">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
           <% }); } else { %>
-            <div class="repeater-item">
-              <div class="row align-items-center">
-                <div class="col-md-3">
-                  <label class="form-label">Image</label>
-                  <input type="file" class="form-control" name="counter_images" accept="image/*"
-                         onchange="previewImage(this, 'counterPreview_0')">
-                  <div class="mt-1" id="counterPreview_0"></div>
-                </div>
-                <div class="col-md-3">
-                  <label class="form-label">Count</label>
-                  <input type="text" class="form-control" name="counter_counts[]" placeholder="e.g., 500+">
-                </div>
-                <div class="col-md-4">
-                  <label class="form-label">Description</label>
-                  <input type="text" class="form-control" name="counter_descriptions[]" placeholder="Enter description">
-                </div>
+          <div class="repeater-item">
+            <div class="row align-items-center">
+              <div class="col-md-3">
+                <label class="form-label">Image</label>
+                <input type="file" class="form-control" name="counter_images" accept="image/*" onchange="previewImage(this, 'counterPreview_0')">
+                <div class="mt-1" id="counterPreview_0"></div>
               </div>
-              <button type="button" class="delete-btn" onclick="removeRepeaterItem(this)">
-                <i class="fas fa-times"></i>
-              </button>
+              <div class="col-md-3">
+                <label class="form-label">Count</label>
+                <input type="text" class="form-control" name="counter_counts[]" placeholder="e.g., 500+">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Description</label>
+                <input type="text" class="form-control" name="counter_descriptions[]" placeholder="Enter description">
+              </div>
             </div>
+            <button type="button" class="delete-btn" onclick="removeRepeaterItem(this)">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
           <% } %>
         </div>
         <button type="button" class="btn btn-add mt-2" onclick="addCounterItem()">
@@ -643,59 +626,57 @@
         <h6 class="mt-0 mb-3 fw-bold">
           <i class="fas fa-images me-2 text-primary"></i>Gallery Images
         </h6>
-        
+
         <div id="galleryRepeater">
           <% if (images && images.length > 0) { 
             images.forEach((image, index) => { %>
-            <div class="repeater-item" data-id="<%= image.id %>" id="galleryItem_<%= image.id %>">
-              <div class="row align-items-center">
-                <div class="col-md-2">
-                  <% if (image.image) { %>
-                    <img src="<%= image.image %>" style="max-height: 60px; max-width: 60px; border-radius: 6px;" alt="Gallery">
-                  <% } else { %>
-                    <div style="height: 60px; width: 60px; background: #f0f0f0; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
-                      <i class="fas fa-image text-muted" style="font-size: 24px;"></i>
-                    </div>
-                  <% } %>
+          <div class="repeater-item" data-id="<%= image.id %>" id="galleryItem_<%= image.id %>">
+            <div class="row align-items-center">
+              <div class="col-md-2">
+                <% if (image.image) { %>
+                <img src="<%= image.image %>" style="max-height: 60px; max-width: 60px; border-radius: 6px;" alt="Gallery">
+                <% } else { %>
+                <div style="height: 60px; width: 60px; background: #f0f0f0; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                  <i class="fas fa-image text-muted" style="font-size: 24px;"></i>
                 </div>
-                <div class="col-md-8">
-                  <label class="form-label">Image</label>
-                  <input type="file" class="form-control" name="gallery_images" accept="image/*"
-                         onchange="previewGalleryImage(this, 'galleryPreview_<%= image.id %>')">
-                  <input type="hidden" name="gallery_existing_image_<%= index %>" value="<%= image.image %>" id="galleryHidden_<%= image.id %>">
-                  <div class="mt-1" id="galleryPreview_<%= image.id %>"></div>
-                </div>
+                <% } %>
               </div>
-              <button type="button" class="delete-btn" onclick="deleteGalleryImage(<%= image.id %>, this)">
-                <i class="fas fa-times"></i>
-              </button>
+              <div class="col-md-8">
+                <label class="form-label">Image</label>
+                <input type="file" class="form-control" name="gallery_images" accept="image/*" onchange="previewGalleryImage(this, 'galleryPreview_<%= image.id %>')">
+                <input type="hidden" name="gallery_existing_image_<%= index %>" value="<%= image.image %>" id="galleryHidden_<%= image.id %>">
+                <div class="mt-1" id="galleryPreview_<%= image.id %>"></div>
+              </div>
             </div>
+            <button type="button" class="delete-btn" onclick="deleteGalleryImage(<%= image.id %>, this)">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
           <% }); } else { %>
-            <div class="repeater-item" id="galleryItem_new">
-              <div class="row align-items-center">
-                <div class="col-md-2">
-                  <div style="height: 60px; width: 60px; background: #f0f0f0; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
-                    <i class="fas fa-image text-muted" style="font-size: 24px;"></i>
-                  </div>
-                </div>
-                <div class="col-md-8">
-                  <label class="form-label">Image</label>
-                  <input type="file" class="form-control" name="gallery_images" accept="image/*"
-                         onchange="previewGalleryImage(this, 'galleryPreview_new')">
-                  <div class="mt-1" id="galleryPreview_new"></div>
+          <div class="repeater-item" id="galleryItem_new">
+            <div class="row align-items-center">
+              <div class="col-md-2">
+                <div style="height: 60px; width: 60px; background: #f0f0f0; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                  <i class="fas fa-image text-muted" style="font-size: 24px;"></i>
                 </div>
               </div>
-              <button type="button" class="delete-btn" onclick="removeGalleryItem(this)">
-                <i class="fas fa-times"></i>
-              </button>
+              <div class="col-md-8">
+                <label class="form-label">Image</label>
+                <input type="file" class="form-control" name="gallery_images" accept="image/*" onchange="previewGalleryImage(this, 'galleryPreview_new')">
+                <div class="mt-1" id="galleryPreview_new"></div>
+              </div>
             </div>
+            <button type="button" class="delete-btn" onclick="removeGalleryItem(this)">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
           <% } %>
         </div>
-        
+
         <button type="button" class="btn btn-add mt-3" onclick="addGalleryItem()">
           <i class="fas fa-plus me-1"></i>Add Gallery Image
         </button>
-        
+
         <input type="hidden" name="gallery_images_data" id="galleryImagesData" value="">
       </div>
     </div>
@@ -714,34 +695,33 @@
               <% allVideos.forEach(video => { 
                 const isSelected = selectedVideos.some(sv => sv.video_id == video.id);
               %>
-                <option value="<%= video.id %>" <%= isSelected ? 'selected' : '' %>>
-                  <%= video.title || 'Video ' + video.id %> 
-                  <% if (video.duration) { %>(<%= Math.floor(video.duration/60) %>:<%= String(video.duration%60).padStart(2,'0') %>)<% } %>
-                </option>
+              <option value="<%= video.id %>" <%= isSelected ? 'selected' : '' %>>
+                <%= video.title || 'Video ' + video.id %>
+                <% if (video.duration) { %>(<%= Math.floor(video.duration/60) %>:<%= String(video.duration%60).padStart(2,'0') %>)<% } %>
+              </option>
               <% }); %>
             </select>
             <small class="text-muted">Type to search videos</small>
           </div>
-          
+
           <div id="videoTitlesContainer" class="col-12 mt-2">
             <% selectedVideos.forEach(video => { %>
-              <div class="video-item">
-                <div class="row align-items-center">
-                  <div class="col-md-1">
-                    <% if (video.videoDetails?.thumbnail) { %>
-                      <img src="<%= video.videoDetails.thumbnail %>" class="video-thumb" alt="Thumb">
-                    <% } %>
-                  </div>
-                  <div class="col-md-3">
-                    <strong><%= video.videoDetails?.title || 'Video' %></strong>
-                  </div>
-                  <div class="col-md-8">
-                    <label class="form-label">Custom Title (optional)</label>
-                    <input type="text" class="form-control" name="video_title_<%= video.video_id %>" 
-                           value="<%= video.title || '' %>" placeholder="Enter custom video title">
-                  </div>
+            <div class="video-item">
+              <div class="row align-items-center">
+                <div class="col-md-1">
+                  <% if (video.videoDetails?.thumbnail) { %>
+                  <img src="<%= video.videoDetails.thumbnail %>" class="video-thumb" alt="Thumb">
+                  <% } %>
+                </div>
+                <div class="col-md-3">
+                  <strong><%= video.videoDetails?.title || 'Video' %></strong>
+                </div>
+                <div class="col-md-8">
+                  <label class="form-label">Custom Title (optional)</label>
+                  <input type="text" class="form-control" name="video_title_<%= video.video_id %>" value="<%= video.title || '' %>" placeholder="Enter custom video title">
                 </div>
               </div>
+            </div>
             <% }); %>
           </div>
         </div>
@@ -758,18 +738,15 @@
         <div class="row">
           <div class="col-12 mb-3">
             <label class="form-label">Heading</label>
-            <input type="text" class="form-control" name="footer_heading" 
-                   value="<%= archive.footer_heading || '' %>" placeholder="Enter footer heading">
+            <input type="text" class="form-control" name="footer_heading" value="<%= archive.footer_heading || '' %>" placeholder="Enter footer heading">
           </div>
           <div class="col-12 mb-3">
             <label class="form-label">Description 1</label>
-            <textarea class="form-control" name="footer_description1" rows="1" 
-                      placeholder="Enter first description"><%= archive.footer_description1 || '' %></textarea>
+            <textarea class="form-control" name="footer_description1" rows="1" placeholder="Enter first description"><%= archive.footer_description1 || '' %></textarea>
           </div>
           <div class="col-12 mb-3">
             <label class="form-label">Description 2</label>
-            <textarea class="form-control" name="footer_description2" rows="1" 
-                      placeholder="Enter second description"><%= archive.footer_description2 || '' %></textarea>
+            <textarea class="form-control" name="footer_description2" rows="1" placeholder="Enter second description"><%= archive.footer_description2 || '' %></textarea>
           </div>
         </div>
       </div>
@@ -786,7 +763,7 @@
   </form>
 </div>
 
-<%- contentFor('js') %> 
+<%- contentFor('js') %>
 <!-- JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
@@ -810,18 +787,18 @@
         if ($.trim(params.term) === '') {
           return data;
         }
-        
+
         if (typeof data.text === 'undefined') {
           return null;
         }
-        
+
         var searchTerm = params.term.toLowerCase();
         var text = data.text.toLowerCase();
-        
+
         if (text.indexOf(searchTerm) > -1) {
           return data;
         }
-        
+
         return null;
       }
     });
@@ -830,7 +807,7 @@
     $('.select2-multiple').on('change', function() {
       const selectedIds = $(this).val() || [];
       const container = $('#videoTitlesContainer');
-      
+
       if (selectedIds.length === 0) {
         container.empty();
         return;
@@ -861,7 +838,7 @@
           </div>
         `;
       });
-      
+
       container.html(html);
     });
 
@@ -996,7 +973,7 @@
 
   function deleteGalleryImage(id, btn) {
     if (!confirm('Are you sure you want to delete this image?')) return;
-    
+
     $.ajax({
       url: `/admin/escape/archive/image/${id}`,
       type: 'DELETE',
@@ -1021,7 +998,7 @@
 
   function deleteIcon(id, btn) {
     if (!confirm('Are you sure you want to delete this icon?')) return;
-    
+
     $.ajax({
       url: `/admin/escape/archive/icon/${id}`,
       type: 'DELETE',
@@ -1046,7 +1023,7 @@
 
   function deleteCounter(id, btn) {
     if (!confirm('Are you sure you want to delete this counter?')) return;
-    
+
     $.ajax({
       url: `/admin/escape/archive/counter/${id}`,
       type: 'DELETE',
@@ -1078,6 +1055,8 @@
       </div>
     `;
     $('body').append(alertHtml);
-    setTimeout(() => $('.alert').fadeOut(300, function() { $(this).remove(); }), 4000);
+    setTimeout(() => $('.alert').fadeOut(300, function() {
+      $(this).remove();
+    }), 4000);
   }
 </script>

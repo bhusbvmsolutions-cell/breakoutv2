@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 module.exports = (sequelize, DataTypes) => {
   const EscapeRoomArchive = sequelize.define(
@@ -7,73 +7,77 @@ module.exports = (sequelize, DataTypes) => {
       id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
-        autoIncrement: true
+        autoIncrement: true,
       },
       banner_heading: {
         type: DataTypes.STRING,
-        allowNull: true
+        allowNull: true,
       },
       banner_description: {
         type: DataTypes.TEXT,
-        allowNull: true
+        allowNull: true,
       },
-      banner_image: {
-        type: DataTypes.STRING,
-        allowNull: true
+      banner_video_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: {
+          model: "videos", // your videos table name
+          key: "id",
+        },
       },
       banner_cta_label1: {
         type: DataTypes.STRING,
-        allowNull: true
+        allowNull: true,
       },
       banner_cta_link1: {
         type: DataTypes.STRING,
-        allowNull: true
+        allowNull: true,
       },
       banner_cta_label2: {
         type: DataTypes.STRING,
-        allowNull: true
+        allowNull: true,
       },
       banner_cta_link2: {
         type: DataTypes.STRING,
-        allowNull: true
+        allowNull: true,
       },
       icon_heading: {
         type: DataTypes.STRING,
-        allowNull: true
+        allowNull: true,
       },
       icon_description: {
         type: DataTypes.TEXT,
-        allowNull: true
+        allowNull: true,
       },
       counter_heading: {
         type: DataTypes.STRING,
-        allowNull: true
+        allowNull: true,
       },
       counter_rating: {
         type: DataTypes.STRING,
-        allowNull: true
+        allowNull: true,
       },
       footer_heading: {
         type: DataTypes.STRING,
-        allowNull: true
+        allowNull: true,
       },
       footer_description1: {
         type: DataTypes.TEXT,
-        allowNull: true
+        allowNull: true,
       },
       footer_description2: {
         type: DataTypes.TEXT,
-        allowNull: true
+        allowNull: true,
       },
       isActive: {
         type: DataTypes.BOOLEAN,
-        defaultValue: true
-      }
+        defaultValue: true,
+      },
     },
     {
       tableName: "escape_room_archives",
-      timestamps: true
-    }
+      timestamps: true,
+    },
   );
 
   return EscapeRoomArchive;

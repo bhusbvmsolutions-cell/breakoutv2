@@ -29,18 +29,25 @@ const escapeRoomLocationController = {
       const { count, rows: locations } =
         await EscapeRoomLocation.findAndCountAll({
           where: { isActive: true },
-          order: [["createdAt", "DESC"]],
-          attributes: ["id", "title", "slug", "banner_featured_image"],
+          attributes: [
+            "id",
+            "title",
+            "slug",
+            "banner_featured_image",
+            "updatedAt",
+          ],
         });
 
       // Format response
-      const formattedLocations = locations.map((location) => ({
-        title: location.title,
-        slug: location.slug,
-        banner_featured_image: location.banner_featured_image
-          ? baseUrl + location.banner_featured_image
-          : null,
-      }));
+      const formattedLocations = locations
+        .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)) // latest first
+        .map((location) => ({
+          title: location.title,
+          slug: location.slug,
+          banner_featured_image: location.banner_featured_image
+            ? baseUrl + location.banner_featured_image
+            : null,
+        }));
 
       res.json({
         success: true,
@@ -57,7 +64,7 @@ const escapeRoomLocationController = {
 
   /**
    * Get single location details by slug or ID
-   * GET /api/public/escaperoomlocations/:identifier
+   * GET /api/public/escaperoomlocations/:slug
    */
   details: async (req, res) => {
     try {
@@ -206,15 +213,7 @@ const escapeRoomLocationController = {
         banner_featured_image: location.banner_featured_image
           ? baseUrl + location.banner_featured_image
           : null,
-        banner_video: location.bannerVideo
-          ? {
-              id: location.bannerVideo.id,
-              title: location.bannerVideo.title,
-              thumbnail: location.bannerVideo.thumbnail,
-              url: location.bannerVideo.url,
-              duration: location.bannerVideo.duration,
-            }
-          : null,
+        banner_video: location?.bannerVideo?.url ? baseUrl + location?.bannerVideo?.url : "",
         banner_cta_label: location.banner_cta_label,
         banner_cta_link: location.banner_cta_link,
         trailor_video: location.trailor_video,
@@ -250,7 +249,7 @@ const escapeRoomLocationController = {
           title: video.title || video.videoDetails?.title,
           video_id: video.video_id,
           thumbnail: video.videoDetails?.thumbnail,
-          url: video.videoDetails?.url,
+          url: video?.videoDetails?.url ? baseUrl + video.videoDetails.url : null,
           duration: video.videoDetails?.duration,
         })),
         all_escape_rooms: all_escape_rooms,

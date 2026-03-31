@@ -20,7 +20,7 @@ const escapeRoomController = {
       const rooms = await EscapeRoom.findAll({
         where: { isActive: true },
         order: [["createdAt", "DESC"]],
-        attributes: ["id", "title", "slug", "banner_image"],
+        attributes: ["id", "title", "slug", "banner_image", "banner_success_rate", "banner_age_group", "banner_character", "banner_scare_factor", "banner_duration"],
       });
 
       const formattedRooms = rooms.map((room) => ({
@@ -28,6 +28,11 @@ const escapeRoomController = {
         title: room.title,
         slug: room.slug,
         banner_image: room.banner_image ? baseUrl + room.banner_image : null,
+        banner_success_rate: room.banner_success_rate,
+        banner_age_group: room.banner_age_group,
+        banner_character: room.banner_character,
+        banner_scare_factor: room.banner_scare_factor,
+        banner_duration: room.banner_duration,
       }));
       res.json({
         success: true,

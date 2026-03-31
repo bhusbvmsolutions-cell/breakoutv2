@@ -9,12 +9,15 @@ const {
   Video,
 } = db;
 
-const {GetRelatedGoogleReviews, GetRelatedFaqs} = require("../../utils/faqHelper");
+const {
+  GetRelatedGoogleReviews,
+  GetRelatedFaqs,
+} = require("../../utils/faqHelper");
 
 const escapeRoomArchiveController = {
   /**
    * Get escape room archive data
-   * GET /api/public/escaperoomarchive
+   * GET /api/escaperoomarchive
    */
   getArchive: async (req, res) => {
     try {
@@ -22,6 +25,10 @@ const escapeRoomArchiveController = {
 
       const archive = await EscapeRoomArchive.findByPk(1, {
         include: [
+          {
+            model: Video,
+            as: "bannerVideo",
+          },
           {
             model: EscapeRoomArchiveIcon,
             as: "icons",
@@ -59,7 +66,11 @@ const escapeRoomArchiveController = {
         });
       }
 
-      const googleReviews = await GetRelatedGoogleReviews(null, "escaperoom", "archive");
+      const googleReviews = await GetRelatedGoogleReviews(
+        null,
+        "escaperoom",
+        "archive",
+      );
       const faqs = await GetRelatedFaqs(null, "escaperoom", "archive");
 
       // Format response
@@ -67,9 +78,9 @@ const escapeRoomArchiveController = {
         id: archive.id,
         banner_heading: archive.banner_heading,
         banner_description: archive.banner_description,
-        banner_image: archive.banner_image
-          ? baseUrl + archive.banner_image
-          : null,
+        banner_video: archive.bannerVideo?.url
+    ? baseUrl + archive.bannerVideo.url
+    : null,
         banner_cta_label1: archive.banner_cta_label1,
         banner_cta_link1: archive.banner_cta_link1,
         banner_cta_label2: archive.banner_cta_label2,
@@ -106,7 +117,7 @@ const escapeRoomArchiveController = {
           duration: video.videoDetails?.duration,
         })),
         faqsection: faqs,
-        googleReviews:googleReviews,
+        googleReviews: googleReviews,
       };
 
       res.json({

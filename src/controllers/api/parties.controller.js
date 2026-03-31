@@ -139,15 +139,7 @@ const partiesController = {
         banner_content: archive.banner_content,
         banner_note: archive.banner_note,
 
-        banner_video: archive.bannerVideo
-          ? {
-              id: archive.bannerVideo.id,
-              title: archive.bannerVideo.title,
-              thumbnail: archive.bannerVideo.thumbnail,
-              url: archive.bannerVideo.url,
-              duration: archive.bannerVideo.duration,
-            }
-          : null,
+        banner_video: archive.bannerVideo?.url ? baseUrl + archive.bannerVideo.url : null,
 
         counters_heading: archive.counters_heading,
         counters_rating: archive.counters_rating,
@@ -288,14 +280,7 @@ const partiesController = {
         banner_heading: archive.banner_heading,
         banner_description: archive.banner_description,
 
-        banner_video: archive.bannerVideo
-          ? {
-              title: archive.bannerVideo.title,
-              thumbnail: archive.bannerVideo.thumbnail,
-              url: baseUrl + archive.bannerVideo.url,
-              duration: archive.bannerVideo.duration,
-            }
-          : null,
+        banner_video: archive.bannerVideo.url ? baseUrl + archive.bannerVideo.url : null,
 
         counters_heading: archive.counters_heading,
         counters_content: archive.counters_content,
@@ -467,14 +452,7 @@ const partiesController = {
         banner_heading: archive.banner_heading,
         banner_description: archive.banner_description,
 
-        banner_video: archive.bannerVideo
-          ? {
-              title: archive.bannerVideo.title,
-              thumbnail: archive.bannerVideo.thumbnail,
-              url: baseUrl + archive.bannerVideo.url,
-              duration: archive.bannerVideo.duration,
-            }
-          : null,
+        banner_video: archive.bannerVideo?.url ? baseUrl + archive.bannerVideo.url : null,
 
         counters_heading: archive.counters_heading,
         counters_content: archive.counters_content,

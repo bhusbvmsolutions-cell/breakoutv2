@@ -142,6 +142,7 @@ module.exports = (db) => {
     Video,
   } = db;
 
+  // Icons
   if (EscapeRoomArchive && EscapeRoomArchiveIcon) {
     EscapeRoomArchive.hasMany(EscapeRoomArchiveIcon, {
       foreignKey: "archive_id",
@@ -156,6 +157,7 @@ module.exports = (db) => {
     });
   }
 
+  // Counters
   if (EscapeRoomArchive && EscapeRoomArchiveCounter) {
     EscapeRoomArchive.hasMany(EscapeRoomArchiveCounter, {
       foreignKey: "archive_id",
@@ -170,6 +172,7 @@ module.exports = (db) => {
     });
   }
 
+  // Images
   if (EscapeRoomArchive && EscapeRoomArchiveImage) {
     EscapeRoomArchive.hasMany(EscapeRoomArchiveImage, {
       foreignKey: "archive_id",
@@ -184,6 +187,7 @@ module.exports = (db) => {
     });
   }
 
+  // Archive Videos (multiple)
   if (EscapeRoomArchive && EscapeRoomArchiveVideo) {
     EscapeRoomArchive.hasMany(EscapeRoomArchiveVideo, {
       foreignKey: "archive_id",
@@ -198,7 +202,7 @@ module.exports = (db) => {
     });
   }
 
-  // Video Associations
+  // Video → ArchiveVideo relation
   if (Video && EscapeRoomArchiveVideo) {
     Video.hasMany(EscapeRoomArchiveVideo, {
       foreignKey: "video_id",
@@ -210,6 +214,19 @@ module.exports = (db) => {
       foreignKey: "video_id",
       as: "videoDetails",
       onDelete: "CASCADE",
+    });
+  }
+
+  // ✅ ✅ FIXED: Banner Video (SINGLE VIDEO)
+  if (EscapeRoomArchive && Video) {
+    EscapeRoomArchive.belongsTo(Video, {
+      foreignKey: "banner_video_id",
+      as: "bannerVideo",
+    });
+
+    Video.hasMany(EscapeRoomArchive, {
+      foreignKey: "banner_video_id",
+      as: "escapeRoomArchives",
     });
   }
 
@@ -1512,58 +1529,109 @@ module.exports = (db) => {
   });
 
   // ==================== FAQs And Google Reviews Associations ====================
-  
+
   const { Page, Faq, GoogleReview } = db;
-  
+
   Page.hasMany(Faq, { foreignKey: "page_id", as: "faqs" });
   Faq.belongsTo(Page, { foreignKey: "page_id", as: "page" });
-  
+
   Page.hasMany(GoogleReview, {
     foreignKey: "page_id",
     as: "googleReviews",
   });
-  
+
   GoogleReview.belongsTo(Page, {
     foreignKey: "page_id",
   });
   // ==================== VENUE FINDER QUIZ Associations ====================
 
-  const { VenueFinderQuiz, VenueFinderQuizQuestion, VenueFinderQuizOption } = db;
+  const { VenueFinderQuiz, VenueFinderQuizQuestion, VenueFinderQuizOption } =
+    db;
 
   // Quiz
-  VenueFinderQuiz.belongsTo(BirthdayBlog, { foreignKey: 'birthday_blog_id', as: 'birthdayBlog' });
-  VenueFinderQuiz.hasMany(VenueFinderQuizQuestion, { foreignKey: 'quiz_id', as: 'questions' });
+  VenueFinderQuiz.belongsTo(BirthdayBlog, {
+    foreignKey: "birthday_blog_id",
+    as: "birthdayBlog",
+  });
+  VenueFinderQuiz.hasMany(VenueFinderQuizQuestion, {
+    foreignKey: "quiz_id",
+    as: "questions",
+  });
 
   // Question
-  VenueFinderQuizQuestion.belongsTo(VenueFinderQuiz, { foreignKey: 'quiz_id', as: 'quiz' });
-  VenueFinderQuizQuestion.hasMany(VenueFinderQuizOption, { foreignKey: 'question_id', as: 'options' });
+  VenueFinderQuizQuestion.belongsTo(VenueFinderQuiz, {
+    foreignKey: "quiz_id",
+    as: "quiz",
+  });
+  VenueFinderQuizQuestion.hasMany(VenueFinderQuizOption, {
+    foreignKey: "question_id",
+    as: "options",
+  });
 
   // Custom Options
-  VenueFinderQuizOption.belongsTo(VenueFinderQuizQuestion, { foreignKey: 'question_id', as: 'question' });
+  VenueFinderQuizOption.belongsTo(VenueFinderQuizQuestion, {
+    foreignKey: "question_id",
+    as: "question",
+  });
 
   // ---- Reference Mappings (many-to-many) ----
   const mappingConfigs = [
-    { mappingModel: 'VenueFinderQuizCategoryMapping', refModel: 'VenueCategory', fk: 'category_id', as: 'categories' },
-    { mappingModel: 'VenueFinderQuizBudgetRangeMapping', refModel: 'VenueBudgetRange', fk: 'budget_range_id', as: 'budgetRanges' },
-    { mappingModel: 'VenueFinderQuizExperienceTypeMapping', refModel: 'VenueExperienceType', fk: 'experience_type_id', as: 'experienceTypes' },
-    { mappingModel: 'VenueFinderQuizPartyTypeMapping', refModel: 'VenuePartType', fk: 'party_type_id', as: 'partyTypes' },
-    { mappingModel: 'VenueFinderQuizSuitableTimeMapping', refModel: 'VenueSuitableTime', fk: 'suitable_time_id', as: 'suitableTimes' },
-    { mappingModel: 'VenueFinderQuizLookingForMapping', refModel: 'VenueExperienceLookingFor', fk: 'looking_for_id', as: 'lookingFor' },
-    { mappingModel: 'VenueFinderQuizLocationMapping', refModel: 'Location', fk: 'location_id', as: 'locations' },
+    {
+      mappingModel: "VenueFinderQuizCategoryMapping",
+      refModel: "VenueCategory",
+      fk: "category_id",
+      as: "categories",
+    },
+    {
+      mappingModel: "VenueFinderQuizBudgetRangeMapping",
+      refModel: "VenueBudgetRange",
+      fk: "budget_range_id",
+      as: "budgetRanges",
+    },
+    {
+      mappingModel: "VenueFinderQuizExperienceTypeMapping",
+      refModel: "VenueExperienceType",
+      fk: "experience_type_id",
+      as: "experienceTypes",
+    },
+    {
+      mappingModel: "VenueFinderQuizPartyTypeMapping",
+      refModel: "VenuePartType",
+      fk: "party_type_id",
+      as: "partyTypes",
+    },
+    {
+      mappingModel: "VenueFinderQuizSuitableTimeMapping",
+      refModel: "VenueSuitableTime",
+      fk: "suitable_time_id",
+      as: "suitableTimes",
+    },
+    {
+      mappingModel: "VenueFinderQuizLookingForMapping",
+      refModel: "VenueExperienceLookingFor",
+      fk: "looking_for_id",
+      as: "lookingFor",
+    },
+    {
+      mappingModel: "VenueFinderQuizLocationMapping",
+      refModel: "Location",
+      fk: "location_id",
+      as: "locations",
+    },
   ];
 
   mappingConfigs.forEach(({ mappingModel, refModel, fk, as }) => {
     if (db[mappingModel] && db[refModel]) {
       VenueFinderQuizQuestion.belongsToMany(db[refModel], {
         through: db[mappingModel],
-        foreignKey: 'question_id',
+        foreignKey: "question_id",
         otherKey: fk,
         as: as,
       });
       db[refModel].belongsToMany(VenueFinderQuizQuestion, {
         through: db[mappingModel],
         foreignKey: fk,
-        otherKey: 'question_id',
+        otherKey: "question_id",
         as: `quizQuestions_${as}`,
       });
     }

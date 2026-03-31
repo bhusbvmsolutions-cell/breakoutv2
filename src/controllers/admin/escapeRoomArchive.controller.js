@@ -90,24 +90,12 @@ const escapeRoomArchiveController = {
         counter_rating: req.body.counter_rating,
         footer_heading: req.body.footer_heading,
         footer_description1: req.body.footer_description1,
-        footer_description2: req.body.footer_description2
+        footer_description2: req.body.footer_description2,
+        banner_video_id: req.body.banner_video_id || null
       });
 
-      // Handle banner image upload
-      if (req.files && req.files['banner_image'] && req.files['banner_image'][0]) {
-        const file = req.files['banner_image'][0];
-        const imagePath = '/uploads/escaperoomarchive/' + file.filename;
-        
-        // Delete old image if exists
-        if (archive.banner_image) {
-          const oldPath = path.join(__dirname, '../../public', archive.banner_image);
-          if (fs.existsSync(oldPath)) {
-            fs.unlinkSync(oldPath);
-          }
-        }
-        
-        await archive.update({ banner_image: imagePath });
-      }
+      
+      
 
       // Handle icons
       if (req.body.icon_headings) {

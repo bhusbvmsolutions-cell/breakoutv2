@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
       // Counter section
       counters_heading: DataTypes.STRING,
       counters_counter_heading: DataTypes.STRING,
-      counters_counter_rating: DataTypes.DECIMAL(3,1),
+      counters_counter_rating: DataTypes.STRING(500),
       // Icons section heading
       icons_heading: DataTypes.STRING,
       // Add‑ons section heading

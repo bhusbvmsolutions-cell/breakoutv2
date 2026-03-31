@@ -109,15 +109,7 @@ const virtualController = {
         // Banner
         banner_heading: archive.banner_heading,
         banner_description: archive.banner_description,
-        banner_video: archive.bannerVideo
-          ? {
-              title: archive.bannerVideo.title,
-              thumbnail: archive.bannerVideo.thumbnail,
-              url: baseUrl + archive.bannerVideo.url,
-              duration: archive.bannerVideo.duration,
-            }
-          : null,
-
+        banner_video: archive?.bannerVideo?.url ? baseUrl + archive.bannerVideo.url : null,
         // Content Section
         content_section: {
           content: archive.content_section_content,
@@ -222,7 +214,7 @@ const virtualController = {
 
       const games = await VirtualGame.findAll({
         where: { isActive: true },
-        attributes: ["id", "title", "slug", "banner_image", "success_rate", "capacity"],    
+        attributes: ["id", "title", "slug", "banner_image", "success_rate", "capacity", "banner_heading", "banner_description", "capacity"],    
         });
 
         games.forEach((game) => {
@@ -250,8 +242,6 @@ const virtualController = {
       const game = await VirtualGame.findOne({
         where: { slug: slug, isActive: true }
       });
-
-      game.banner_image = game.banner_image ? baseUrl + game.banner_image : null;
 
       const faqs = await GetRelatedFaqs(game.id, `vg:${game.slug}`, "virtualgame");
       const googleReviews = await GetRelatedGoogleReviews(game.id, `vg:${game.slug}`, "virtualgame");

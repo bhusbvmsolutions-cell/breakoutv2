@@ -147,6 +147,12 @@
     border: 2px solid #dee2e6;
     margin-top: 0.5rem;
   }
+
+  .review-heading {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+  }
 </style>
 
 <%- contentFor('body') %>
@@ -207,6 +213,7 @@
               data-name="<%= review.reviewer_name.replace(/"/g, '&quot;') %>" 
               data-image="<%= review.reviewer_image.replace(/"/g, '&quot;') %>" 
               data-rating="<%= review.rating %>" 
+              data-heading="<%= review.review_heading ? review.review_heading.replace(/"/g, '&quot;') : '' %>" 
               data-text="<%= review.review_text.replace(/"/g, '&quot;') %>" 
               data-date="<%= review.review_date ? new Date(review.review_date).toISOString().split('T')[0] : '' %>" 
               data-active="<%= review.isActive %>">
@@ -218,6 +225,9 @@
           </div>
         </div>
         <div class="review-text">
+          <% if (review.review_heading) { %>
+            <div class="review-heading"><%= review.review_heading %></div>
+          <% } %>
           <%- review.review_text %>
         </div>
       </div>
@@ -267,6 +277,11 @@
             <option value="2">★★☆☆☆ (2)</option>
             <option value="1">★☆☆☆☆ (1)</option>
           </select>
+        </div>
+        <!-- Review Heading Field -->
+        <div class="mb-3">
+          <label class="form-label">Review Heading (optional)</label>
+          <input type="text" class="form-control" id="reviewHeading" placeholder="e.g., Great experience!">
         </div>
         <div class="mb-3">
           <label class="form-label">Review Date</label>
@@ -392,8 +407,8 @@
       $('#reviewerImage').val('');
       $('#imagePreviewContainer').hide();
       $('#rating').val('5');
+      $('#reviewHeading').val('');
       $('#reviewDate').val(new Date().toISOString().split('T')[0]);
-      // Clear summernote content
       if (summernoteInitialized) {
         $('#reviewText').summernote('code', '');
       } else {
@@ -411,6 +426,7 @@
       const name = $(this).data('name');
       const image = $(this).data('image');
       const rating = $(this).data('rating');
+      const heading = $(this).data('heading') || '';
       const text = $(this).data('text');
       const date = $(this).data('date');
       const active = $(this).data('active');
@@ -426,9 +442,9 @@
         $('#imagePreviewContainer').hide();
       }
       $('#rating').val(rating);
+      $('#reviewHeading').val(heading);
       $('#reviewDate').val(date);
       
-      // Initialize summernote if not already, then set content
       if (!summernoteInitialized) {
         initSummernote();
         setTimeout(() => {
@@ -448,6 +464,7 @@
       const reviewer_name = $('#reviewerName').val().trim();
       const reviewer_image = $('#reviewerImage').val().trim();
       const rating = $('#rating').val();
+      const review_heading = $('#reviewHeading').val().trim();
       const review_text = $('#reviewText').summernote('code');
       const review_date = $('#reviewDate').val();
       const isActive = $('#reviewActive').is(':checked');
@@ -463,6 +480,7 @@
         reviewer_name,
         reviewer_image,
         rating,
+        review_heading,
         review_text,
         review_date,
         isActive: isActive ? 'on' : ''

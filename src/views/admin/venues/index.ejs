@@ -167,8 +167,15 @@
     <div class="col-md-3">
       <div class="stats-card">
         <h3 id="avgRating"><%=
-      venues.length ? (venues.reduce((sum, v) => sum + (v.rating || 0), 0) / venues.length).toFixed(1) : 0
-    %></h3>
+  venues.length
+    ? (
+        venues.reduce((sum, v) => {
+          const rating = parseFloat(v.rating);
+          return sum + (isNaN(rating) ? 0 : rating);
+        }, 0) / venues.length
+      ).toFixed(1)
+    : "0.0"
+%></h3>
         <p>Avg Rating</p>
       </div>
     </div>
