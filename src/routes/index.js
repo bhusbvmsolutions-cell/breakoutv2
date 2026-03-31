@@ -112,6 +112,7 @@ const VirtualApiRoutes = require('./api/virtual.routes');
 const PartiesApiRoutes = require('./api/parties.routes');
 const BirthDayBlogsAPIRoutes = require('./api/birthdayblog.routes');
 const breakoutPartyBlogAPIRoutes = require('./api/breakoutPartyBlog.routes');
+const StaticPagesAPIRoutes = require('./api/staticPages.routes');
 
 
 
@@ -127,6 +128,7 @@ router.use('/api/virtual', VirtualApiRoutes);
 router.use('/api/parties', PartiesApiRoutes);
 router.use('/api/seo-blogs', BirthDayBlogsAPIRoutes);
 router.use('/api/breakout-party-blogs', breakoutPartyBlogAPIRoutes);
+router.use('/api/static', StaticPagesAPIRoutes);
 
 
 // Home route
