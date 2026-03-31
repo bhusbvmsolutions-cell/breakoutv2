@@ -110,6 +110,8 @@ const EscapeRoomLocationsApiRoutes = require('./api/escapelocations.routes');
 const EscapeRoomApiRoutes = require('./api/escaperoom.routes');
 const VirtualApiRoutes = require('./api/virtual.routes');
 const PartiesApiRoutes = require('./api/parties.routes');
+const BirthDayBlogsAPIRoutes = require('./api/birthdayblog.routes');
+const breakoutPartyBlogAPIRoutes = require('./api/breakoutPartyBlog.routes');
 
 
 
@@ -123,7 +125,8 @@ router.use('/api/escaperoomlocations', EscapeRoomLocationsApiRoutes);
 router.use('/api/escaperooms', EscapeRoomApiRoutes);
 router.use('/api/virtual', VirtualApiRoutes);
 router.use('/api/parties', PartiesApiRoutes);
-
+router.use('/api/seo-blogs', BirthDayBlogsAPIRoutes);
+router.use('/api/breakout-party-blogs', breakoutPartyBlogAPIRoutes);
 
 
 // Home route
